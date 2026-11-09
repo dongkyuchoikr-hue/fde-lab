@@ -48,30 +48,38 @@ jobs:
                   print(f"[{kw}] …{t[max(0,m.start()-220):m.end()+220]}…\n")
           PY
           done
-      - name: 위키백과 DJIA 구성 종목 표 (CC BY-SA 4.0) — 티커·회사·업종·편입일과 판 번호(oldid)
+      - name: 위키백과 DJIA 구성 종목 (CC BY-SA 4.0) — 표 머리글 전부 + 위키텍스트의 거래소 템플릿 티커, 판 번호(oldid)
         run: |
           curl -sS -m 30 -L -A "fde-lab learning project (GitHub Actions probe)" -o djia.html -w "HTTP %{http_code} · %{size_download} bytes\n" "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average" || true
+          curl -sS -m 30 -L -A "fde-lab learning project (GitHub Actions probe)" -o djia_wt.json -w "HTTP %{http_code} · %{size_download} bytes\n" "https://en.wikipedia.org/w/api.php?action=parse&page=Dow_Jones_Industrial_Average&prop=wikitext|revid&format=json&formatversion=2" || true
           python3 -I - <<'PY'
-          import re, html
+          import re, html, json
           raw = open("djia.html", encoding="utf-8", errors="replace").read()
           m = re.search(r'"wgRevisionId":(\d+)', raw) or re.search(r'"wgCurRevisionId":(\d+)', raw)
-          print("revision (oldid):", m.group(1) if m else "?")
+          print("page revision (oldid):", m.group(1) if m else "?")
           def cells_of(row):
               return [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", c))).strip() for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, flags=re.S)]
-          found = False
-          for tbl in re.findall(r"<table[^>]*>.*?</table>", raw, flags=re.S):
+          for i, tbl in enumerate(re.findall(r"<table[^>]*>.*?</table>", raw, flags=re.S)):
               rows = re.findall(r"<tr[^>]*>(.*?)</tr>", tbl, flags=re.S)
-              if not rows: continue
-              head = cells_of(rows[0])
-              if not any(h.lower() in ("symbol", "ticker", "ticker symbol") for h in head): continue
-              found = True
-              print("HEADER:", " | ".join(head))
-              n = 0
-              for r in rows[1:]:
-                  c = cells_of(r)
-                  if c and any(c): print(" | ".join(c)); n += 1
-              print("rows:", n)
-          if not found: print("Symbol 열이 있는 표를 찾지 못함")
+              if rows:
+                  print(f"table {i} rows={len(rows)} header:", " | ".join(cells_of(rows[0]))[:200])
+          try:
+              wt = json.load(open("djia_wt.json", encoding="utf-8"))["parse"]
+              print("api revid:", wt.get("revid"))
+              text = wt["wikitext"]
+              tick = re.findall(r"\{\{(?:NYSE|NASDAQ|Nasdaq|nyse|nasdaq)\|([A-Za-z.\-]+)", text)
+              seen = []
+              for t in tick:
+                  if t.upper() not in seen: seen.append(t.upper())
+              print("exchange-template tickers:", len(seen), " ".join(seen))
+              sec = re.search(r"==+\s*(Current )?[Cc]omponents\s*==+(.*?)\n==[^=]", text, flags=re.S)
+              if sec:
+                  body = sec.group(2)
+                  for line in body.split("\n"):
+                      if line.startswith("|") and ("NYSE" in line or "NASDAQ" in line.upper()):
+                          print(re.sub(r"\s+", " ", line)[:220])
+          except Exception as e:
+              print("wikitext parse 실패:", e)
           PY
       - name: NYSE 휴장일 페이지 — 날짜가 든 줄 전부
         run: |
