@@ -7,7 +7,7 @@
 
 - 지난주 = weekly.json 의 week.prev_end 를 기준일로 가진 동결 파일(picks/{날짜}.json). 없으면 아무것도 쓰지 않습니다(첫 주).
 - 종목 수익률 = 이번 주 수집본의 ret_1w(같은 시계열의 두 날짜). 바구니 = 선정 종목 단순 평균(동일 비중).
-- 기준선 둘: 유니버스 동일비중 평균, 시장(SPY). 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값).
+- 기준선 둘: 유니버스 동일비중 평균(자료 이상 종목 제외), 시장(벤치마크, universe.json). 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값).
 - 선정 종목 중 하나라도 기준일 자료가 없으면 결과 '보류'(바구니 계산 안 함). 다음 실행이 다시 계산합니다.
   더 오래된 동결 선정에 확정 결과가 없으면 '공백'으로 남기고 2주 수익률로 메우지 않습니다.
 - 기록은 추가만 합니다. 확정된 행은 바꾸지 않습니다(바꾸려 하면 오류).
@@ -44,6 +44,7 @@ def lesson_texts(code: str, ctx: dict, mode: str) -> str:
     full = mode == "full"
     t = ctx.get("ticker", "")
     flag = ctx.get("flag", "")
+    b = ctx.get("bench_t", "시장")
     if code == "L1":
         head = f"{t}의 {ctx['ret']:.1f}%는" if full and is_num(ctx.get("ret")) else f"{t}의 큰 하락(7% 넘게)은"
         return f"교훈: {head} 위험 표시 「{flag}」가 붙어 있던 종목에서 나왔습니다. 표시가 맞혔다는 뜻은 아니지만, 표시가 뜻하는 '흔들릴 수 있음'이 이번 주에 일어났습니다."
@@ -54,7 +55,7 @@ def lesson_texts(code: str, ctx: dict, mode: str) -> str:
         head = f"{ctx['ret']:.1f}% 빠졌습니다" if full and is_num(ctx.get("ret")) else "7% 넘게 빠졌습니다"
         return f"교훈: {t}는 위험 표시가 하나도 없었는데 {head}. 과거 숫자가 좋아도 한 주 뒤는 알 수 없습니다 — 그래서 한 종목이 아니라 5종목으로 나눕니다."
     if code == "L4":
-        head = f"시장 전체(SPY)가 {ctx['bench']:.1f}% 빠진 주였습니다" if full and is_num(ctx.get("bench")) else "시장 전체(SPY)가 3% 넘게 빠진 주였습니다"
+        head = f"시장 전체({b})가 {ctx['bench']:.1f}% 빠진 주였습니다" if full and is_num(ctx.get("bench")) else f"시장 전체({b})가 3% 넘게 빠진 주였습니다"
         return f"교훈: {head}. 이런 주엔 무엇을 골랐든 대부분 내립니다 — '내 종목만 왜?'보다 '시장이 왜?'를 먼저 보세요."
     if code == "L5":
         return f"교훈: 이번 주 선정이 {ctx.get('changed', 0)}개 바뀌었습니다. 매주 따라 사고팔면 비용이 수익을 갉아먹습니다 — 기록의 '비용 차감 선'이 그 차이입니다."
@@ -121,7 +122,7 @@ def main(argv: list[str]) -> int:
         hold = {"from": pick_as_of, "to": result_as_of, "trading_days": w["week"].get("trading_days"), "half_day": w["week"].get("half_day")}
         uni_avg = w.get("universe_avg_ret_1w")
         bench_ret = bench.get("ret_1w")
-        singles = [s["ret_1w"] for s in w["stocks"] if s.get("in_universe") and s.get("fresh") and is_num(s.get("ret_1w"))]
+        singles = [s["ret_1w"] for s in w["stocks"] if s.get("in_universe") and s.get("fresh") and not s.get("suspect") and is_num(s.get("ret_1w"))]
         rows_out, rets, all_fresh = [], [], True
         for p in picks:
             s = stocks.get(p["ticker"])
@@ -191,7 +192,7 @@ def main(argv: list[str]) -> int:
                 if r <= -7 and not row["flags_at_pick"]:
                     cand.append(("L2", {"ticker": row["ticker"], "ret": r}))
             if is_num(bench_ret) and bench_ret <= -3:
-                cand.append(("L4", {"bench": bench_ret}))
+                cand.append(("L4", {"bench": bench_ret, "bench_t": bench.get("ticker", "시장")}))
             if changed >= rules["flags"]["MANY_CHANGES"]["threshold"]:
                 cand.append(("L5", {"changed": changed}))
             order = {c: i for i, c in enumerate(rr["lessons_priority"])}

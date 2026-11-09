@@ -1,0 +1,76 @@
+{
+ "schema": "track/1",
+ "rules_version": "v1",
+ "publish_mode": "full",
+ "start": "2026-10-23",
+ "assumptions_ko": "가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · 5종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값) · 세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.",
+ "min_weeks_to_read": 26,
+ "weeks": [
+  {
+   "pick_as_of": "2026-10-23",
+   "result_as_of": "2026-10-30",
+   "status": "확정",
+   "n_picks": 5,
+   "beat_universe": false,
+   "beat_bench": false,
+   "pct_rank_among_singles": 27.6,
+   "changed_count": 0,
+   "lessons": [
+    "L2"
+   ],
+   "basket_ret": -1.46,
+   "basket_net_ret": -1.76,
+   "universe_avg_ret": -0.1,
+   "bench_ret_1w": -0.04
+  },
+  {
+   "pick_as_of": "2026-10-30",
+   "result_as_of": "2026-11-06",
+   "status": "확정",
+   "n_picks": 5,
+   "beat_universe": true,
+   "beat_bench": false,
+   "pct_rank_among_singles": 57.1,
+   "changed_count": 1,
+   "lessons": [
+    "L6"
+   ],
+   "basket_ret": 1.64,
+   "basket_net_ret": 1.52,
+   "universe_avg_ret": 0.78,
+   "bench_ret_1w": 2.95
+  }
+ ],
+ "summary": {
+  "rows": 2,
+  "n": 2,
+  "weeks_beat_universe": 1,
+  "weeks_beat_bench": 0,
+  "weeks_no_picks": 0,
+  "weeks_pending": 0,
+  "weeks_gap": 0,
+  "min_weeks_to_read": 26,
+  "cum": {
+   "basket_ret": 0.16,
+   "basket_net_ret": -0.27,
+   "universe_avg_ret": 0.68,
+   "bench_ret_1w": 2.91
+  },
+  "idx": [
+   {
+    "pick_as_of": "2026-10-23",
+    "basket_ret": 98.54,
+    "basket_net_ret": 98.24,
+    "universe_avg_ret": 99.9,
+    "bench_ret_1w": 99.96
+   },
+   {
+    "pick_as_of": "2026-10-30",
+    "basket_ret": 100.16,
+    "basket_net_ret": 99.73,
+    "universe_avg_ret": 100.68,
+    "bench_ret_1w": 102.91
+   }
+  ]
+ }
+}

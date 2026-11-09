@@ -212,7 +212,7 @@ def main(argv: list[str]) -> int:
     r_calm = avg_ranks({s["ticker"]: s.get("volatility_60d") for s in ranked}, higher_better=False)
     r_dd = avg_ranks({s["ticker"]: s.get("max_drawdown_12w") for s in ranked}, higher_better=True)
     r_1w = avg_ranks({s["ticker"]: s.get("ret_1w") for s in ranked}, higher_better=True)
-    fresh_in_uni = [s for s in stocks if s["in_universe"] and s.get("fresh") and is_num(s.get("ret_1w"))]
+    fresh_in_uni = [s for s in stocks if s["in_universe"] and s.get("fresh") and not s.get("suspect") and is_num(s.get("ret_1w"))]
     uni_avg = round(sum(s["ret_1w"] for s in fresh_in_uni) / len(fresh_in_uni), 2) if fresh_in_uni else None
     bench_ret = bench.get("ret_1w")
     fl = rules["flags"]

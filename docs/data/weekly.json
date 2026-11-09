@@ -14,7 +14,7 @@
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 07:05",
+ "generated_at_utc": "2026-11-09 07:06",
  "run": null,
  "provider": "eodhd",
  "provider_name_ko": "EODHD (eodhd.com) 일별 시세 API",

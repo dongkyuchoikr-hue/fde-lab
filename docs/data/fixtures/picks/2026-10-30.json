@@ -1,0 +1,642 @@
+{
+ "schema": "picks/1",
+ "as_of": {
+  "date": "2026-10-30",
+  "et": "2026-10-30 16:00",
+  "kst": "2026-10-31 05:00",
+  "half_day": false
+ },
+ "week": {
+  "start": "2026-10-26",
+  "end": "2026-10-30",
+  "prev_end": "2026-10-23",
+  "trading_days": 5,
+  "half_day": false,
+  "short": false
+ },
+ "generated_at_utc": "2026-10-31 03:20",
+ "run": null,
+ "rules_version": "v1",
+ "rules_frozen_on": "2026-11-09",
+ "universe_version": "fixture-1",
+ "publish_mode": "full",
+ "provider": "synthetic",
+ "status": "확정",
+ "status_message_ko": "조건 4개를 통과한 15개 중 점수 순으로 5개(같은 업종 최대 2개).",
+ "late": false,
+ "gate_summary": {
+  "M": 28,
+  "fresh_count": 30,
+  "universe_count": 30,
+  "above_ma200": 17,
+  "surge_excluded": 0,
+  "crash_excluded": 1,
+  "data_excluded": 2,
+  "passed": 15
+ },
+ "market": {
+  "ticker": "MKT",
+  "above_ma200": true,
+  "dir_1w": "보합"
+ },
+ "previous": {
+  "as_of": "2026-10-23",
+  "status": "확정",
+  "tickers": [
+   "S10",
+   "S07",
+   "S01",
+   "S06",
+   "S27"
+  ],
+  "picks": [
+   {
+    "rank": 1,
+    "ticker": "S10",
+    "name_ko": "예시 10",
+    "sector_ko": "정보기술",
+    "score": 92.6
+   },
+   {
+    "rank": 2,
+    "ticker": "S07",
+    "name_ko": "예시 7",
+    "sector_ko": "커뮤니케이션",
+    "score": 91.1
+   },
+   {
+    "rank": 3,
+    "ticker": "S01",
+    "name_ko": "예시 1",
+    "sector_ko": "정보기술",
+    "score": 91.1
+   },
+   {
+    "rank": 4,
+    "ticker": "S06",
+    "name_ko": "예시 6",
+    "sector_ko": "필수소비재",
+    "score": 80.0
+   },
+   {
+    "rank": 5,
+    "ticker": "S27",
+    "name_ko": "예시 27",
+    "sector_ko": "소재",
+    "score": 75.6
+   }
+  ]
+ },
+ "picks": [
+  {
+   "rank": 1,
+   "ticker": "S10",
+   "name_ko": "예시 10",
+   "sector_ko": "정보기술",
+   "score": 95.6,
+   "rank_all": 1,
+   "pct": {
+    "trend": 88.9,
+    "calm": 100.0,
+    "dd": 100.0
+   },
+   "ranks": {
+    "trend": 4,
+    "calm": 1,
+    "dd": 1,
+    "ret_1w": 12
+   },
+   "state": "유지",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 28개 중 4위 (+15.8%, 같은 기간 시장 MKT +8.2%). 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 28개 중 1번째 (최근 60거래일 하루 평균 ±0.6%).",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 28개 중 1번째 (최대 -3.3%). 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 +1.0% (MKT -0.0%) · 52주 고점 대비 -0.5% · 거래량 평소의 0.9배 · 이번주 종가 $235.27",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다.",
+   "values": {
+    "ret_1w": 0.99,
+    "mom_6_1": 15.79,
+    "volatility_60d": 0.64,
+    "max_drawdown_12w": -3.31,
+    "pct_from_52w_high": -0.45,
+    "vol_ratio": 0.93,
+    "last_close": 235.27
+   }
+  },
+  {
+   "rank": 2,
+   "ticker": "S01",
+   "name_ko": "예시 1",
+   "sector_ko": "정보기술",
+   "score": 94.1,
+   "rank_all": 2,
+   "pct": {
+    "trend": 92.6,
+    "calm": 96.3,
+    "dd": 92.6
+   },
+   "ranks": {
+    "trend": 3,
+    "calm": 2,
+    "dd": 3,
+    "ret_1w": 10
+   },
+   "state": "유지",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 28개 중 3위 (+26.2%, 같은 기간 시장 MKT +8.2%). 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 28개 중 2번째 (최근 60거래일 하루 평균 ±0.7%).",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 28개 중 3번째 (최대 -3.7%). 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 +1.2% (MKT -0.0%) · 52주 고점 대비 -0.5% · 거래량 평소의 0.9배 · 이번주 종가 $350.71",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다.",
+   "values": {
+    "ret_1w": 1.18,
+    "mom_6_1": 26.22,
+    "volatility_60d": 0.68,
+    "max_drawdown_12w": -3.66,
+    "pct_from_52w_high": -0.54,
+    "vol_ratio": 0.87,
+    "last_close": 350.71
+   }
+  },
+  {
+   "rank": 3,
+   "ticker": "S11",
+   "name_ko": "예시 11",
+   "sector_ko": "금융",
+   "score": 82.2,
+   "rank_all": 4,
+   "pct": {
+    "trend": 96.3,
+    "calm": 70.4,
+    "dd": 77.8
+   },
+   "ranks": {
+    "trend": 2,
+    "calm": 9,
+    "dd": 7,
+    "ret_1w": 11
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 28개 중 2위 (+27.8%, 같은 기간 시장 MKT +8.2%). 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 28개 중 9번째 (최근 60거래일 하루 평균 ±1.1%).",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 28개 중 7번째 (최대 -4.4%). 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 +1.0% (MKT -0.0%) · 52주 고점 대비 -1.9% · 거래량 평소의 0.9배 · 이번주 종가 $123.77",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다.",
+   "values": {
+    "ret_1w": 1.0,
+    "mom_6_1": 27.79,
+    "volatility_60d": 1.1,
+    "max_drawdown_12w": -4.42,
+    "pct_from_52w_high": -1.86,
+    "vol_ratio": 0.9,
+    "last_close": 123.77
+   }
+  },
+  {
+   "rank": 4,
+   "ticker": "S27",
+   "name_ko": "예시 27",
+   "sector_ko": "소재",
+   "score": 81.5,
+   "rank_all": 5,
+   "pct": {
+    "trend": 74.1,
+    "calm": 85.2,
+    "dd": 88.9
+   },
+   "ranks": {
+    "trend": 8,
+    "calm": 5,
+    "dd": 4,
+    "ret_1w": 15
+   },
+   "state": "유지",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 28개 중 8위 (+11.6%, 같은 기간 시장 MKT +8.2%). 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 28개 중 5번째 (최근 60거래일 하루 평균 ±1.0%).",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 28개 중 4번째 (최대 -4.1%). 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 -0.1% (MKT -0.0%) · 52주 고점 대비 -0.5% · 거래량 평소의 1.3배 · 이번주 종가 $256.02",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다.",
+   "values": {
+    "ret_1w": -0.07,
+    "mom_6_1": 11.63,
+    "volatility_60d": 0.98,
+    "max_drawdown_12w": -4.08,
+    "pct_from_52w_high": -0.47,
+    "vol_ratio": 1.29,
+    "last_close": 256.02
+   }
+  },
+  {
+   "rank": 5,
+   "ticker": "S06",
+   "name_ko": "예시 6",
+   "sector_ko": "필수소비재",
+   "score": 73.4,
+   "rank_all": 6,
+   "pct": {
+    "trend": 55.6,
+    "calm": 92.6,
+    "dd": 70.4
+   },
+   "ranks": {
+    "trend": 13,
+    "calm": 3,
+    "dd": 9,
+    "ret_1w": 21
+   },
+   "state": "유지",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 28개 중 13위 (+6.9%, 같은 기간 시장 MKT +8.2%). 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 28개 중 3번째 (최근 60거래일 하루 평균 ±0.9%).",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 28개 중 9번째 (최대 -5.0%). 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 -1.9% (MKT -0.0%) · 52주 고점 대비 -5.5% · 거래량 평소의 0.7배 · 이번주 종가 $121.84",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다.",
+   "values": {
+    "ret_1w": -1.95,
+    "mom_6_1": 6.93,
+    "volatility_60d": 0.92,
+    "max_drawdown_12w": -4.97,
+    "pct_from_52w_high": -5.52,
+    "vol_ratio": 0.72,
+    "last_close": 121.84
+   }
+  }
+ ],
+ "not_selected": [
+  {
+   "ticker": "S19",
+   "name_ko": "예시 19",
+   "sector_ko": "정보기술",
+   "score": 85.2,
+   "rank_all": 3,
+   "why_code": "SECTOR_CAP",
+   "why_ko": "업종 상한 — 같은 업종이 이미 2개",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S16",
+   "name_ko": "예시 16",
+   "sector_ko": "커뮤니케이션",
+   "score": 73.3,
+   "rank_all": 7,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "보합"
+  },
+  {
+   "ticker": "S23",
+   "name_ko": "예시 23",
+   "sector_ko": "경기소비재",
+   "score": 72.6,
+   "rank_all": 8,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S14",
+   "name_ko": "예시 14",
+   "sector_ko": "경기소비재",
+   "score": 65.9,
+   "rank_all": 9,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S02",
+   "name_ko": "예시 2",
+   "sector_ko": "금융",
+   "score": 62.2,
+   "rank_all": 10,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S07",
+   "name_ko": "예시 7",
+   "sector_ko": "커뮤니케이션",
+   "score": 61.5,
+   "rank_all": 11,
+   "why_code": "CRASH_DAY",
+   "why_ko": "C4 — 최근 4주에 하루 7% 넘게 내린 날이 있어 제외",
+   "flags": [
+    "CRASH_DAY",
+    "VOL_UP"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S09",
+   "name_ko": "예시 9",
+   "sector_ko": "소재",
+   "score": 59.3,
+   "rank_all": 12,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S22",
+   "name_ko": "예시 22",
+   "sector_ko": "산업재",
+   "score": 57.0,
+   "rank_all": 13,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOL_UP"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S03",
+   "name_ko": "예시 3",
+   "sector_ko": "헬스케어",
+   "score": 56.3,
+   "rank_all": 14,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S12",
+   "name_ko": "예시 12",
+   "sector_ko": "헬스케어",
+   "score": 46.7,
+   "rank_all": 15,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S21",
+   "name_ko": "예시 21",
+   "sector_ko": "헬스케어",
+   "score": 44.4,
+   "rank_all": 16,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "보합"
+  },
+  {
+   "ticker": "S20",
+   "name_ko": "예시 20",
+   "sector_ko": "금융",
+   "score": 39.3,
+   "rank_all": 17,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S29",
+   "name_ko": "예시 29",
+   "sector_ko": "금융",
+   "score": 37.0,
+   "rank_all": 18,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S24",
+   "name_ko": "예시 24",
+   "sector_ko": "필수소비재",
+   "score": 36.3,
+   "rank_all": 19,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S30",
+   "name_ko": "예시 30",
+   "sector_ko": "헬스케어",
+   "score": 31.1,
+   "rank_all": 20,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S28",
+   "name_ko": "예시 28",
+   "sector_ko": "정보기술",
+   "score": 31.1,
+   "rank_all": 21,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S13",
+   "name_ko": "예시 13",
+   "sector_ko": "산업재",
+   "score": 27.4,
+   "rank_all": 22,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S05",
+   "name_ko": "예시 5",
+   "sector_ko": "경기소비재",
+   "score": 27.4,
+   "rank_all": 23,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "BIG_DD"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S26",
+   "name_ko": "예시 26",
+   "sector_ko": "에너지",
+   "score": 19.2,
+   "rank_all": 24,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOL_SPIKE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S08",
+   "name_ko": "예시 8",
+   "sector_ko": "에너지",
+   "score": 15.5,
+   "rank_all": 25,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S15",
+   "name_ko": "예시 15",
+   "sector_ko": "필수소비재",
+   "score": 11.8,
+   "rank_all": 26,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S17",
+   "name_ko": "예시 17",
+   "sector_ko": "에너지",
+   "score": 6.7,
+   "rank_all": 27,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "S04",
+   "name_ko": "예시 4",
+   "sector_ko": "산업재",
+   "score": 5.9,
+   "rank_all": 28,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S18",
+   "name_ko": "예시 18",
+   "sector_ko": "소재",
+   "score": null,
+   "rank_all": null,
+   "why_code": "SUSPECT",
+   "why_ko": "C1 미충족 — 자료 이상 의심",
+   "flags": [
+    "SUSPECT"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "S25",
+   "name_ko": "예시 25",
+   "sector_ko": "커뮤니케이션",
+   "score": null,
+   "rank_all": null,
+   "why_code": "DATA",
+   "why_ko": "C1 미충족 — 기준일 자료가 없거나 거래일 200일 미만",
+   "flags": [
+    "DATA"
+   ],
+   "dir_1w": "상승"
+  }
+ ],
+ "changes": {
+  "added": [
+   "S11"
+  ],
+  "dropped": [
+   {
+    "ticker": "S07",
+    "now_code": "CRASH_DAY",
+    "now_ko": "C4 — 최근 4주에 하루 7% 넘게 내린 날이 있어 제외"
+   }
+  ],
+  "kept": [
+   "S01",
+   "S06",
+   "S10",
+   "S27"
+  ],
+  "changed_count": 1,
+  "prev_as_of": "2026-10-23"
+ },
+ "sector_mix": {
+  "정보기술": 2,
+  "금융": 1,
+  "소재": 1,
+  "필수소비재": 1
+ },
+ "basket_flags": [],
+ "rule_line_ko": "조건: 데이터 충분 · 200일 추세선 위 · 이번 주 +10% 급등 아님 · 최근 4주 −7% 급락 없음 → 점수: 추세 40 · 잔잔함 40 · 낙폭 20 → 상위 5 · 같은 업종 최대 2개",
+ "disclaimer_ko": "투자 조언이 아닙니다. 이 목록은 과거 가격 숫자가 미리 정한 규칙에 맞았다는 뜻이지 앞으로 오를 종목이라는 뜻이 아니며, 수익을 예측하지 않습니다."
+}

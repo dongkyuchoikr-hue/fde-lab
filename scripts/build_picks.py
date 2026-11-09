@@ -50,7 +50,7 @@ def nth_ko(r) -> str:
     return f"{rank_ko(r)}번째"
 
 
-def flag_message(code: str, s: dict, mode: str, m: int) -> str:
+def flag_message(code: str, s: dict, mode: str, m: int, bench_t: str = "SPY") -> str:
     full = mode == "full"
     w = s.get("worst_day_4w") or {}
     if code == "SURGE":
@@ -60,9 +60,9 @@ def flag_message(code: str, s: dict, mode: str, m: int) -> str:
         day = w.get("date", "최근")
         drop = f"하루 {w['ret']:.1f}% 하락" if full and is_num(w.get("ret")) else "하루 7% 넘게 하락"
         if w.get("market_down_too") is True:
-            mk = f"같은 날 시장(SPY)도 {w['bench_ret']:+.1f}%" if full and is_num(w.get("bench_ret")) else "같은 날 시장(SPY)도 내린 날"
+            mk = f"같은 날 시장({bench_t})도 {w['bench_ret']:+.1f}%" if full and is_num(w.get("bench_ret")) else f"같은 날 시장({bench_t})도 내린 날"
         elif w.get("market_down_too") is False:
-            mk = f"같은 날 시장(SPY)은 {w['bench_ret']:+.1f}%" if full and is_num(w.get("bench_ret")) else "같은 날 시장(SPY)은 크게 내리지 않음"
+            mk = f"같은 날 시장({bench_t})은 {w['bench_ret']:+.1f}%" if full and is_num(w.get("bench_ret")) else f"같은 날 시장({bench_t})은 크게 내리지 않음"
         else:
             mk = "같은 날 시장 자료 없음"
         if w.get("volume_spike") is True:
@@ -106,7 +106,7 @@ def reasons_for(s: dict, w: dict, mode: str) -> list[str]:
     if full and is_num(s.get("mom_6_1")):
         line += f" ({s['mom_6_1']:+.1f}%"
         if is_num(bench.get("mom_6_1")):
-            line += f", 같은 기간 시장 SPY {bench['mom_6_1']:+.1f}%"
+            line += f", 같은 기간 시장 {bench.get('ticker', '')} {bench['mom_6_1']:+.1f}%"
         line += ")"
     out.append(line + ". 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.")
     line = f"잔잔함 — 평소 하루 움직임이 작은 순서로 {m}개 중 {nth_ko(r['calm'])}"
@@ -123,7 +123,7 @@ def reasons_for(s: dict, w: dict, mode: str) -> list[str]:
 def reference_line(s: dict, w: dict, mode: str) -> str:
     bench = w.get("benchmark") or {}
     if mode == "full" and is_num(s.get("ret_1w")):
-        parts = [f"이번 주 {s['ret_1w']:+.1f}%" + (f" (SPY {bench['ret_1w']:+.1f}%)" if is_num(bench.get("ret_1w")) else "")]
+        parts = [f"이번 주 {s['ret_1w']:+.1f}%" + (f" ({bench.get('ticker', '시장')} {bench['ret_1w']:+.1f}%)" if is_num(bench.get("ret_1w")) else "")]
         if is_num(s.get("pct_from_52w_high")):
             parts.append(f"52주 고점 대비 {s['pct_from_52w_high']:.1f}%")
         if is_num(s.get("vol_ratio")):
@@ -133,7 +133,7 @@ def reference_line(s: dict, w: dict, mode: str) -> str:
         return " · ".join(parts)
     parts = [f"이번 주 {s.get('dir_1w') or '?'}"]
     if s.get("beat_bench_1w") is not None:
-        parts.append("시장(SPY)보다 " + ("나음" if s["beat_bench_1w"] else "못함"))
+        parts.append(f"시장({bench.get('ticker', '')})보다 " + ("나음" if s["beat_bench_1w"] else "못함"))
     parts.append("거래량 " + ("급증" if "VOL_SPIKE" in s.get("flags", []) else "평소 수준"))
     parts.append("200일 추세선 위")
     return " · ".join(parts)
@@ -179,6 +179,7 @@ def main(argv: list[str]) -> int:
     cal = Calendar(load_json(args.holidays))
     now = parse_now(args.now)
     mode = w.get("publish_mode", "ranks_only")
+    bench_t = (w.get("benchmark") or {}).get("ticker") or "시장"
     as_of = w["as_of"]["date"]
     as_of_d = dt.date.fromisoformat(as_of)
     m = w["M"]
@@ -246,7 +247,7 @@ def main(argv: list[str]) -> int:
 
     pick_rows = []
     for i, s in enumerate(picks, 1):
-        flags = [{"code": c, "name_ko": rules["flags"][c]["name_ko"], "message_ko": flag_message(c, s, mode, m)} for c in s.get("flags", []) if c in rules["flags"]]
+        flags = [{"code": c, "name_ko": rules["flags"][c]["name_ko"], "message_ko": flag_message(c, s, mode, m, bench_t)} for c in s.get("flags", []) if c in rules["flags"]]
         row = {
             "rank": i, "ticker": s["ticker"], "name_ko": s.get("name_ko"), "sector_ko": s.get("sector_ko"),
             "score": s["score"], "rank_all": s["rank_all"], "pct": s["pct"], "ranks": s["ranks"],
@@ -280,7 +281,7 @@ def main(argv: list[str]) -> int:
     if status == "확정" and prev_tickers and changes["changed_count"] >= rules["flags"]["MANY_CHANGES"]["threshold"]:
         basket_flags.append({"code": "MANY_CHANGES", "message_ko": f"이번 주 선정 {top_n}개 중 {changes['changed_count']}개가 바뀌었습니다 — 매주 따라 사고팔면 수수료·환전 비용이 쌓입니다(기록의 '비용 차감 선' 참고)."})
     if (w.get("benchmark") or {}).get("above_ma200") is False:
-        basket_flags.append({"code": "MARKET_BELOW_MA200", "message_ko": "시장 전체(SPY)가 200일 추세선 아래입니다. 이런 때는 조건을 통과하는 종목이 줄거나 0개가 됩니다 — 쉬어 가는 것도 선택입니다."})
+        basket_flags.append({"code": "MARKET_BELOW_MA200", "message_ko": f"시장 전체({bench_t})가 200일 추세선 아래입니다. 이런 때는 조건을 통과하는 종목이 줄거나 0개가 됩니다 — 쉬어 가는 것도 선택입니다."})
     if w["week"].get("short"):
         basket_flags.append({"code": "SHORT_WEEK", "message_ko": f"이번 주 미국 장 거래일 {w['week']['trading_days']}일(휴장·단축) — 거래량 배수와 주간 등락이 평소보다 작게 나올 수 있습니다."})
 
