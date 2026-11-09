@@ -56,18 +56,24 @@ jobs:
           raw = open("djia.html", encoding="utf-8", errors="replace").read()
           m = re.search(r'"wgRevisionId":(\d+)', raw) or re.search(r'"wgCurRevisionId":(\d+)', raw)
           print("revision (oldid):", m.group(1) if m else "?")
-          tbl = re.search(r'<table[^>]*id="constituents".*?</table>', raw, flags=re.S)
-          if not tbl:
-              print("constituents 표를 찾지 못함"); raise SystemExit
-          rows = re.findall(r"<tr>(.*?)</tr>", tbl.group(0), flags=re.S)
-          n = 0
-          for r in rows:
-              cells = [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", c))).strip() for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", r, flags=re.S)]
-              if cells and any(cells):
-                  print(" | ".join(cells)); n += 1
-          print("rows:", n)
+          def cells_of(row):
+              return [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", c))).strip() for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, flags=re.S)]
+          found = False
+          for tbl in re.findall(r"<table[^>]*>.*?</table>", raw, flags=re.S):
+              rows = re.findall(r"<tr[^>]*>(.*?)</tr>", tbl, flags=re.S)
+              if not rows: continue
+              head = cells_of(rows[0])
+              if not any(h.lower() in ("symbol", "ticker", "ticker symbol") for h in head): continue
+              found = True
+              print("HEADER:", " | ".join(head))
+              n = 0
+              for r in rows[1:]:
+                  c = cells_of(r)
+                  if c and any(c): print(" | ".join(c)); n += 1
+              print("rows:", n)
+          if not found: print("Symbol 열이 있는 표를 찾지 못함")
           PY
-      - name: NYSE 휴장일 페이지 — 2026·2027 날짜 줄
+      - name: NYSE 휴장일 페이지 — 날짜가 든 줄 전부
         run: |
           curl -sS -m 30 -L -A "Mozilla/5.0 (fde-lab learning project)" -o nyse.html -w "HTTP %{http_code} · %{size_download} bytes\n" "https://www.nyse.com/markets/hours-calendars" || true
           python3 -I - <<'PY'
@@ -78,7 +84,7 @@ jobs:
           lines = [re.sub(r"\s+", " ", l).strip() for l in t.split("\n")]
           lines = [l for l in lines if l]
           print("lines", len(lines))
-          for i, l in enumerate(lines):
-              if re.search(r"(Holiday|Early Close|2026|2027|Thanksgiving|Christmas|Juneteenth|Independence|Memorial|Labor|Presidents|Luther|Good Friday|New Year)", l):
-                  print(l[:160])
+          for l in lines:
+              if re.search(r"(Monday|Tuesday|Wednesday|Thursday|Friday|Holiday|Early Close|2026|2027|\*)", l):
+                  print(l[:200])
           PY
