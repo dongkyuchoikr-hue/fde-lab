@@ -1,0 +1,48 @@
+name: check-deploy
+
+# docs/ 가 바뀌어 main 에 올라오면: 검사 → GitHub Pages 배포
+# 처음 한 번은 Actions 탭에서 "Run workflow" 로 수동 실행해도 됩니다.
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", ".github/workflows/check-deploy.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 첫 화면 검사 — 자리표시자가 남아 있지 않은지
+        run: |
+          test -f docs/index.html
+          ! grep -q '<h1>주제 제목</h1>' docs/index.html
+          grep -q '투자 조언이 아닙니다' docs/index.html
+          grep -q '기준일' docs/index.html
+      - name: 비밀값 검사 — 키 모양 문자열이 없는지
+        run: |
+          ! grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
