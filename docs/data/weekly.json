@@ -14,7 +14,7 @@
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 07:04",
+ "generated_at_utc": "2026-11-09 07:05",
  "run": null,
  "provider": "eodhd",
  "provider_name_ko": "EODHD (eodhd.com) 일별 시세 API",
@@ -27,7 +27,7 @@
   "name": "다우존스 산업평균(DJIA) 30종목",
   "name_short_ko": "다우 30",
   "version": "2026-11-09",
-  "verified_on": null,
+  "verified_on": "2026-11-09",
   "size": 30
  },
  "benchmark": {
