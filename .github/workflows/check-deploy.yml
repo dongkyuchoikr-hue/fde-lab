@@ -2,11 +2,13 @@ name: check-deploy
 
 # docs/ 가 바뀌어 main 에 올라오면: 검사 → GitHub Pages 배포
 # 처음 한 번은 Actions 탭에서 "Run workflow" 로 수동 실행해도 됩니다.
+# fetch-prices.yml 이 주 1회 데이터를 갱신한 뒤에도 이 워크플로를 호출해 배포합니다.
 on:
   push:
     branches: [main]
-    paths: ["docs/**", ".github/workflows/check-deploy.yml"]
+    paths: ["docs/**", "scripts/**", ".github/workflows/check-deploy.yml"]
   workflow_dispatch:
+  workflow_call:   # fetch-prices.yml 이 데이터를 올린 뒤 호출합니다 (봇 푸시는 push 이벤트를 만들지 않음)
 
 permissions:
   contents: read

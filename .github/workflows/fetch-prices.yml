@@ -1,0 +1,77 @@
+name: fetch-prices
+
+# 주 1회(토요일 12:17 KST = 03:17 UTC, 미국 금요일 종가 뒤) 공개 일별 시세를 받아 docs/data/ 에 커밋하고 배포합니다.
+# 키: 저장소 Settings → Secrets and variables → Actions → New repository secret → 이름 EOD_API_KEY
+# 공급자: Settings → Variables → EOD_PROVIDER (eodhd 또는 alphavantage, 기본 eodhd)
+# 종목 목록: docs/data/universe.json 의 tickers[].ticker (없으면 AAPL 1개)
+on:
+  schedule:
+    - cron: "17 3 * * 6"
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: "쉼표 구분 종목 코드 (비우면 universe.json 사용)"
+        required: false
+        default: ""
+
+concurrency:
+  group: fetch-prices
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: 종목 목록 정하기
+        id: list
+        run: |
+          if [ -n "${{ github.event.inputs.tickers }}" ]; then
+            T="${{ github.event.inputs.tickers }}"
+          elif [ -f docs/data/universe.json ]; then
+            T=$(python3 -I -c 'import json; print(",".join(x["ticker"] for x in json.load(open("docs/data/universe.json"))["tickers"]))')
+          else
+            T="AAPL"
+          fi
+          echo "tickers=$T" >> "$GITHUB_OUTPUT"
+          echo "종목: $T"
+      - name: 시세 받기 (키는 Secret, 로그에 안 나옴)
+        env:
+          EOD_API_KEY: ${{ secrets.EOD_API_KEY }}
+        run: |
+          python3 -I scripts/fetch_eod.py --provider "${{ vars.EOD_PROVIDER || 'eodhd' }}" \
+            --tickers "${{ steps.list.outputs.tickers }}" --out docs/data/eod --max-requests 25 || test $? -eq 2
+      - name: 주간 요약 만들기 (스크립트가 있을 때)
+        run: |
+          if [ -f scripts/build_weekly.py ]; then python3 -I scripts/build_weekly.py; else echo "build_weekly.py 없음 — eod/ 원본만 저장"; fi
+      - name: 검사
+        run: |
+          if [ -f docs/data/week.json ]; then python3 -I scripts/check_week_json.py docs/data/week.json; fi
+          if [ -f scripts/check_weekly.py ]; then python3 -I scripts/check_weekly.py; fi
+      - name: 커밋·푸시
+        id: commit
+        run: |
+          if git diff --quiet -- docs/data; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"; echo "바뀐 데이터 없음"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          git commit -m "데이터 갱신: $(date -u +%Y-%m-%d) 공개 일별 시세 (fetch-prices)"
+          git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: fetch
+    if: needs.fetch.outputs.changed == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/check-deploy.yml
