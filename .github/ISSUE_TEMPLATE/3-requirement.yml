@@ -1,0 +1,36 @@
+name: 12월 요구 (Product Backlog)
+description: 12월 고객이 자기 저장소에 씁니다. 인수 조건 하나 = 이슈 하나. 우선순위는 Milestone(Sprint 5~7)으로 정합니다.
+title: "[요구 AC-0n] "
+labels: ["customer"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        정본은 `december/requirements.md`입니다. 이 이슈는 그중 인수 조건 하나를 FDE에게 맡기는 카드입니다.
+        **수락 판정은 일요일 22:00까지 이 이슈의 댓글로** 남깁니다 — 판정(수락·보완·거절·판단 불가) · 입력 · 기대 · 실제 · 시험한 Release(태그) · 확인 시각. 수락이면 고객이 직접 닫습니다.
+  - type: textarea
+    id: ac
+    attributes:
+      label: 인수 조건 — [입력/상황]에서 [행동]하면 [관찰할 결과]
+      placeholder: "예) 합성 대본 1편을 넣으면 결정·담당·기한 표가 30초 안에 나온다"
+    validations:
+      required: true
+  - type: textarea
+    id: event
+    attributes:
+      label: 이 요구가 나온 실제 사건 (바람이 아니라 과거에 있었던 일)
+  - type: textarea
+    id: out
+    attributes:
+      label: 이번에 하지 않는 것
+  - type: input
+    id: data
+    attributes:
+      label: FDE에게 줄 데이터 — 합성 또는 공개 출처
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 공개 저장소 약속
+      options:
+        - label: 회사 자료·거래처·동료 실명·키가 없는 공개·합성 데이터만 줍니다
+          required: true

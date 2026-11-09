@@ -1,0 +1,37 @@
+name: 회차 과제 (Story)
+description: 회차 하나 = 이슈 하나. PR 본문에 "Closes #이슈번호"를 적어 병합하면 닫힙니다.
+title: "[회차 n] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: goal
+    attributes:
+      label: 목표 한 줄
+      description: 과제안의 회차 카드 '목표'를 내 주제에 맞게 적습니다.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 완료 기준 (관찰할 수 있는 것)
+      description: 회차 카드의 완료 기준을 그대로 옮기고 확인될 때마다 체크합니다.
+      value: |
+        - [ ] ①
+        - [ ] ②
+        - [ ] ③
+        - [ ] ④
+    validations:
+      required: true
+  - type: input
+    id: data
+    attributes:
+      label: 쓰는 데이터 — 합성 또는 공개 출처(URL)
+  - type: textarea
+    id: cut
+    attributes:
+      label: 시간이 모자라면 줄일 범위
+  - type: input
+    id: competency
+    attributes:
+      label: 역량 코드
+      placeholder: "예) GIT-01 · OPS-02"

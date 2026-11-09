@@ -1,0 +1,26 @@
+name: 고칠 것 (Bug)
+description: 깨진 것을 적습니다. 고친 PR 본문에 "Closes #이슈번호".
+title: "[고칠 것] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 증상 — 어디에서 무엇이 어떻게 보였나
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 순서
+      value: |
+        1.
+        2.
+  - type: input
+    id: expected
+    attributes:
+      label: 기대한 동작
+  - type: input
+    id: revert
+    attributes:
+      label: 되돌릴 수 있는 커밋 또는 Release

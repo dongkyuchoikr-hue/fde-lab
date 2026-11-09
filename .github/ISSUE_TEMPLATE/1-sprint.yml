@@ -1,0 +1,55 @@
+name: Sprint 계획·회고
+description: 월요일에 열고(계획) 일요일 22:00에 회고 댓글을 남기고 닫습니다. Sprint 하나 = 달력 한 주.
+title: "[Sprint N] 계획·회고 — "
+labels: ["sprint"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Sprint 하나 = 달력 한 주(월~일)** · 제목의 N을 Sprint 번호로 바꾸고 Milestone을 같은 Sprint로 고릅니다.
+        닫을 때는 아래 회고 칸(② 실제 ③ 막힘 ④ 다음)을 **댓글**로 남기고, 이번 주 Release 주소를 붙인 뒤 닫습니다.
+  - type: input
+    id: goal
+    attributes:
+      label: Sprint Goal — 일요일에 사이트에서 보여 줄 것 한 문장
+      placeholder: "예) 조건을 고르면 결과 카드가 github.io에서 보인다"
+    validations:
+      required: true
+  - type: textarea
+    id: backlog
+    attributes:
+      label: 이번 Sprint에 할 일 (Sprint Backlog)
+      description: 회차 이슈 번호(11월) 또는 고객 요구 이슈·FDE 납품(12월)을 적습니다.
+      value: |
+        - [ ] #
+    validations:
+      required: true
+  - type: input
+    id: estimate
+    attributes:
+      label: ① 예상 시간(분)
+      placeholder: "예) 75"
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: ① 막힐 것 같은 곳
+      placeholder: "예) Actions 권한 설정이 어디 있는지 모름"
+  - type: textarea
+    id: retro
+    attributes:
+      label: 회고 칸 안내 — 닫을 때 댓글로 복사해 채웁니다
+      value: |
+        ### ② 실제 — 걸린 시간 __분 · Release 주소 · 예측과 달랐던 이유
+        ### 받은 도움 — AI·동료·코치가 도운 범위와 내가 직접 확인한 것
+        ### ③ 막힘과 푼 법 — 증상 · 시도 · 결과
+        ### ④ 다음 Sprint에 바꿀 한 가지
+        ### 회차 추가 질문 답
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 공개 저장소 약속
+      options:
+        - label: 회사 자료·동료 실명·키(비밀값)를 넣지 않습니다
+          required: true
