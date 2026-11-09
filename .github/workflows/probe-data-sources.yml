@@ -77,6 +77,7 @@ jobs:
           d = json.load(open("tmpl.json", encoding="utf-8"))
           if "parse" not in d: print("없음:", str(d)[:200]); raise SystemExit
           text = d["parse"]["wikitext"]; print("revid:", d["parse"].get("revid"), "chars:", len(text))
+          if len(text) < 4000: print("--- wikitext ---"); print(text); print("--- end ---")
           tick = []
           for m in re.findall(r"\{\{(?:NYSE|NASDAQ|Nasdaq|nyse|nasdaq)\|([A-Za-z.\-]+)", text):
               if m.upper() not in tick: tick.append(m.upper())
