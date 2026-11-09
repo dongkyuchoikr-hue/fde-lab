@@ -1,7 +1,7 @@
 name: probe-data-sources
 
-# 데이터 출처 시험 — Actions 러너에서 공개 시세가 실제로 받아지는지 한 번 확인합니다 (Sprint 2 Backlog 항목).
-# 키를 쓰지 않습니다. 결과는 Actions 로그에서 봅니다.
+# 데이터 출처 시험 — Actions 러너(인터넷 제한 없음)에서 공개 자료가 실제로 받아지는지, 이용 조건 문장이 무엇인지 확인합니다.
+# 키를 쓰지 않습니다. 결과는 Actions 로그에서 봅니다. 가격 숫자는 로그에 남기지 않도록 머리 부분만 출력합니다.
 on:
   workflow_dispatch:
   push:
@@ -14,19 +14,71 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Stooq CSV (키 없음)
+      - name: EODHD demo (AAPL.US) — 받아지는지와 마지막 날짜만
         run: |
-          for t in aapl.us msft.us ibm.us; do
-            echo "== stooq $t"
-            curl -sS -m 30 -o "$t.csv" -w "HTTP %{http_code} · %{size_download} bytes · %{content_type}\n" "https://stooq.com/q/d/l/?s=$t&i=d" || true
-            head -c 300 "$t.csv"; echo; echo "-- tail:"; tail -3 "$t.csv"
+          curl -sS -m 30 -o eod.json -w "HTTP %{http_code}\n" "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2026-10-01" || true
+          python3 -I -c 'import json; d=json.load(open("eod.json")); print("rows", len(d), "last date", d[-1]["date"] if d else None)' || head -c 300 eod.json
+      - name: EODHD 이용 조건 — display·redistribut·non-commercial 문장
+        run: |
+          curl -sS -m 30 -L -o terms.html -w "HTTP %{http_code}\n" "https://eodhd.com/financial-apis/terms-conditions" || true
+          python3 -I - <<'PY'
+          import re, html
+          t = open("terms.html", encoding="utf-8", errors="replace").read()
+          t = re.sub(r"<script.*?</script>|<style.*?</style>", "", t, flags=re.S)
+          t = re.sub(r"<[^>]+>", " ", t); t = html.unescape(t); t = re.sub(r"\s+", " ", t)
+          for kw in ["displaying", "redistribut", "non-commercial", "attribution"]:
+              for m in list(re.finditer(kw, t, flags=re.I))[:2]:
+                  print(f"[{kw}] …{t[max(0,m.start()-250):m.end()+250]}…\n")
+          PY
+      - name: Twelve Data demo (AAPL) + 이용 조건·요금 페이지의 attribution/display 문장
+        run: |
+          curl -sS -m 30 -o td.json -w "HTTP %{http_code}\n" "https://api.twelvedata.com/time_series?symbol=AAPL&interval=1day&outputsize=3&adjust=all&apikey=demo" || true
+          python3 -I -c 'import json; d=json.load(open("td.json")); print("keys", list(d.keys())); v=d.get("values") or []; print("rows", len(v), "last", v[0]["datetime"] if v else d.get("message"))' || head -c 300 td.json
+          for u in "https://twelvedata.com/terms" "https://twelvedata.com/pricing" "https://support.twelvedata.com/en/articles/5194610-attribution"; do
+            echo "== $u"
+            curl -sS -m 30 -L -A "Mozilla/5.0 (fde-lab learning project)" -o page.html -w "HTTP %{http_code} · %{size_download} bytes\n" "$u" || true
+            python3 -I - <<'PY'
+          import re, html
+          t = open("page.html", encoding="utf-8", errors="replace").read()
+          t = re.sub(r"<script.*?</script>|<style.*?</style>", "", t, flags=re.S)
+          t = re.sub(r"<[^>]+>", " ", t); t = html.unescape(t); t = re.sub(r"\s+", " ", t)
+          print("text chars", len(t))
+          for kw in ["attribution", "attribute", "display", "redistribut", "non-commercial", "personal use", "free plan", "Basic plan"]:
+              for m in list(re.finditer(kw, t, flags=re.I))[:3]:
+                  print(f"[{kw}] …{t[max(0,m.start()-220):m.end()+220]}…\n")
+          PY
           done
-      - name: EODHD demo (AAPL.US)
+      - name: 위키백과 DJIA 구성 종목 표 (CC BY-SA 4.0) — 티커·회사·업종·편입일과 판 번호(oldid)
         run: |
-          curl -sS -m 30 -w "\nHTTP %{http_code}\n" "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2026-10-01" | head -c 800; echo
-      - name: Alpha Vantage demo (IBM)
+          curl -sS -m 30 -L -A "fde-lab learning project (GitHub Actions probe)" -o djia.html -w "HTTP %{http_code} · %{size_download} bytes\n" "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average" || true
+          python3 -I - <<'PY'
+          import re, html
+          raw = open("djia.html", encoding="utf-8", errors="replace").read()
+          m = re.search(r'"wgRevisionId":(\d+)', raw) or re.search(r'"wgCurRevisionId":(\d+)', raw)
+          print("revision (oldid):", m.group(1) if m else "?")
+          tbl = re.search(r'<table[^>]*id="constituents".*?</table>', raw, flags=re.S)
+          if not tbl:
+              print("constituents 표를 찾지 못함"); raise SystemExit
+          rows = re.findall(r"<tr>(.*?)</tr>", tbl.group(0), flags=re.S)
+          n = 0
+          for r in rows:
+              cells = [re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", "", c))).strip() for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", r, flags=re.S)]
+              if cells and any(cells):
+                  print(" | ".join(cells)); n += 1
+          print("rows:", n)
+          PY
+      - name: NYSE 휴장일 페이지 — 2026·2027 날짜 줄
         run: |
-          curl -sS -m 30 -w "\nHTTP %{http_code}\n" "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo" | head -c 800; echo
-      - name: SEC EDGAR companyfacts (AAPL, 키 없음)
-        run: |
-          curl -sS -m 30 -A "fde-lab learning project (github.com/dongkyuchoikr-hue/fde-lab)" -w "\nHTTP %{http_code}\n" "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json" | head -c 400; echo
+          curl -sS -m 30 -L -A "Mozilla/5.0 (fde-lab learning project)" -o nyse.html -w "HTTP %{http_code} · %{size_download} bytes\n" "https://www.nyse.com/markets/hours-calendars" || true
+          python3 -I - <<'PY'
+          import re, html
+          t = open("nyse.html", encoding="utf-8", errors="replace").read()
+          t = re.sub(r"<script.*?</script>|<style.*?</style>", "", t, flags=re.S)
+          t = re.sub(r"<[^>]+>", "\n", t); t = html.unescape(t)
+          lines = [re.sub(r"\s+", " ", l).strip() for l in t.split("\n")]
+          lines = [l for l in lines if l]
+          print("lines", len(lines))
+          for i, l in enumerate(lines):
+              if re.search(r"(Holiday|Early Close|2026|2027|Thanksgiving|Christmas|Juneteenth|Independence|Memorial|Labor|Presidents|Luther|Good Friday|New Year)", l):
+                  print(l[:160])
+          PY
