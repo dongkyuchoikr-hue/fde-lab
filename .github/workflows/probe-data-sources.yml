@@ -48,45 +48,22 @@ jobs:
                   print(f"[{kw}] …{t[max(0,m.start()-220):m.end()+220]}…\n")
           PY
           done
-      - name: 위키백과 DJIA 구성 종목 (CC BY-SA 4.0) — 본문이 쓰는 템플릿을 찾아 그 안의 티커 출력, 판 번호(oldid)
+      - name: 위키백과 DJIA 구성 변경 이력 — Alphabet·Verizon·Honeywell 줄과 티커, 판 번호
         run: |
           API="https://en.wikipedia.org/w/api.php"
           UA="fde-lab learning project (GitHub Actions probe)"
-          curl -sS -m 30 -L -A "$UA" -o djia_wt.json -w "HTTP %{http_code} · %{size_download} bytes\n" "$API?action=parse&page=Dow_Jones_Industrial_Average&prop=wikitext|revid|templates&format=json&formatversion=2" || true
+          curl -sS -m 30 -L -A "$UA" -o hist.json -w "HTTP %{http_code} · %{size_download} bytes\n" "$API?action=parse&page=Historical_components_of_the_Dow_Jones_Industrial_Average&prop=wikitext|revid&format=json&formatversion=2" || true
+          curl -sS -m 30 -L -A "$UA" -o tmpl.json -w "HTTP %{http_code} · %{size_download} bytes\n" "$API?action=parse&page=Template:Dow_Jones_Industrial_Average_companies&prop=wikitext|revid&format=json&formatversion=2" || true
           python3 -I - <<'PY'
-          import re, json, urllib.parse
-          wt = json.load(open("djia_wt.json", encoding="utf-8"))["parse"]
-          print("api revid:", wt.get("revid"))
-          text = wt["wikitext"]
-          names = sorted({m.strip() for m in re.findall(r"\{\{([^|}\n]+)", text)})
-          cands = [n for n in names if re.search(r"dow|component|djia", n, flags=re.I)]
-          print("templates used (관련):", cands)
-          tmpl_pages = [t["title"] for t in wt.get("templates", []) if re.search(r"dow|component|djia", t["title"], flags=re.I)]
-          print("template pages:", tmpl_pages)
-          open("cands.txt", "w").write("\n".join(tmpl_pages or ["Template:" + c for c in cands]))
-          sec = re.search(r"==+\s*(Current )?[Cc]omponents\s*==+(.*?)(\n==[^=]|\Z)", text, flags=re.S)
-          if sec: print("components section (앞 600자):", re.sub(r"\s+", " ", sec.group(2))[:600])
-          PY
-          while read -r T; do
-            [ -z "$T" ] && continue
-            echo "== $T"
-            ENC=$(python3 -I -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$T")
-            curl -sS -m 30 -L -A "$UA" -o tmpl.json "$API?action=parse&page=$ENC&prop=wikitext|revid&format=json&formatversion=2" || true
-            python3 -I - <<'PY'
           import re, json
-          d = json.load(open("tmpl.json", encoding="utf-8"))
-          if "parse" not in d: print("없음:", str(d)[:200]); raise SystemExit
-          text = d["parse"]["wikitext"]; print("revid:", d["parse"].get("revid"), "chars:", len(text))
-          if len(text) < 4000: print("--- wikitext ---"); print(text); print("--- end ---")
-          tick = []
-          for m in re.findall(r"\{\{(?:NYSE|NASDAQ|Nasdaq|nyse|nasdaq)\|([A-Za-z.\-]+)", text):
-              if m.upper() not in tick: tick.append(m.upper())
-          print("exchange-template tickers:", len(tick), " ".join(tick))
+          d = json.load(open("tmpl.json", encoding="utf-8")).get("parse", {})
+          print("template revid:", d.get("revid")); print(d.get("wikitext", "")[:1200])
+          h = json.load(open("hist.json", encoding="utf-8")).get("parse", {})
+          text = h.get("wikitext", ""); print("history revid:", h.get("revid"), "chars:", len(text))
           for line in text.split("\n"):
-              if ("NYSE" in line or "NASDAQ" in line.upper()) and "|" in line:
-                  print(re.sub(r"\s+", " ", line)[:200])
+              if re.search(r"Alphabet|Verizon|Honeywell|Nvidia|Sherwin|Amazon|2024|2025|2026", line):
+                  print(re.sub(r"\s+", " ", line)[:260])
           PY
-          done < cands.txt
       - name: NYSE 휴장일 페이지 — 날짜가 든 줄 전부
         run: |
           curl -sS -m 30 -L -A "Mozilla/5.0 (fde-lab learning project)" -o nyse.html -w "HTTP %{http_code} · %{size_download} bytes\n" "https://www.nyse.com/markets/hours-calendars" || true
