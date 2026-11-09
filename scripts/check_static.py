@@ -7,10 +7,9 @@
 검사 항목:
 - universe.json: schema universe/1 · 종목 정확히 30개 · 중복 없음 · 코드 형식 ^[A-Z][A-Z0-9.-]{0,9}$ · name_ko·sector_ko 비어 있지 않음
   · benchmark.ticker 가 있고 종목 목록에 없음 · source_urls 비어 있지 않고 모두 https:// · version 있음 · sector_cap 이 rules.json 과 같음
-- nyse_holidays.json: schema holidays/1 · closed·half_days 날짜 형식·중복 없음·평일 · half_days 와 closed 겹치지 않음
-  · coverage_until ≥ 오늘(--today 또는 UTC 오늘) + 60일 · close_time_et·half_day_close_time_et 는 HH:MM · source_url https://
-- source_policy.json: schema source_policy/1 · provider · publish_mode(ranks_only|full) · terms_url https:// · terms_checked_on 날짜 · decision_ko
-  · publish_mode_ko 에 ranks_only·full 두 키
+- nyse_holidays.json: schema holidays/1 · closed·half_days 날짜 형식·중복 없음·평일 · 서로 겹치지 않음 · coverage_until ≥ 오늘(--today 또는 UTC 오늘)+60일
+  · close_time_et·half_day_close_time_et 는 HH:MM · source_url https://
+- source_policy.json: schema source_policy/1 · provider · publish_mode(ranks_only|full) · terms_url https:// · terms_checked_on 날짜 · decision_ko · publish_mode_ko 두 키
 - rules.json: schema rules/1 · version · frozen_on 날짜 · top_n ≥ 1 · sector_cap ≥ 1 · 0 < min_fresh_ratio ≤ 1 · factors(trend/calm/dd) 가중치 합 1.0(±0.001)
   · 요인마다 name_ko/formula/better · gates C1~C4 name_ko(C3 surge_1w_max_pct · C4 crash_day_min_pct 숫자) · flags 마다 name_ko·rule(문턱 쓰는 표시는 threshold 숫자)
   · dir_1w down_pct < up_pct · results.cost_one_way_pct 숫자 · lessons_priority ⊆ lessons 키
@@ -36,8 +35,8 @@ GATES = ("C1", "C2", "C3", "C4")
 THRESHOLD_FLAGS = ("VOL_SPIKE", "VOLATILE", "VOL_UP", "BIG_DD", "FAR_FROM_HIGH", "MANY_CHANGES")
 
 
-def load_or_exit(path: str, what: str):
-    """파일이 없으면 사용 오류(2), JSON 이 깨졌으면 FAIL(1) 로 끝냅니다."""
+def load_or_exit(path: str, what: str) -> dict:
+    """파일이 없으면 사용 오류(2), JSON 이 깨졌거나 객체가 아니면 FAIL(1) 로 끝냅니다."""
     try:
         d = load_json(path)
     except FileNotFoundError:
@@ -53,11 +52,8 @@ def load_or_exit(path: str, what: str):
 
 
 def valid_date(s) -> bool:
-    if not (isinstance(s, str) and DATE_RE.match(s)):
-        return False
     try:
-        dt.date.fromisoformat(s)
-        return True
+        return bool(isinstance(s, str) and DATE_RE.match(s) and dt.date.fromisoformat(s))
     except ValueError:
         return False
 
@@ -66,17 +62,12 @@ def text(v) -> bool:
     return isinstance(v, str) and bool(v.strip())
 
 
-def is_pos_int(v) -> bool:
-    return isinstance(v, int) and not isinstance(v, bool) and v >= 1
-
-
 def check_universe(u: dict, rules: dict, err) -> None:
     if u.get("schema") != "universe/1":
         err(f"schema 가 universe/1 이 아님: {u.get('schema')!r}")
-    rows = u.get("tickers")
-    if not isinstance(rows, list):
+    if not isinstance(u.get("tickers"), list):
         err("tickers 가 목록이 아님")
-    rows = [r for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
+    rows = [r for r in u.get("tickers") or [] if isinstance(r, dict)] if isinstance(u.get("tickers"), list) else []
     if len(rows) != UNIVERSE_SIZE:
         err(f"종목이 {len(rows)}개 — 정확히 {UNIVERSE_SIZE}개여야 함")
     tickers = [r.get("ticker") for r in rows]
@@ -87,9 +78,8 @@ def check_universe(u: dict, rules: dict, err) -> None:
         t = r.get("ticker")
         if not (isinstance(t, str) and TICKER_RE.match(t)):
             err(f"종목 코드 형식 오류: {t!r}")
-        for k in ("name_ko", "sector_ko"):
-            if not text(r.get(k)):
-                err(f"{t}: {k} 가 비어 있음")
+        for k in [k for k in ("name_ko", "sector_ko") if not text(r.get(k))]:
+            err(f"{t}: {k} 가 비어 있음")
     bt = (u.get("benchmark") or {}).get("ticker")
     if not text(bt):
         err("benchmark.ticker 가 없음")
@@ -111,23 +101,20 @@ def check_holidays(h: dict, today: dt.date, err) -> None:
         err(f"schema 가 holidays/1 이 아님: {h.get('schema')!r}")
     sets: dict[str, set] = {}
     for k in ("closed", "half_days"):
-        v = h.get(k)
-        if not isinstance(v, list):
+        if not isinstance(h.get(k), list):
             err(f"{k} 가 목록이 아님")
-            v = []
-        bad = [x for x in v if not valid_date(x)]
+        v = h.get(k) if isinstance(h.get(k), list) else []
+        bad, good = [x for x in v if not valid_date(x)], [x for x in v if valid_date(x)]
         if bad:
             err(f"{k} 에 날짜 형식 오류: {bad}")
-        good = [x for x in v if valid_date(x)]
         if len(set(good)) != len(good):
             err(f"{k} 에 중복 날짜가 있음")
         weekend = [x for x in good if dt.date.fromisoformat(x).weekday() >= 5]
         if weekend:
             err(f"{k} 에 주말 날짜(오타 의심): {weekend}")
         sets[k] = set(good)
-    both = sorted(sets["closed"] & sets["half_days"])
-    if both:
-        err(f"half_days 와 closed 에 같이 있는 날짜: {both}")
+    if sets["closed"] & sets["half_days"]:
+        err(f"half_days 와 closed 에 같이 있는 날짜: {sorted(sets['closed'] & sets['half_days'])}")
     cu = h.get("coverage_until")
     if not valid_date(cu):
         err(f"coverage_until 날짜 형식 오류: {cu!r}")
@@ -143,9 +130,8 @@ def check_holidays(h: dict, today: dt.date, err) -> None:
 def check_policy(p: dict, err) -> None:
     if p.get("schema") != "source_policy/1":
         err(f"schema 가 source_policy/1 이 아님: {p.get('schema')!r}")
-    for k in ("provider", "decision_ko"):
-        if not text(p.get(k)):
-            err(f"{k} 가 비어 있음")
+    for k in [k for k in ("provider", "decision_ko") if not text(p.get(k))]:
+        err(f"{k} 가 비어 있음")
     if p.get("publish_mode") not in MODES:
         err(f"publish_mode 는 ranks_only 또는 full 이어야 함: {p.get('publish_mode')!r}")
     if not str(p.get("terms_url", "")).startswith("https://"):
@@ -165,7 +151,7 @@ def check_rules(r: dict, err) -> None:
     if not valid_date(r.get("frozen_on")):
         err(f"frozen_on 날짜 형식 오류: {r.get('frozen_on')!r}")
     for k in ("top_n", "sector_cap"):
-        if not is_pos_int(r.get(k)):
+        if not (isinstance(r.get(k), int) and not isinstance(r.get(k), bool) and r[k] >= 1):
             err(f"{k} 는 1 이상 정수여야 함: {r.get(k)!r}")
     mf = r.get("min_fresh_ratio")
     if not (is_num(mf) and 0 < mf <= 1):
@@ -182,31 +168,26 @@ def check_rules(r: dict, err) -> None:
             if miss:
                 err(f"factors.{k} 에 {'/'.join(miss)} 가 없음")
     g = r.get("gates") or {}
-    for k in GATES:
-        if not (isinstance(g.get(k), dict) and text(g[k].get("name_ko"))):
-            err(f"gates.{k} 에 name_ko 가 없음")
-    if not is_num((g.get("C3") or {}).get("surge_1w_max_pct")):
-        err("gates.C3.surge_1w_max_pct 가 숫자가 아님")
-    if not is_num((g.get("C4") or {}).get("crash_day_min_pct")):
-        err("gates.C4.crash_day_min_pct 가 숫자가 아님")
-    fl = r.get("flags")
-    if not (isinstance(fl, dict) and fl):
+    for k in [k for k in GATES if not (isinstance(g.get(k), dict) and text(g[k].get("name_ko")))]:
+        err(f"gates.{k} 에 name_ko 가 없음")
+    for k, field in (("C3", "surge_1w_max_pct"), ("C4", "crash_day_min_pct")):
+        if not is_num((g.get(k) or {}).get(field)):
+            err(f"gates.{k}.{field} 가 숫자가 아님")
+    fl = r.get("flags") if isinstance(r.get("flags"), dict) and r.get("flags") else {}
+    if not fl:
         err("flags 가 비어 있음")
-        fl = {}
-    for code, spec in fl.items():
-        if not (isinstance(spec, dict) and text(spec.get("name_ko")) and text(spec.get("rule"))):
-            err(f"flags.{code} 에 name_ko·rule 이 있어야 함")
-    for code in THRESHOLD_FLAGS:
-        if not is_num((fl.get(code) or {}).get("threshold")):
-            err(f"flags.{code}.threshold 가 숫자가 아님(빌더가 씀)")
+    for code in [c for c, spec in fl.items() if not (isinstance(spec, dict) and text(spec.get("name_ko")) and text(spec.get("rule")))]:
+        err(f"flags.{code} 에 name_ko·rule 이 있어야 함")
+    bad_thr = [c for c in THRESHOLD_FLAGS if not is_num((fl.get(c) or {}).get("threshold"))]
+    if bad_thr:
+        err(f"flags.{'/'.join(bad_thr)} 의 threshold 가 숫자가 아님(빌더가 씀)")
     d1 = r.get("dir_1w") or {}
     if not (is_num(d1.get("up_pct")) and is_num(d1.get("down_pct")) and d1["down_pct"] < d1["up_pct"]):
         err("dir_1w 의 up_pct/down_pct 는 숫자이고 down_pct < up_pct 여야 함")
     rs = r.get("results") or {}
     if not is_num(rs.get("cost_one_way_pct")):
         err("results.cost_one_way_pct 가 숫자가 아님")
-    lessons = rs.get("lessons") or {}
-    extra = [x for x in rs.get("lessons_priority") or [] if x not in lessons]
+    extra = [x for x in rs.get("lessons_priority") or [] if x not in (rs.get("lessons") or {})]
     if extra:
         err(f"results.lessons_priority 에 lessons 에 없는 코드: {extra}")
 
@@ -225,16 +206,18 @@ def main(argv: list[str]) -> int:
         ap.error(f"--today 형식 오류: {args.today}")
     u, h = load_or_exit(args.universe, "universe"), load_or_exit(args.holidays, "holidays")
     p, r = load_or_exit(args.policy, "source_policy"), load_or_exit(args.rules, "rules")
-
     errors: list[str] = []
-    for path, fn, extra in ((args.universe, check_universe, (r,)), (args.holidays, check_holidays, (today,)),
-                            (args.policy, check_policy, ()), (args.rules, check_rules, ())):
-        name = os.path.basename(path)
-        fn(load_or_exit(path, name), *extra, lambda m, name=name: errors.append(f"{name}: {m}"))
+
+    def err_for(path: str):
+        return lambda m: errors.append(f"{os.path.basename(path)}: {m}")
+
+    check_universe(u, r, err_for(args.universe))
+    check_holidays(h, today, err_for(args.holidays))
+    check_policy(p, err_for(args.policy))
+    check_rules(r, err_for(args.rules))
     if errors:
         print("FAIL 정적 설정 파일(universe · holidays · source_policy · rules)")
-        for e in errors:
-            print(" -", e)
+        print("\n".join(f" - {e}" for e in errors))
         return 1
     print(f"OK 정적 설정: 유니버스 {len(u['tickers'])}종목(v{u['version']}) · 벤치마크 {u['benchmark']['ticker']} · "
           f"휴장일 {len(h['closed'])}일 · 단축 {len(h['half_days'])}일 (coverage_until {h['coverage_until']}, 오늘 {today}) · "

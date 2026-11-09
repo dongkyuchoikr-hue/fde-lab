@@ -7,9 +7,10 @@
 - 금지어 검사 대상: .html · .md 는 줄 단위 본문(HTML 엔티티 풀어서), .json 은 문자열 값만(키 제외 · 재귀). .py 는 보지 않습니다.
 - 금지어: 추천 권유 목표가 최고 수익 최고의 종목 지금 사 사야 할 사세요 매수 신호 매도 신호 매수 타이밍 수익 보장 확실한 수익 오를 종목
   급등주 대박 필승 무조건 보장합니다
-- 허용: 같은 문장(。.!?줄바꿈 으로 나눈 뒤 '·' 와 ' — ' 로 다시 나눈 조각)에 부정·메타 표지(않 아닙니다 아니 아닌 금지 없습니다 없 제외 검사 금지어
-  하지 않 말 것 ≠)가 있으면 허용. 한국어는 부정이 문장 끝에 오므로 같은 문장 안에서 그 조각 '뒤' 조각의 표지도 인정합니다
-  (예: "종목 추천·수익 예측·매매 신호는 하지 않는다" 는 허용, "추천하지 않습니다 · 이번 주 추천 종목" 은 두 번째 조각이 걸림).
+- 허용 규칙: 본문을 。.!?줄바꿈 으로 문장으로 나누고, 문장을 다시 '·' 와 ' — ' 로 조각으로 나눕니다.
+  · 메타 표지(금지 금지어 검사 제외 ≠)가 같은 문장 어디에든 있으면 그 문장 전체 허용 — 용어를 '언급'하는 문장(금지어 목록 등)
+  · 부정 표지(않 아닙니다 아니 아닌 아님 없습니다 없 하지 않 말 것)는 같은 조각 또는 같은 문장의 '뒤' 조각에 있으면 허용 —
+    한국어는 부정이 문장 끝에 오므로 "종목 추천·수익 예측·매매 신호는 하지 않는다" 는 허용, "추천하지 않습니다 · 이번 주 추천 종목" 은 둘째 조각이 걸림
 - 비밀값 모양(경로 아래 모든 텍스트 파일): (api_token|apikey|api_key|token)=12자 이상 · sk-20자 이상 · AKIA+16자 · ghp_+36자 — 값은 출력하지 않습니다.
 """
 from __future__ import annotations
@@ -21,13 +22,14 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from fdelib import load_json  # noqa: E402,F401  (표준 경로 확인용 — 이 검사는 파일을 직접 읽습니다)
+from fdelib import DATE_RE  # noqa: E402,F401  (다른 check_*.py 와 같은 import 경로를 확인하는 용도)
 
 DEFAULT_PATHS = ["docs/index.html", "docs/data", "README.md"]
 WORD_EXTS = {".html", ".md", ".json"}
 TERMS = ["추천", "권유", "목표가", "최고 수익", "최고의 종목", "지금 사", "사야 할", "사세요", "매수 신호", "매도 신호", "매수 타이밍",
          "수익 보장", "확실한 수익", "오를 종목", "급등주", "대박", "필승", "무조건", "보장합니다"]
-MARKERS = ["않", "아닙니다", "아니", "아닌", "금지", "없습니다", "없", "제외", "검사", "금지어", "하지 않", "말 것", "≠"]
+NEGATIONS = ["않", "아닙니다", "아니", "아닌", "아님", "없습니다", "없", "하지 않", "말 것"]
+META = ["금지", "금지어", "검사", "제외", "≠"]
 SENT_RE = re.compile(r"[。.!?\n]")
 FRAG_RE = re.compile(r"·| — ")
 JSON_STR_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
@@ -38,19 +40,21 @@ SECRET_RES = [("api_token=…", re.compile(r"(api_token|apikey|api_key|token)=[A
 
 
 def bad_terms(text: str) -> list[tuple[str, str]]:
-    """허용 표지 없는 금지어 (용어, 조각) 목록. 표지는 같은 조각 또는 같은 문장의 뒤 조각에서 찾습니다."""
+    """허용 표지 없는 금지어의 (용어, 조각) 목록 — 규칙은 모듈 설명 참고."""
     hits = []
     for sent in SENT_RE.split(text):
+        if any(m in sent for m in META):
+            continue
         frags = FRAG_RE.split(sent)
         for i, frag in enumerate(frags):
-            for term in TERMS:
-                if term in frag and not any(m in f for f in frags[i:] for m in MARKERS):
-                    hits.append((term, frag.strip()))
+            if any(n in f for f in frags[i:] for n in NEGATIONS):
+                continue
+            hits += [(term, frag.strip()) for term in TERMS if term in frag]
     return hits
 
 
 def json_values(lines: list[str]):
-    """(줄번호, 문자열 값) — 키("…":)는 뺍니다. 값을 못 읽는 조각은 건너뜁니다."""
+    """(줄번호, 문자열 값) — 키("…":)는 뺍니다. 값으로 못 읽는 조각은 건너뜁니다."""
     for no, line in enumerate(lines, 1):
         for m in JSON_STR_RE.finditer(line):
             if line[m.end():].lstrip().startswith(":"):
@@ -79,7 +83,7 @@ def collect(paths: list[str]) -> list[str]:
 
 
 def scan_file(path: str, errors: list[str]) -> bool:
-    """비밀값 모양은 모든 텍스트 파일에서, 금지어는 .html/.md/.json 에서. 금지어 검사를 했으면 True."""
+    """비밀값 모양은 모든 텍스트 파일에서, 금지어는 .html/.md/.json 에서 찾습니다. 금지어 검사를 했으면 True."""
     with open(path, "rb") as f:
         raw = f.read()
     if b"\0" in raw[:8192]:

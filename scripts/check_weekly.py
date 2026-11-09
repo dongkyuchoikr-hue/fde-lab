@@ -41,36 +41,17 @@ def load_or_exit(path: str, what: str):
         sys.exit(1)
 
 
-def report(path: str, errors: list[str]) -> int:
-    print(f"FAIL {path}")
-    for e in errors:
-        print(" -", e)
-    return 1
-
-
 def price_leaks(obj, path: str = "") -> list[str]:
-    """PRICE_FIELDS 키가 남아 있는 경로 목록(값은 모으지 않음)."""
+    """PRICE_FIELDS 키가 남아 있는 경로 목록(값은 모으지 않음). 목록 안의 종목은 [티커] 로 표시."""
     out: list[str] = []
     if isinstance(obj, dict):
         for k, v in obj.items():
             p = f"{path}.{k}" if path else str(k)
-            if k in PRICE_FIELDS:
-                out.append(p)
-            out += price_leaks(v, p)
+            out += ([p] if k in PRICE_FIELDS else []) + price_leaks(v, p)
     elif isinstance(obj, list):
         for i, v in enumerate(obj):
-            tag = v.get("ticker") if isinstance(v, dict) and isinstance(v.get("ticker"), str) else i
-            out += price_leaks(v, f"{path}[{tag}]")
+            out += price_leaks(v, f"{path}[{v.get('ticker', i) if isinstance(v, dict) else i}]")
     return out
-
-
-def leak_message(leaks: list[str]) -> str:
-    shown = ", ".join(leaks[:8]) + (f" 외 {len(leaks) - 8}곳" if len(leaks) > 8 else "")
-    return f"ranks_only 인데 가격 칸이 {len(leaks)}곳 남아 있음: {shown}"
-
-
-def is_bool_or_none(v) -> bool:
-    return v is None or isinstance(v, bool)
 
 
 def is_int_at_least(v, lo: int) -> bool:
@@ -83,14 +64,10 @@ def check_header(d: dict, errors: list[str]) -> None:
     as_of, week = d.get("as_of") or {}, d.get("week") or {}
     if not DATE_RE.match(str(as_of.get("date", ""))):
         errors.append("as_of.date 형식 오류(YYYY-MM-DD)")
-    for k in ("et", "kst"):
-        if not STAMP_RE.match(str(as_of.get(k, ""))):
-            errors.append(f"as_of.{k} 형식 오류(YYYY-MM-DD HH:MM)")
+    errors += [f"as_of.{k} 형식 오류(YYYY-MM-DD HH:MM)" for k in ("et", "kst") if not STAMP_RE.match(str(as_of.get(k, "")))]
     if not str(as_of.get("et", "")).startswith(str(as_of.get("date"))):
         errors.append("as_of.et 가 as_of.date 로 시작하지 않음")
-    for k in ("start", "end", "prev_end"):
-        if not DATE_RE.match(str(week.get(k, ""))):
-            errors.append(f"week.{k} 형식 오류(YYYY-MM-DD)")
+    errors += [f"week.{k} 형식 오류(YYYY-MM-DD)" for k in ("start", "end", "prev_end") if not DATE_RE.match(str(week.get(k, "")))]
     dates = (week.get("prev_end"), week.get("start"), week.get("end"), as_of.get("date"))
     if all(DATE_RE.match(str(x)) for x in dates) and not (dates[0] < dates[1] <= dates[2] == dates[3]):
         errors.append("날짜 순서 오류: week.prev_end < week.start <= week.end == as_of.date 여야 함")
@@ -98,9 +75,7 @@ def check_header(d: dict, errors: list[str]) -> None:
         errors.append(f"week.trading_days 는 1~5 정수여야 함: {week.get('trading_days')!r}")
     if d.get("publish_mode") not in MODES:
         errors.append(f"publish_mode 는 ranks_only 또는 full 이어야 함: {d.get('publish_mode')!r}")
-    for k in ("provider", "attribution_ko"):
-        if not (isinstance(d.get(k), str) and d[k].strip()):
-            errors.append(f"{k} 가 비어 있음")
+    errors += [f"{k} 가 비어 있음" for k in ("provider", "attribution_ko") if not (isinstance(d.get(k), str) and d[k].strip())]
     if not str(d.get("terms_url", "")).startswith("https://"):
         errors.append("terms_url 은 https:// 로 시작해야 함")
 
@@ -112,9 +87,7 @@ def check_universe(d: dict, universe: dict, stocks: list[dict], in_uni: list[dic
         errors.append(f"universe.size({size}) · universe_count({d.get('universe_count')}) · 유니버스 종목 수({len(in_uni)}) · "
                       f"universe.json 종목 수({len(uni)}) 가 서로 다름")
     present = {s.get("ticker") for s in stocks} | {x.get("ticker") for x in d.get("skipped") or [] if isinstance(x, dict)}
-    for t in uni:
-        if t not in present:
-            errors.append(f"{t}: universe.json 에 있지만 stocks 에도 skipped 에도 없음")
+    errors += [f"{t}: universe.json 에 있지만 stocks 에도 skipped 에도 없음" for t in uni if t not in present]
     for s in in_uni:
         t = s.get("ticker")
         if t not in uni:
@@ -145,17 +118,15 @@ def check_ranks(s: dict, m: int, errors: list[str]) -> None:
 
 def check_stock(s: dict, as_of: str, m: int, flag_codes: set[str], errors: list[str]) -> None:
     t = s.get("ticker", "?")
-    fresh = s.get("fresh")
+    fresh, gates, flags = s.get("fresh"), s.get("gates"), s.get("flags")
     if not isinstance(fresh, bool):
         errors.append(f"{t}: fresh 가 참/거짓이 아님")
         return
-    gates = s.get("gates")
-    if not isinstance(gates, dict) or not set(GATES) <= set(gates) or not all(is_bool_or_none(gates[k]) for k in GATES):
+    if not isinstance(gates, dict) or not set(GATES) <= set(gates) or not all(gates[k] is None or isinstance(gates[k], bool) for k in GATES):
         errors.append(f"{t}: gates 는 C1~C4 각각 참/거짓/null 이어야 함")
         gates = {}
     if s.get("dir_1w") not in DIRS:
         errors.append(f"{t}: dir_1w 는 상승/하락/보합/null 이어야 함: {s.get('dir_1w')!r}")
-    flags = s.get("flags")
     if not (isinstance(flags, list) and all(isinstance(c, str) for c in flags) and set(flags) <= flag_codes):
         errors.append(f"{t}: flags 는 rules.flags 에 있는 코드 목록이어야 함: {flags!r}")
     if fresh:
@@ -177,18 +148,18 @@ def check_stock(s: dict, as_of: str, m: int, flag_codes: set[str], errors: list[
 
 def check_mode(d: dict, in_uni: list[dict], errors: list[str]) -> None:
     mode = d.get("publish_mode")
-    if mode == "ranks_only":
-        leaks = price_leaks(d)
-        if leaks:
-            errors.append(leak_message(leaks))
-    elif mode == "full":
-        for s in in_uni:
-            if s.get("fresh") is True and (s.get("gates") or {}).get("C1") is True:
-                missing = [k for k in FULL_NUMS if not is_num(s.get(k))]
-                if missing:
-                    errors.append(f"{s.get('ticker')}: full 모드인데 {'/'.join(missing)} 가 숫자가 아님")
-                if is_num(s.get("ret_1w")) and abs(s["ret_1w"]) > 60:
-                    errors.append(f"{s.get('ticker')}: ret_1w 절댓값이 60% 를 넘음 — 자료 오류 의심")
+    leaks = price_leaks(d) if mode == "ranks_only" else []
+    if leaks:
+        errors.append(f"ranks_only 인데 가격 칸이 {len(leaks)}곳 남아 있음: " + ", ".join(leaks[:8]) + (" …" if len(leaks) > 8 else ""))
+    if mode != "full":
+        return
+    for s in in_uni:
+        if s.get("fresh") is True and (s.get("gates") or {}).get("C1") is True:
+            missing = [k for k in FULL_NUMS if not is_num(s.get(k))]
+            if missing:
+                errors.append(f"{s.get('ticker')}: full 모드인데 {'/'.join(missing)} 가 숫자가 아님")
+            if is_num(s.get("ret_1w")) and abs(s["ret_1w"]) > 60:
+                errors.append(f"{s.get('ticker')}: ret_1w 절댓값이 60% 를 넘음 — 자료 오류 의심")
 
 
 def main(argv: list[str]) -> int:
@@ -197,11 +168,10 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--rules", default="docs/data/rules.json")
     ap.add_argument("--universe", default="docs/data/universe.json")
     args = ap.parse_args(argv)
-    d = load_or_exit(args.path, "weekly")
-    rules = load_or_exit(args.rules, "rules")
-    universe = load_or_exit(args.universe, "universe")
+    d, rules, universe = load_or_exit(args.path, "weekly"), load_or_exit(args.rules, "rules"), load_or_exit(args.universe, "universe")
     if not isinstance(d, dict):
-        return report(args.path, ["최상위가 객체가 아님"])
+        print(f"FAIL {args.path}\n - 최상위가 객체가 아님")
+        return 1
 
     errors: list[str] = []
     check_header(d, errors)
@@ -221,13 +191,14 @@ def main(argv: list[str]) -> int:
         errors.append(f"M({d.get('M')}) 이 C1 통과 유니버스 종목 수({m_calc}) 와 다름")
     if d.get("fresh_count") != fresh_calc:
         errors.append(f"fresh_count({d.get('fresh_count')}) 가 fresh 유니버스 종목 수({fresh_calc}) 와 다름")
-    as_of = str((d.get("as_of") or {}).get("date"))
-    flag_codes = set(rules.get("flags") or {})
+    as_of, flag_codes = str((d.get("as_of") or {}).get("date")), set(rules.get("flags") or {})
     for s in stocks:
         check_stock(s, as_of, m_calc, flag_codes, errors)
     check_mode(d, in_uni, errors)
     if errors:
-        return report(args.path, errors)
+        print(f"FAIL {args.path}")
+        print("\n".join(f" - {e}" for e in errors))
+        return 1
     week = d["week"]
     print(f"OK weekly.json: 유니버스 {d['universe_count']} · 최신 자료 {d['fresh_count']} · 순위 대상 M={d['M']} · "
           f"주 {week['start']}~{week['end']} (거래일 {week['trading_days']}) · 기준일 {d['as_of']['et']} ET · 공개 범위 {d['publish_mode']}")
