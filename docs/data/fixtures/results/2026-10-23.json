@@ -32,7 +32,7 @@
    "reason_short_ko": "점수 92.6 · 28개 중 1위",
    "in_universe_now": true,
    "ret_pct": 0.99,
-   "vs_universe_pp": 1.09,
+   "vs_universe_pp": 1.19,
    "vs_bench_pp": 1.03,
    "entry_adj_close": null,
    "exit_adj_close": null
@@ -50,7 +50,7 @@
    "reason_short_ko": "점수 91.1 · 28개 중 2위",
    "in_universe_now": true,
    "ret_pct": -7.45,
-   "vs_universe_pp": -7.35,
+   "vs_universe_pp": -7.25,
    "vs_bench_pp": -7.41,
    "entry_adj_close": null,
    "exit_adj_close": null
@@ -68,7 +68,7 @@
    "reason_short_ko": "점수 91.1 · 28개 중 3위",
    "in_universe_now": true,
    "ret_pct": 1.18,
-   "vs_universe_pp": 1.28,
+   "vs_universe_pp": 1.38,
    "vs_bench_pp": 1.22,
    "entry_adj_close": null,
    "exit_adj_close": null
@@ -86,7 +86,7 @@
    "reason_short_ko": "점수 80.0 · 28개 중 5위",
    "in_universe_now": true,
    "ret_pct": -1.95,
-   "vs_universe_pp": -1.85,
+   "vs_universe_pp": -1.75,
    "vs_bench_pp": -1.91,
    "entry_adj_close": null,
    "exit_adj_close": null
@@ -104,7 +104,7 @@
    "reason_short_ko": "점수 75.6 · 28개 중 6위",
    "in_universe_now": true,
    "ret_pct": -0.07,
-   "vs_universe_pp": 0.03,
+   "vs_universe_pp": 0.13,
    "vs_bench_pp": -0.03,
    "entry_adj_close": null,
    "exit_adj_close": null
@@ -114,12 +114,14 @@
   "n": 5,
   "beat_universe": false,
   "beat_bench": false,
-  "pct_rank_among_singles": 27.6,
+  "net_beat_universe": false,
+  "net_beat_bench": false,
+  "pct_rank_among_singles": 28.6,
+  "trades_assumed": 5,
   "ret_pct": -1.46,
   "net_ret_pct": -1.76,
   "cost_pct": 0.3,
-  "trades_assumed": 5,
-  "universe_avg_ret_pct": -0.1,
+  "universe_avg_ret_pct": -0.2,
   "bench_ret_pct": -0.04
  },
  "lessons": [
@@ -128,7 +130,7 @@
  "lessons_ko": [
   "교훈: S07는 위험 표시가 하나도 없었는데 -7.5% 빠졌습니다. 과거 숫자가 좋아도 한 주 뒤는 알 수 없습니다 — 그래서 한 종목이 아니라 5종목으로 나눕니다."
  ],
- "assumptions_ko": "가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · 5종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값) · 세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.",
+ "assumptions_ko": "가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · 5종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값 · 첫 주는 매수 5건 · '선정 없음' 주로 넘어갈 때 판 종목의 비용은 세지 않음) · 세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.",
  "generated_at_utc": "2026-10-31 03:20",
  "run": null
 }

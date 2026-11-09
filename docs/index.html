@@ -41,6 +41,7 @@
   th { background: var(--bg-soft); font-weight: 600; }
   tr.pick td { background: #fdf7e7; }
   tr.gray td { color: var(--muted); }
+  tr.gray td.up { color: var(--up); opacity: .75; } tr.gray td.down { color: var(--down); opacity: .75; }
   .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .scroll table th:first-child, .scroll table td:first-child { position: sticky; left: 0; background: #fff; }
   .scroll table th:first-child { background: var(--bg-soft); }
@@ -108,10 +109,12 @@
 
   async function getJSON(path) {
     const res = await fetch(path, { cache: 'no-store' });
-    if (!res.ok) throw new Error(path + ' HTTP ' + res.status);
+    if (!res.ok) { const err = new Error(path + ' HTTP ' + res.status); err.status = res.status; throw err; }
     return res.json();
   }
-  async function tryJSON(path) { try { return await getJSON(path); } catch (e) { return { __error: e.message }; } }
+  async function tryJSON(path) { try { return await getJSON(path); } catch (e) { return { __error: e.message, __status: e.status || 0 }; } }
+  // 절 하나가 깨져도 다른 절은 뜨게: 예외는 그 절의 「데이터 없음」으로
+  const section = (id, fn) => { try { fn(); } catch (e) { const el = $(id); if (el) el.innerHTML = empty('표시 오류 — ' + e.message); } };
   const empty = (why) => '<p class="empty">데이터 없음 — ' + esc(why) + '</p>';
 
   // 불러오기 — 절마다 독립. 하나가 없어도 다른 절은 뜬다.
@@ -129,8 +132,12 @@
   const mode = ok(weekly) ? weekly.publish_mode : (ok(policy) ? policy.publish_mode : 'ranks_only');
   const full = mode === 'full';
   const modeKo = full ? '숫자 공개' : '순위·조건 결과만 공개';
-  const M = ok(weekly) ? weekly.M : null;
-  const benchT = ok(weekly) && weekly.benchmark ? weekly.benchmark.ticker : 'SPY';
+  const M = ok(weekly) ? weekly.M : (ok(picks) && picks.gate_summary && isNum(picks.gate_summary.M) ? picks.gate_summary.M : null);
+  const benchT = ok(weekly) && weekly.benchmark ? weekly.benchmark.ticker : (ok(picks) && picks.market && picks.market.ticker ? picks.market.ticker : 'SPY');
+  // 기록 파일이 '없음(404)'이고 직전 선정도 없을 때만 '첫 선정'. 그 밖의 실패(깨진 JSON·다른 오류)는 데이터 없음으로.
+  const trackMissing = !!track.__error && track.__status === 404 && (!ok(picks) || !picks.previous);
+  const trackEmpty = ok(track) && (!Array.isArray(track.weeks) || !track.weeks.length);
+  const firstWeek = trackMissing || trackEmpty;
 
   // 0. 상단 줄·배지·배너
   let stale = false;
@@ -159,17 +166,18 @@
   if (!FIX && !full) banners.push('<div class="banner">출처 이용 조건에 따라 가격·수익률 <strong>숫자는 공개하지 않고</strong> 순위·조건 결과·방향만 보입니다(공급자 결정: 아래 「데이터·출처」). 숫자가 든 화면 예시는 <a href="?data=fixtures">합성 데이터 화면</a>에서 볼 수 있습니다.</div>');
   if (ok(weekly) && stale) banners.push('<div class="banner">기준일이 ' + STALE_DAYS + '일 넘게 지났습니다. 자동 수집이 멈췄을 수 있어 이번 주 선정 목록을 숨깁니다.</div>');
   if (ok(weekly) && weekly.benchmark && weekly.benchmark.above_ma200 === false) banners.push('<div class="banner">시장 전체(' + esc(benchT) + ')가 200일 추세선 아래입니다. 이런 때는 조건을 통과하는 종목이 줄거나 0개가 됩니다 — 쉬어 가는 것도 선택입니다.</div>');
-  if (ok(picks) && picks.status !== '확정') banners.push('<div class="banner"><strong>이번 주 선정 ' + esc(picks.status) + '</strong> — ' + esc(picks.status_message_ko) + '</div>');
+  if (ok(picks) && picks.status !== '확정') banners.push('<div class="banner"><strong>' + (picks.status === '선정 없음' ? '이번 주 선정 없음' : '이번 주 선정 ' + esc(picks.status)) + '</strong> — ' + esc(picks.status_message_ko) + '</div>');
   $('banners').innerHTML = banners.join('');
 
   // 1. 지난주 한 줄 복기
-  (function () {
+  section('review-line', function () {
     const el = $('review-line');
-    if (!ok(track) || !Array.isArray(track.weeks) || !track.weeks.length) {
+    if (firstWeek) {
       const asOf = ok(weekly) ? weekly.as_of.date : null;
       el.innerHTML = '<p>아직 기록이 없습니다 — ' + (asOf ? '이번 주(' + esc(asOf) + ')가 첫 선정입니다. ' : '') + '첫 선정 다음 주 토요일부터 「지난주 고른 것이 실제로 어땠나」가 여기 생깁니다.</p>';
       return;
     }
+    if (!ok(track)) { el.innerHTML = empty(track.__error); return; }
     const r = lastResult;
     if (!ok(r)) { el.innerHTML = empty(r ? r.__error : '결과 파일 없음'); return; }
     if (r.status !== '확정') { el.innerHTML = '<p>지난주(' + esc(r.pick_as_of) + ') 선정의 결과: <strong>' + esc(r.status) + '</strong> — ' + esc(r.status_message_ko) + '</p>'; return; }
@@ -180,14 +188,15 @@
       s += '평균 <span class="' + pctClass(b.ret_pct) + '">' + signed(b.ret_pct) + '</span> (비용 차감 ' + signed(b.net_ret_pct) + ') · ' + esc(r.M) + '종목 평균 ' + signed(b.universe_avg_ret_pct) + ' · 시장(' + esc(benchT) + ') ' + signed(b.bench_ret_pct);
     } else {
       s += esc(r.M) + '종목 평균보다 <strong>' + (b.beat_universe ? '나았고' : '못했고') + '</strong>, 시장(' + esc(benchT) + ')보다 <strong>' + (b.beat_bench ? '나았습니다' : '못했습니다') + '</strong>';
+      if (typeof b.net_beat_universe === 'boolean') s += ' · 비용(가정 매매 ' + esc(b.trades_assumed) + '건)을 뺀 뒤에도 평균보다 ' + (b.net_beat_universe ? '나음' : '못함');
       if (isNum(b.pct_rank_among_singles)) s += ' · 단일 종목 ' + esc(r.M) + '개와 견주면 아래에서 ' + fmt(b.pct_rank_among_singles, 0) + '% 위치';
     }
     s += '. ' + esc((r.lessons_ko && r.lessons_ko[0]) || '') + ' <a href="#review">자세히 ↓</a>';
     el.innerHTML = '<p>' + s + '</p>';
-  })();
+  });
 
   // 2. 이번 주 선정 카드
-  (function () {
+  section('picks', function () {
     const el = $('picks');
     if (!ok(picks)) { el.innerHTML = empty(picks.__error); return; }
     $('rule-line').textContent = picks.rule_line_ko || '';
@@ -207,11 +216,11 @@
     for (const p of picks.picks) {
       const v = p.values || {};
       const flags = (p.flags || []).map(f => '<span class="flag" title="' + esc(f.code) + '"><strong>' + esc(f.name_ko) + '</strong> — ' + esc(f.message_ko) + '</span>').join('');
-      const copyText = [picks.as_of.date, p.ticker + ' ' + (p.name_ko || ''), '점수 ' + p.score + ' (' + M + '개 중 ' + p.rank_all + '위)', '이유: ' + (p.reasons_ko || []).join(' / '),
+      const copyText = [picks.as_of.date, p.ticker + ' ' + (p.name_ko || ''), '점수 ' + p.score + ' (' + (M ?? '?') + '개 중 ' + p.rank_all + '위)', '이유: ' + (p.reasons_ko || []).join(' / '),
         '위험 표시: ' + ((p.flags || []).map(f => f.name_ko).join(', ') || '없음'), '다음 주 확인할 것: 이번 주 등락 · 시장 대비 · 위험 표시가 뜻한 흔들림이 있었나'].join('\n');
       html += '<article class="card">' +
         '<h3>' + p.rank + '위 · ' + esc(p.ticker) + ' ' + esc(p.name_ko) + ' <small>· ' + esc(p.sector_ko) + ' · ' + esc(p.state) + '</small></h3>' +
-        '<p class="meta">점수 ' + fmt(p.score, 1) + '/100 (' + esc(M) + '개 중 ' + esc(p.rank_all) + '위) · 조건 4개 통과</p>' +
+        '<p class="meta">점수 ' + fmt(p.score, 1) + '/100 (' + esc(M ?? '?') + '개 중 ' + esc(p.rank_all) + '위) · 조건 4개 통과</p>' +
         '<ul>' + (p.reasons_ko || []).map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>' +
         '<p class="ref">' + esc(p.reference_ko) + '</p>' +
         flags +
@@ -227,24 +236,25 @@
     const ch = picks.changes || {};
     let c = '';
     if (picks.status === '확정' && ch.prev_as_of) {
-      c += '<p class="small">지난주(' + esc(ch.prev_as_of) + ')와 비교: 새로 들어옴 ' + (ch.added || []).length + '개' + ((ch.added || []).length ? ' (' + ch.added.map(esc).join(', ') + ')' : '') +
+      c += '<p class="small">직전 선정(' + esc(ch.prev_as_of) + ')과 비교: 새로 들어옴 ' + (ch.added || []).length + '개' + ((ch.added || []).length ? ' (' + ch.added.map(esc).join(', ') + ')' : '') +
         ' · 빠짐 ' + (ch.dropped || []).length + '개' + ((ch.dropped || []).length ? ' (' + ch.dropped.map(d => esc(d.ticker) + ': ' + esc(d.now_ko)).join(' / ') + ')' : '') +
         ' · 유지 ' + (ch.kept || []).length + '개 — 바뀐 종목이 많을수록 따라 사고팔면 비용이 커집니다.</p>';
     }
     if (picks.sector_mix && Object.keys(picks.sector_mix).length) c += '<p class="small">업종 구성: ' + Object.entries(picks.sector_mix).map(([k, v]) => esc(k) + ' ' + v).join(' · ') + ' (같은 업종 최대 2개)</p>';
     for (const f of (picks.basket_flags || [])) c += '<span class="flag">' + esc(f.message_ko) + '</span>';
     $('changes').innerHTML = c;
-  })();
+  });
 
   // 3. 지난주 복기 — 자세히
-  (function () {
+  section('review', function () {
     const el = $('review');
-    if (!ok(track) || !Array.isArray(track.weeks) || !track.weeks.length) { el.innerHTML = '<p class="empty">기록 없음 — 첫 선정입니다.</p>'; return; }
+    if (firstWeek) { el.innerHTML = '<p class="empty">기록 없음 — 첫 선정입니다.</p>'; return; }
+    if (!ok(track)) { el.innerHTML = empty(track.__error); return; }
     const r = lastResult;
     if (!ok(r)) { el.innerHTML = empty(r ? r.__error : '결과 파일 없음'); return; }
     let html = '<p class="small">' + esc(r.status_message_ko) + (r.holding ? ' · 보유 가정 ' + esc(r.holding.from) + ' → ' + esc(r.holding.to) + ' (거래일 ' + esc(r.holding.trading_days) + '일)' : '') + '</p>';
     if (r.picks && r.picks.length) {
-      html += '<div class="scroll"><table><thead><tr><th>종목</th><th>결과</th><th>' + esc(r.M) + '평균 대비</th><th>' + esc(benchT) + ' 대비</th><th>뽑힌 이유</th><th>위험 표시</th></tr></thead><tbody>';
+      html += '<div class="scroll"><table><thead><tr><th>종목</th><th>결과</th><th>' + esc(r.M) + '종목 평균 대비</th><th>' + esc(benchT) + ' 대비</th><th>뽑힌 이유</th><th>위험 표시</th></tr></thead><tbody>';
       for (const p of r.picks) {
         const res = p.status !== '확정' && p.status !== '유니버스 제외(계속 추적)' ? esc(p.status)
           : (full && isNum(p.ret_pct) ? '<span class="' + pctClass(p.ret_pct) + '">' + signed(p.ret_pct) + '</span>' : '<span class="' + dirClass(p.dir_1w) + '">' + dirMark(p.dir_1w) + '</span>');
@@ -259,38 +269,42 @@
       const b = r.basket;
       html += '<p>바구니(' + b.n + '종목 동일 비중): ' + (full && isNum(b.ret_pct)
         ? '<span class="' + pctClass(b.ret_pct) + '">' + signed(b.ret_pct) + '</span> · 비용 차감 ' + signed(b.net_ret_pct) + ' (가정 매매 ' + esc(b.trades_assumed) + '건) · ' + esc(r.M) + '종목 평균 ' + signed(b.universe_avg_ret_pct) + ' · 시장(' + esc(benchT) + ') ' + signed(b.bench_ret_pct)
-        : esc(r.M) + '종목 평균보다 ' + (b.beat_universe ? '나음' : '못함') + ' · 시장(' + esc(benchT) + ')보다 ' + (b.beat_bench ? '나음' : '못함') + (isNum(b.pct_rank_among_singles) ? ' · 단일 종목 중 아래에서 ' + fmt(b.pct_rank_among_singles, 0) + '% 위치' : '')) + '</p>';
+        : esc(r.M) + '종목 평균보다 ' + (b.beat_universe ? '나음' : '못함') + ' · 시장(' + esc(benchT) + ')보다 ' + (b.beat_bench ? '나음' : '못함')
+          + (typeof b.net_beat_universe === 'boolean' ? ' · 비용 뺀 뒤(가정 매매 ' + esc(b.trades_assumed) + '건 × 편도 0.3%) 평균보다 ' + (b.net_beat_universe ? '나음' : '못함') + ' · 시장보다 ' + (b.net_beat_bench ? '나음' : '못함') : '')
+          + (isNum(b.pct_rank_among_singles) ? ' · 단일 종목 중 아래에서 ' + fmt(b.pct_rank_among_singles, 0) + '% 위치' : '')) + '</p>';
     }
     for (const l of (r.lessons_ko || [])) html += '<p><strong>' + esc(l) + '</strong> <span class="small">(규칙이 고른 문장 · AI 아님)</span></p>';
     const n = ok(track) && track.summary ? track.summary.n : 0;
     html += '<p class="small">기록 ' + n + '주째 — 26주 미만이면 성적을 읽지 마세요. 26주가 지나도 1년 남짓한 기록으로는 규칙이 좋은지 나쁜지 판단하기 어렵습니다.</p>';
     html += '<p class="small">' + esc(r.assumptions_ko || '') + '</p>';
     el.innerHTML = html;
-  })();
+  });
 
   // 4. 기록
-  (function () {
+  section('record', function () {
     const el = $('record');
-    if (!ok(track) || !Array.isArray(track.weeks) || !track.weeks.length) { el.innerHTML = '<p class="empty">기록 없음 — 이번 주가 첫 선정입니다. 다음 주부터 한 행씩 쌓입니다.</p>'; return; }
+    if (firstWeek) { el.innerHTML = '<p class="empty">기록 없음 — 이번 주가 첫 선정입니다. 다음 주부터 한 행씩 쌓입니다.</p>'; return; }
+    if (!ok(track)) { el.innerHTML = empty(track.__error); return; }
     const s = track.summary || {};
     let html = '<div class="tiles"><div class="tile"><b>기록</b><span>' + esc(s.n || 0) + '주째</span></div>' +
       '<div class="tile"><b>' + (M || '30') + '종목 평균보다 나았던 주</b><span>' + esc(s.weeks_beat_universe || 0) + ' / ' + esc(s.n || 0) + '</span></div>' +
-      '<div class="tile"><b>시장(' + esc(benchT) + ')보다 나았던 주</b><span>' + esc(s.weeks_beat_bench || 0) + ' / ' + esc(s.n || 0) + '</span></div></div>';
+      '<div class="tile"><b>시장(' + esc(benchT) + ')보다 나았던 주</b><span>' + esc(s.weeks_beat_bench || 0) + ' / ' + esc(s.n || 0) + '</span></div>' +
+      (isNum(s.weeks_net_beat_universe) ? '<div class="tile"><b>비용 뺀 뒤에도 평균보다 나았던 주</b><span>' + esc(s.weeks_net_beat_universe) + ' / ' + esc(s.n || 0) + '</span></div>' : '') + '</div>';
     if (full && s.cum) html += '<p class="small">누적(100 → 지금, 가상): 선정 바구니 ' + signed(s.cum.basket_ret) + ' · 비용 차감 ' + signed(s.cum.basket_net_ret) + ' · ' + (M || '') + '종목 평균 ' + signed(s.cum.universe_avg_ret) + ' · 시장 ' + signed(s.cum.bench_ret_1w) + '</p>';
-    html += '<div class="scroll"><table><thead><tr><th>선정 기준일</th><th>결과 기준일</th><th>상태</th><th>종목 수</th><th>' + (full ? '바구니' : '평균보다') + '</th><th>' + (full ? '비용 차감' : '시장보다') + '</th>' + (full ? '<th>평균</th><th>시장</th>' : '<th>단일 종목 중 위치</th>') + '<th>교체</th></tr></thead><tbody>';
+    html += '<div class="scroll"><table><thead><tr><th>선정 기준일</th><th>결과 기준일</th><th>상태</th><th>종목 수</th><th>' + (full ? '바구니' : '평균보다') + '</th><th>' + (full ? '비용 차감' : '비용 뺀 뒤 평균보다') + '</th>' + (full ? '<th>평균</th><th>시장</th>' : '<th>시장보다</th><th>단일 종목 중 위치</th>') + '<th>교체</th></tr></thead><tbody>';
     for (const w of track.weeks.slice().reverse()) {
       html += '<tr' + (w.status !== '확정' ? ' class="gray"' : '') + '><td>' + esc(w.pick_as_of) + '</td><td>' + esc(w.result_as_of || '—') + '</td><td>' + esc(w.status) + '</td><td>' + esc(w.n_picks) + '</td>';
       if (full) html += '<td>' + signed(w.basket_ret) + '</td><td>' + signed(w.basket_net_ret) + '</td><td>' + signed(w.universe_avg_ret) + '</td><td>' + signed(w.bench_ret_1w) + '</td>';
-      else html += '<td>' + (w.beat_universe == null ? '—' : w.beat_universe ? '나음' : '못함') + '</td><td>' + (w.beat_bench == null ? '—' : w.beat_bench ? '나음' : '못함') + '</td><td>' + (isNum(w.pct_rank_among_singles) ? '아래에서 ' + fmt(w.pct_rank_among_singles, 0) + '%' : '—') + '</td>';
+      else html += '<td>' + (w.beat_universe == null ? '—' : w.beat_universe ? '나음' : '못함') + '</td><td>' + (w.net_beat_universe == null ? '—' : w.net_beat_universe ? '나음' : '못함') + '</td><td>' + (w.beat_bench == null ? '—' : w.beat_bench ? '나음' : '못함') + '</td><td>' + (isNum(w.pct_rank_among_singles) ? '아래에서 ' + fmt(w.pct_rank_among_singles, 0) + '%' : '—') + '</td>';
       html += '<td>' + esc(w.changed_count == null ? '—' : w.changed_count) + '</td></tr>';
     }
     html += '</tbody></table></div>';
     html += '<p class="small">' + esc(track.assumptions_ko || '') + ' 26주 미만이면 성적을 읽지 마세요.</p>';
     el.innerHTML = html;
-  })();
+  });
 
   // 5. 전체 30종목 표
-  (function () {
+  section('table', function () {
     const el = $('table');
     if (!ok(weekly)) { el.innerHTML = empty(weekly.__error); return; }
     const picked = new Set(ok(picks) ? picks.picks.map(p => p.ticker) : []);
@@ -319,10 +333,10 @@
     html += '</tbody></table></div>';
     if (weekly.skipped && weekly.skipped.length) html += '<p class="small">제외: ' + weekly.skipped.map(x => esc(x.ticker) + ' — ' + esc(x.why_ko)).join(' · ') + '</p>';
     el.innerHTML = html;
-  })();
+  });
 
   // 6. 규칙 설명 (rules.json 그대로)
-  (function () {
+  section('rules', function () {
     const el = $('rules');
     if (!ok(rules)) { el.innerHTML = empty(rules.__error); return; }
     const g = rules.gates, f = rules.factors;
@@ -336,16 +350,16 @@
     html += '<details><summary>지난주 복기 계산과 교훈 문장 규칙</summary><p class="small">' + esc(rules.results.note_ko) + '</p><ul>' + rules.results.lessons_priority.map(k => '<li>' + esc(k) + ' — ' + esc(rules.results.lessons[k]) + '</li>').join('') + '</ul><p class="small">보류: 최신 자료가 ' + Math.round(rules.min_fresh_ratio * 100) + '% 미만이면 선정하지 않음 · 지각: 다음 거래일 장 시작 뒤 실행이면 기록에 공백 · 기준일이 ' + esc(rules.stale_days_max) + '일 넘게 지나면 목록을 숨김.</p></details>';
     html += '<p class="small">손으로 다시 계산해 보기: <a href="?data=fixtures">합성 데이터 화면</a>의 숫자와 docs/data/README.md 의 공식으로 한 종목의 점수를 계산하면 화면 점수와 ±0.1 안에서 같아야 합니다.</p>';
     el.innerHTML = html;
-  })();
+  });
 
   // 7. 데이터·출처
-  (function () {
+  section('sources', function () {
     const el = $('sources');
     const p = ok(policy) ? policy : null;
     const w = ok(weekly) ? weekly : null;
     let html = '';
     if (p) {
-      html += '<p><strong>시세:</strong> ' + esc(p.provider_name_ko) + ' · <a href="' + esc(p.terms_url) + '" rel="noopener">이용 조건</a> (' + esc(p.terms_checked_on) + ' 확인) · 수정 종가 기준 · 원본 일별 시세는 어디에도 저장하지 않음</p>';
+      html += '<p><strong>시세:</strong> ' + esc(p.provider_name_ko) + ' · <a href="' + esc(p.terms_url) + '" rel="noopener">이용 조건</a> (' + esc(p.terms_checked_on) + ' 확인) · 수정 종가 기준 · 원본 일별 시세는 공개 저장소·화면에 올리지 않음(비공개 작업 폴더와 재시도용 Actions 캐시에만, 최대 7일)</p>';
       html += '<p class="small">이용 조건 원문: “' + esc(p.terms_quote_en) + '” — ' + esc(p.terms_quote_ko) + '</p>';
       html += '<p><strong>공개 범위(' + esc(p.decided_on) + ' 결정):</strong> ' + esc(p.publish_mode_ko[p.publish_mode] || p.publish_mode) + '. ' + esc(p.decision_ko) + '</p>';
       if (p.inquiry && p.inquiry.sent_on) html += '<p class="small">공급자 문의: ' + esc(p.inquiry.sent_on) + ' 발송' + (p.inquiry.answer_on ? ' · ' + esc(p.inquiry.answer_on) + ' 답: ' + esc(p.inquiry.answer_summary_ko) : ' · 답 대기') + '</p>';
@@ -356,7 +370,7 @@
     }
     html += '<p class="small">휴장일: <a href="https://www.nyse.com/markets/hours-calendars" rel="noopener">NYSE 공개 달력</a>. 이 화면의 모든 문장은 규칙 템플릿 문장이며 11월에는 AI를 호출하지 않습니다. 운영자의 실제 보유 종목·금액과 무관하며 공개하지 않습니다. 운영자는 금융투자업 인가를 받은 전문가가 아닙니다. 주식은 원금 손실이 날 수 있고 해외 주식은 환율에 따라 원화 손익이 달라집니다.</p>';
     el.innerHTML = html;
-  })();
+  });
 })();
 </script>
 </body>

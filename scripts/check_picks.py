@@ -11,8 +11,10 @@
   · state 는 지난 선정(previous.tickers)에 있으면 유지, 아니면 신규 · flags 는 {code, name_ko, message_ko} 목록(코드는 weekly 의 flags 안)
 - 상태: late → 지각 · fresh_count < ceil(min_fresh_ratio × universe_count) → 보류(선정 비움) · 선정 0개 → 선정 없음(통과 0) · 그 밖 → 확정
   · gate_summary(M·fresh_count·universe_count·passed) 를 weekly 로 재계산해 일치
-- not_selected: 선정되지 않은 유니버스 종목을 정확히 한 번씩 · why_code 는 알려진 코드 · changes: added ∪ kept == 선정, dropped == 지난 선정 − 선정
-- 동결 사본 {frozen-dir}/{as_of}.json 이 있고 status 가 확정·선정 없음 이면 run·generated_at_utc 만 빼고 같아야 함
+- not_selected: 선정되지 않은 유니버스 종목을 정확히 한 번씩 · why_code 는 알려진 코드 · 보류(최신 자료 부족)면 조건 통과 종목은 DEFERRED(RANK·SECTOR_CAP 없음), 아니면 DEFERRED 없음
+  · changes: added ∪ kept == 선정, dropped == 지난 선정 − 선정 · buys == |added| · sells == |dropped| · changed_count == max(|added|, |dropped|)(직전 선정 없으면 0)
+  · previous.status 는 확정·선정 없음(지각 선정은 비교 대상이 아님)
+- 동결 사본 {frozen-dir}/{as_of}.json 이 있고 status 가 확정·선정 없음·지각 이면 run·generated_at_utc 만 빼고 같아야 함
 - ranks_only: PRICE_FIELDS 키(values 포함)가 어디에도 없음(재귀). 표준 출력에는 가격 숫자를 찍지 않습니다.
 """
 from __future__ import annotations
@@ -28,7 +30,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fdelib import DATE_RE, PRICE_FIELDS, is_num, load_json  # noqa: E402
 
 STATUSES = {"확정", "보류", "선정 없음", "지각"}
-WHY_CODES = {"DATA", "SUSPECT", "BELOW_MA200", "SURGE", "CRASH_DAY", "SECTOR_CAP", "RANK"}
+WHY_CODES = {"DATA", "SUSPECT", "BELOW_MA200", "SURGE", "CRASH_DAY", "SECTOR_CAP", "RANK", "DEFERRED"}
+FILLED_ONLY = {"RANK", "SECTOR_CAP"}       # 선정을 실제로 채운 주에만 나오는 사유
+FROZEN_STATUSES = {"확정", "선정 없음", "지각"}
+PREV_STATUSES = {"확정", "선정 없음"}
 GATES = ("C1", "C2", "C3", "C4")
 IGNORE_FROZEN = {"run", "generated_at_utc"}
 
@@ -143,7 +148,7 @@ def check_status(d: dict, w: dict, rules: dict, picks: list[dict], errors: list[
     return passed
 
 
-def check_not_selected(d: dict, w: dict, picks: list[dict], errors: list[str]) -> None:
+def check_not_selected(d: dict, w: dict, picks: list[dict], deferred: bool, errors: list[str]) -> None:
     ns = d.get("not_selected")
     if not isinstance(ns, list):
         errors.append("not_selected 가 목록이 아님")
@@ -154,9 +159,14 @@ def check_not_selected(d: dict, w: dict, picks: list[dict], errors: list[str]) -
                        ("있으면 안 되는 종목(선정됐거나 유니버스 밖)", set(tickers) - want)):
         if bad:
             errors.append(f"not_selected 에 {label}: {sorted(bad, key=str)}")
-    bad_codes = {r.get("why_code") for r in ns if isinstance(r, dict) and r.get("why_code") not in WHY_CODES}
+    codes = [r.get("why_code") for r in ns if isinstance(r, dict)]
+    bad_codes = {c for c in codes if c not in WHY_CODES}
     if bad_codes:
         errors.append(f"not_selected.why_code 에 알 수 없는 코드: {sorted(bad_codes, key=str)}")
+    if deferred and any(c in FILLED_ONLY for c in codes):
+        errors.append("선정을 보류한 주인데 not_selected 에 RANK/SECTOR_CAP 사유가 있음(조건 통과 종목은 DEFERRED 여야 함)")
+    if not deferred and "DEFERRED" in codes:
+        errors.append("선정을 채운 주인데 not_selected 에 DEFERRED 사유가 있음")
 
 
 def check_changes(d: dict, picks: list[dict], errors: list[str]) -> None:
@@ -168,10 +178,20 @@ def check_changes(d: dict, picks: list[dict], errors: list[str]) -> None:
         errors.append("changes.dropped 가 (지난 선정 − 이번 선정) 과 다름")
     if prev and (ch.get("prev_as_of") != prev.get("as_of") or not str(prev.get("as_of")) < str((d.get("as_of") or {}).get("date"))):
         errors.append("previous.as_of 는 as_of.date 이전 날짜이고 changes.prev_as_of 와 같아야 함")
+    if prev and prev.get("status") not in PREV_STATUSES:
+        errors.append(f"previous.status 는 확정·선정 없음 이어야 함(지각 선정은 비교 대상이 아님): {prev.get('status')!r}")
+    if not prev and ch.get("prev_as_of") is not None:
+        errors.append("previous 가 없는데 changes.prev_as_of 가 있음")
+    n_add, n_drop = len(ch.get("added") or []), len(ch.get("dropped") or [])
+    if ch.get("buys") != n_add or ch.get("sells") != n_drop:
+        errors.append(f"changes.buys({ch.get('buys')})·sells({ch.get('sells')}) 가 added({n_add})·dropped({n_drop}) 수와 다름")
+    want_changed = max(n_add, n_drop) if prev else 0
+    if ch.get("changed_count") != want_changed:
+        errors.append(f"changes.changed_count({ch.get('changed_count')}) 는 {want_changed} 이어야 함(직전 선정 {'있음' if prev else '없음'})")
 
 
 def check_frozen(d: dict, frozen_dir: str, errors: list[str]) -> str:
-    if d.get("status") not in ("확정", "선정 없음"):
+    if d.get("status") not in FROZEN_STATUSES:
         return "동결 대상 아님"
     fp = os.path.join(frozen_dir, f"{(d.get('as_of') or {}).get('date')}.json")
     if not os.path.exists(fp):
@@ -210,7 +230,8 @@ def main(argv: list[str]) -> int:
     for i, p in enumerate(picks, 1):
         check_pick(p, i, stocks.get(p.get("ticker")), rules, prev_tickers, errors)
     passed = check_status(d, w, rules, picks, errors)
-    check_not_selected(d, w, picks, errors)
+    deferred = (w.get("fresh_count") or 0) < math.ceil(rules["min_fresh_ratio"] * (w.get("universe_count") or 0))
+    check_not_selected(d, w, picks, deferred, errors)
     check_changes(d, picks, errors)
     note = check_frozen(d, args.frozen_dir, errors)
     leaks = price_leaks(d) if d.get("publish_mode") == "ranks_only" else []

@@ -104,7 +104,7 @@
     "trend": 4,
     "calm": 1,
     "dd": 1,
-    "ret_1w": 12
+    "week": 12
    },
    "state": "유지",
    "reasons_ko": [
@@ -141,7 +141,7 @@
     "trend": 3,
     "calm": 2,
     "dd": 3,
-    "ret_1w": 10
+    "week": 10
    },
    "state": "유지",
    "reasons_ko": [
@@ -178,7 +178,7 @@
     "trend": 2,
     "calm": 9,
     "dd": 7,
-    "ret_1w": 11
+    "week": 11
    },
    "state": "신규",
    "reasons_ko": [
@@ -215,7 +215,7 @@
     "trend": 8,
     "calm": 5,
     "dd": 4,
-    "ret_1w": 15
+    "week": 15
    },
    "state": "유지",
    "reasons_ko": [
@@ -252,7 +252,7 @@
     "trend": 13,
     "calm": 3,
     "dd": 9,
-    "ret_1w": 21
+    "week": 21
    },
    "state": "유지",
    "reasons_ko": [
@@ -627,6 +627,8 @@
    "S10",
    "S27"
   ],
+  "buys": 1,
+  "sells": 1,
   "changed_count": 1,
   "prev_as_of": "2026-10-23"
  },

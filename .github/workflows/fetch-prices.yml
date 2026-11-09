@@ -1,14 +1,19 @@
 name: fetch-prices
 
 # 주 1회 공개 일별 시세를 받아(비공개 작업 폴더) 주간 통계·지난주 결과·이번 주 선정을 계산하고 docs/data/ 에 커밋한 뒤 배포합니다.
-# 토 12:17 KST(금 22:17 ET, 미국 금요일 종가 뒤) 본 실행 · 일 09:47 KST 재시도(이미 최신이면 아무것도 하지 않음).
-# 키: Settings → Secrets and variables → Actions → New repository secret → 이름 EOD_API_KEY (값은 어디에도 적지 않음)
+# 토 12:17 KST(금 22:17 ET, 미국 금요일 종가 뒤) 본 실행 · 일 09:47 KST 재시도 · 월 09:30 KST 마지막 확인(이미 최신이면 아무것도 하지 않음 —
+# 월요일 실행은 금요일 행이 그때까지도 없으면 빨간불을 켜기 위한 것).
+# 키: Settings → Secrets and variables → Actions → New repository secret → 이름 EOD_API_KEY (값은 어디에도 적지 않음). 키가 없으면 실행이 실패합니다
+#     (demo 키는 벤치마크 SPY 를 주지 않아 계산할 수 없음).
 # 공급자·공개 범위: docs/data/source_policy.json · 종목: docs/data/universe.json · 규칙: docs/data/rules.json
 # 원본 일별 시세는 공급자 이용 조건상 공개할 수 없어 .work/ 에만 두고 커밋하지 않습니다(로그에도 가격을 찍지 않음).
+# 재시도 때 한도를 아끼려고 .work/eod 를 Actions 캐시에 두며(저장소 밖 · 마지막 사용 뒤 최대 7일), 커밋에 성공하면 바로 지웁니다.
+# 같은 저장소의 다른 워크플로 실행(PR 포함)도 캐시를 읽을 수 있으니 Settings → Actions → "Require approval for all outside collaborators" 를 켜 두세요.
 on:
   schedule:
     - cron: "17 3 * * 6"
     - cron: "47 0 * * 0"
+    - cron: "30 0 * * 1"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -16,7 +21,7 @@ on:
         type: boolean
         default: false
       tickers:
-        description: "시험용: 쉼표 구분 종목(비우면 universe.json + 벤치마크 + 지난주 선정)"
+        description: "시험용: 쉼표 구분 종목(비우면 universe.json + 벤치마크 + 지난주 선정). 채우면 항상 dry_run 으로 동작"
         type: string
         default: ""
 
@@ -29,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
       sha: ${{ steps.commit.outputs.sha }}
@@ -47,7 +53,18 @@ jobs:
         if: steps.plan.outputs.already == 'true'
         run: echo "기준일 ${{ steps.plan.outputs.as_of }} 자료가 이미 확정돼 있습니다 — 할 일 없음 (${{ steps.plan.outputs.reason }})" | tee -a "$GITHUB_STEP_SUMMARY"
 
-      - name: 작업 폴더 복원 (재시도 때 한도 절약 · 캐시는 공개되지 않음)
+      - name: 키 확인 — EOD_API_KEY Secret 이 없으면 여기서 멈춤
+        if: steps.plan.outputs.already != 'true'
+        env:
+          EOD_API_KEY: ${{ secrets.EOD_API_KEY }}
+        run: |
+          if [ -z "$EOD_API_KEY" ]; then
+            echo "::error::EOD_API_KEY Secret 이 없습니다 — demo 키는 벤치마크 SPY 를 주지 않아 계산할 수 없습니다. Settings → Secrets and variables → Actions 에 EOD_API_KEY 를 넣고 다시 실행하세요. 이미 커밋된 자료만 배포하려면 check-deploy 를 Run workflow 하면 됩니다."
+            exit 1
+          fi
+          echo "키 있음(값은 출력하지 않음)"
+
+      - name: 작업 폴더 복원 (재시도 때 한도 절약 · 캐시는 저장소 밖, 최대 7일, 커밋 성공 시 삭제)
         if: steps.plan.outputs.already != 'true'
         id: restore
         uses: actions/cache/restore@v4
@@ -55,16 +72,15 @@ jobs:
           path: .work/eod
           key: eod-${{ steps.plan.outputs.provider }}-${{ steps.plan.outputs.as_of }}
 
-      - name: 시세 받기 (키는 Secret · 로그에는 날짜·행 수만)
+      - name: 시세 받기 (키는 Secret · 로그에는 날짜·행 수만 · 일부 실패(종료 코드 4)면 계속)
         if: steps.plan.outputs.already != 'true'
         env:
           EOD_API_KEY: ${{ secrets.EOD_API_KEY }}
         run: |
-          if [ -z "$EOD_API_KEY" ]; then echo "::notice::EOD_API_KEY Secret 이 없어 demo 키로 시도합니다 — 소수 종목만 받아지고 선정은 '보류'가 됩니다"; fi
           python3 -I scripts/fetch_eod.py --provider "${{ steps.plan.outputs.provider }}" \
             --tickers "${{ steps.plan.outputs.tickers }}" --out .work/eod \
             --expect-last "${{ steps.plan.outputs.as_of }}" --skip-fresh --max-requests 40 --pause 3.1 \
-            || test $? -eq 2
+            || test $? -eq 4
 
       - name: 작업 폴더 저장
         if: always() && steps.plan.outputs.already != 'true' && steps.restore.outputs.cache-hit != 'true'
@@ -78,15 +94,15 @@ jobs:
         id: build
         run: |
           set +e
-          EXTRA=""
           python3 -I scripts/build_weekly.py --eod .work/eod --private-out .work/weekly_full.json --out docs/data/weekly.json \
             --extra-tickers "$(python3 -I -c "import json,os; p='docs/data/picks/${{ steps.plan.outputs.prev_pick_as_of }}.json'; print(','.join(x['ticker'] for x in json.load(open(p))['picks']) if os.path.exists(p) else '')")"
           rc=$?
           set -e
           if [ $rc -eq 3 ]; then
-            echo "아직 게시 안 됨 — 벤치마크의 ${{ steps.plan.outputs.as_of }} 행이 없습니다" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "아직 게시 안 됨 — 벤치마크의 ${{ steps.plan.outputs.as_of }} 행이 없습니다 (기준일 ${{ steps.plan.outputs.age_days }}일 전)" | tee -a "$GITHUB_STEP_SUMMARY"
             git checkout -- docs/data/weekly.json 2>/dev/null || true
             if [ "${{ steps.plan.outputs.age_days }}" -gt 2 ]; then echo "::error::기준일이 2일 넘게 지났는데도 자료가 없습니다 — 휴장일 파일 또는 공급자 상태를 확인하세요"; exit 1; fi
+            if [ "${{ steps.plan.outputs.age_days }}" -ge 2 ]; then echo "::warning::기준일 ${{ steps.plan.outputs.as_of }} 행이 아직 없습니다(2일째). 월요일 실행까지 없으면 빨간불이 됩니다"; fi
             echo "built=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
           [ $rc -eq 0 ] || exit $rc
@@ -103,14 +119,14 @@ jobs:
           python3 -I scripts/check_results.py
           python3 -I scripts/check_words.py docs/data
           python3 -I scripts/check_frozen.py --base HEAD
-          ! grep -rEl '(api_token|apikey)=[A-Za-z0-9._-]{12,}' docs/ || (echo "::error::키 모양 문자열이 docs/ 에 있습니다"; exit 1)
+          if grep -rEl '(api_token|apikey)=[A-Za-z0-9._-]{12,}' docs/; then echo "::error::키 모양 문자열이 docs/ 에 있습니다"; exit 1; fi
 
-      - name: 커밋·태그·푸시 (dry_run 이면 건너뜀)
+      - name: 커밋·태그·푸시 (dry_run 이거나 시험용 종목이면 건너뜀)
         if: steps.build.outputs.built == 'true'
         id: commit
         run: |
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
-            echo "dry_run — 바뀐 파일:"; git status --short docs/data; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ] || [ -n "${{ github.event.inputs.tickers }}" ]; then
+            echo "dry_run(또는 시험용 종목) — 바뀐 파일:"; git status --short docs/data; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
           if git diff --quiet -- docs/data && [ -z "$(git ls-files --others --exclude-standard docs/data)" ]; then
             echo "바뀐 데이터 없음"; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
@@ -121,13 +137,25 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data
           git commit -m "데이터 갱신: 주 마감 ${{ steps.plan.outputs.week_end }} (기준일 ${AS_OF} ET) · 선정 ${STATUS} (fetch-prices)"
-          if { [ "$STATUS" = "확정" ] || [ "$STATUS" = "선정 없음" ]; } && ! git rev-parse -q --verify "refs/tags/data/${AS_OF}" >/dev/null; then
-            git tag -a "data/${AS_OF}" -m "선정 동결 — 기준일 ${AS_OF} (Actions 실행 ${{ github.run_id }})"
-          fi
+          # 먼저 main 위로 옮긴 뒤 태그를 붙입니다(태그가 리베이스 전 커밋에 남아 푸시되지 않는 일이 없게)
           git pull --rebase origin main
-          git push origin HEAD:main --follow-tags
+          TAG=""
+          if { [ "$STATUS" = "확정" ] || [ "$STATUS" = "선정 없음" ] || [ "$STATUS" = "지각" ]; } && ! git rev-parse -q --verify "refs/tags/data/${AS_OF}" >/dev/null; then
+            TAG="data/${AS_OF}"
+            git tag -a "$TAG" -m "선정 동결 — 기준일 ${AS_OF} · 상태 ${STATUS} (Actions 실행 ${{ github.run_id }})"
+          fi
+          git push origin HEAD:main
+          if [ -n "$TAG" ]; then git push origin "refs/tags/$TAG"; fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: 작업 캐시 삭제 (커밋에 성공했으면 원본 시세 캐시를 더 두지 않음)
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh cache delete "eod-${{ steps.plan.outputs.provider }}-${{ steps.plan.outputs.as_of }}" --repo "${{ github.repository }}" \
+            && echo "캐시 삭제됨" || echo "::notice::캐시 삭제 실패 또는 없음 — 마지막 사용 뒤 7일이면 자동으로 지워집니다"
 
       - name: 요약
         if: always() && steps.plan.outputs.already != 'true'

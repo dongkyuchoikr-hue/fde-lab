@@ -5,7 +5,8 @@
   as_of=2026-11-06  week_end=2026-11-06  age_days=3  provider=eodhd  publish_mode=ranks_only
   tickers=SPY,AAPL,...  prev_pick_as_of=2026-10-30|none  already=true|false  reason=...
 - 받을 종목 = 벤치마크 + 유니버스 30 + 직전 동결 선정(유니버스에서 빠진 종목도 결과 계산을 위해).
-- already=true 조건: weekly.json·picks.json 이 이미 그 기준일이고 선정 상태가 확정/선정 없음이며, 직전 선정의 결과 파일이 확정돼 있음(또는 직전 선정 없음).
+- already=true 조건: weekly.json·picks.json 이 이미 그 기준일이고 선정 상태가 확정/선정 없음/지각(동결되는 상태)이며,
+  직전 선정의 결과 파일이 확정 또는 공백으로 끝나 있음(또는 직전 선정 없음).
 """
 from __future__ import annotations
 
@@ -56,11 +57,11 @@ def main(argv: list[str]) -> int:
     weekly = load_json(os.path.join(d, "weekly.json"), default=None)
     picks = load_json(os.path.join(d, "picks.json"), default=None)
     if weekly and picks and weekly.get("as_of", {}).get("date") == as_of.isoformat() and picks.get("as_of", {}).get("date") == as_of.isoformat() \
-            and picks.get("status") in ("확정", "선정 없음"):
+            and picks.get("status") in ("확정", "선정 없음", "지각"):
         res_ok = True
         if prev_as_of == week["prev_end"]:
             res = load_json(os.path.join(d, "results", f"{prev_as_of}.json"), default=None)
-            res_ok = bool(res and res.get("status") == "확정")
+            res_ok = bool(res and res.get("status") in ("확정", "공백"))
         if res_ok:
             already, reason = True, "weekly.json·picks.json 이 이미 이 기준일로 확정돼 있음"
         else:

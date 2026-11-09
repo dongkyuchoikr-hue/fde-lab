@@ -12,6 +12,8 @@
 - 공개 파일(--out)은 source_policy.json 의 publish_mode 를 따릅니다: ranks_only 면 가격·수익률 숫자를 빼고
   순위·조건 결과·방향·참/거짓만 남깁니다. 전체 숫자는 --private-out(작업 폴더, 커밋 안 함)에만 씁니다.
 - 통계만 계산합니다. 점수·순위·선정은 build_picks.py, 지난주 결과는 build_results.py 가 이 파일을 읽어 만듭니다.
+- ranks{trend,calm,dd,week}: M개 중 순위. week = 이번 주 등락률 순위(점수에는 안 들어감). 칸 이름이 ret_1w 가 아닌 이유: 공개 필터(PRICE_FIELDS)에 걸리지 않게.
+- universe_avg_ret_1w·beat_universe_1w 의 "유니버스 평균" = 순위 대상 M개(C1 통과)의 동일비중 평균.
 - 표준 출력에는 가격 숫자를 찍지 않습니다(공개 저장소의 Actions 로그는 공개).
 종료 코드: 0 성공 · 1 인자·파일 오류 · 3 벤치마크 자료가 아직 기준일까지 없음(게시 전)
 """
@@ -52,7 +54,10 @@ def load_rows(eod_dir: str, ticker: str):
 
 
 def stats_for(rows: list[dict], as_of: str, week_start: str, bench_daily: dict | None, rules: dict) -> dict:
-    """한 종목의 통계. rows 는 날짜 오름차순. 기준일 이후 행은 무시."""
+    """한 종목의 통계. rows 는 날짜 오름차순. 기준일 이후 행은 무시. 문턱값(거래량 배수·자료 이상)은 rules.json 에서."""
+    fl = rules["flags"]
+    spike_thr = fl["VOL_SPIKE"]["threshold"]
+    suspect_thr = fl.get("SUSPECT", {}).get("threshold", 40.0) / 100.0
     rows = [r for r in rows if r["date"] <= as_of]
     if not rows:
         return {"fresh": False, "last_date": None, "days_of_data": 0}
@@ -123,13 +128,13 @@ def stats_for(rows: list[dict], as_of: str, week_start: str, bench_daily: dict |
                  "bench_ret": round(bret * 100, 2) if is_num(bret) else None,
                  "market_down_too": (bret < -0.01) if is_num(bret) else None,
                  "vol_ratio_day": vratio,
-                 "volume_spike": (vratio >= 2.0) if is_num(vratio) else None}
+                 "volume_spike": (vratio >= spike_thr) if is_num(vratio) else None}
     out["worst_day_4w"] = worst
 
     big = max((abs(x) for _, x in daily[-61:]), default=0.0)
     out["max_abs_daily_ret_61d"] = round(big * 100, 2)
-    out["suspect"] = ({"code": "BIG_JUMP", "why_ko": "최근 61거래일 중 하루 등락률 절댓값이 40%를 넘어 분할 미반영 또는 자료 오류로 의심됩니다"}
-                      if big > 0.40 else None)
+    out["suspect"] = ({"code": "BIG_JUMP", "why_ko": f"최근 61거래일 중 하루 등락률 절댓값이 {suspect_thr * 100:g}%를 넘어 분할 미반영 또는 자료 오류로 의심됩니다"}
+                      if big > suspect_thr else None)
     return out
 
 
@@ -212,7 +217,8 @@ def main(argv: list[str]) -> int:
     r_calm = avg_ranks({s["ticker"]: s.get("volatility_60d") for s in ranked}, higher_better=False)
     r_dd = avg_ranks({s["ticker"]: s.get("max_drawdown_12w") for s in ranked}, higher_better=True)
     r_1w = avg_ranks({s["ticker"]: s.get("ret_1w") for s in ranked}, higher_better=True)
-    fresh_in_uni = [s for s in stocks if s["in_universe"] and s.get("fresh") and not s.get("suspect") and is_num(s.get("ret_1w"))]
+    # 유니버스 평균 = 순위 대상 M개(C1 통과)의 동일비중 평균 — 화면의 "M종목 평균" 라벨과 같은 집합
+    fresh_in_uni = [s for s in ranked if is_num(s.get("ret_1w"))]
     uni_avg = round(sum(s["ret_1w"] for s in fresh_in_uni) / len(fresh_in_uni), 2) if fresh_in_uni else None
     bench_ret = bench.get("ret_1w")
     fl = rules["flags"]
@@ -232,7 +238,7 @@ def main(argv: list[str]) -> int:
         s["beat_bench_1w"] = (s["ret_1w"] > bench_ret) if fresh and is_num(s.get("ret_1w")) and is_num(bench_ret) else None
         s["beat_universe_1w"] = (s["ret_1w"] > uni_avg) if fresh and is_num(s.get("ret_1w")) and is_num(uni_avg) else None
         in_m = t in r_trend
-        s["ranks"] = {"trend": r_trend.get(t), "calm": r_calm.get(t), "dd": r_dd.get(t), "ret_1w": r_1w.get(t)} if in_m else None
+        s["ranks"] = {"trend": r_trend.get(t), "calm": r_calm.get(t), "dd": r_dd.get(t), "week": r_1w.get(t)} if in_m else None
         s["pct"] = ({"trend": pct_from_rank(r_trend.get(t), m), "calm": pct_from_rank(r_calm.get(t), m), "dd": pct_from_rank(r_dd.get(t), m)}
                     if in_m else None)
         flags = []

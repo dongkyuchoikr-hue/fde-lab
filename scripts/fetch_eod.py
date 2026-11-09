@@ -14,12 +14,13 @@
   - 429 는 Retry-After(최대 60초)만큼 기다린 뒤 1회 재시도, 네트워크·5xx 는 5·10·20초 간격으로 최대 3회 재시도.
 출력(종목당 1개): {"ticker","provider","source_url","fetched_at_utc","adjusted","rows":[{"date","close","adj_close","volume"}]}
 요약: {out}/_manifest.json — provider, terms_url, adjusted, fetched_at_utc, since, expected_last, tickers{T:{first,last,rows,fresh}}, errors{T:사유}
-종료 코드: 0 = 모두 성공 · 2 = 일부 실패(요약에 기록) · 1 = 인자 오류
+종료 코드: 0 = 모두 성공 · 4 = 일부 실패(요약에 기록; 워크플로가 계속 진행) · 1 = 그 밖의 오류 · 2 = 인자 오류(argparse)
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import http.client
 import json
 import os
 import re
@@ -85,7 +86,7 @@ def http_get_json(url: str, timeout: int = 40):
                 attempt += 1
                 continue
             raise
-        except (urllib.error.URLError, TimeoutError, ValueError) as e:
+        except (urllib.error.URLError, TimeoutError, ValueError, http.client.HTTPException, OSError) as e:
             if attempt < len(delays) and not isinstance(e, json.JSONDecodeError):
                 time.sleep(delays[attempt])
                 attempt += 1
@@ -212,7 +213,7 @@ def main(argv: list[str]) -> int:
             stop_reason = str(e)
             manifest["errors"][t] = stop_reason
             print(f"STOP {t:6s} {stop_reason}", file=sys.stderr)
-        except (NotFound, urllib.error.URLError, ValueError, KeyError, TimeoutError) as e:
+        except (NotFound, urllib.error.URLError, ValueError, KeyError, TimeoutError, http.client.HTTPException, OSError) as e:
             manifest["errors"][t] = redact(str(e), key)
             print(f"FAIL {t:6s} {redact(str(e), key)}", file=sys.stderr)
 
@@ -221,7 +222,7 @@ def main(argv: list[str]) -> int:
     fresh_n = sum(1 for v in manifest["tickers"].values() if v.get("fresh"))
     print(f"요약: 요청 {requests_made} · 성공 {len(manifest['tickers'])} · 건너뜀 {len(manifest['skipped_fresh'])} · 실패 {len(manifest['errors'])}"
           + (f" · 기준일 {args.expect_last} 최신 {fresh_n}" if args.expect_last else "") + f" → {manifest_path}")
-    return 2 if manifest["errors"] else 0
+    return 4 if manifest["errors"] else 0
 
 
 if __name__ == "__main__":

@@ -6,14 +6,15 @@
 
 검사 항목:
 - track_record.json: schema track/1 · publish_mode · rules_version == rules.version · weeks 가 pick_as_of 오름차순·중복 없음 · 행 status ∈ {확정, 보류, 공백}
-  · n_picks 정수 · start == 첫 행 · summary(rows·n·weeks_beat_universe·weeks_beat_bench·weeks_no_picks·weeks_pending·weeks_gap) 재계산 일치
+  · 행 publish_mode(있으면) ∈ {ranks_only, full} 이고 결과 파일의 publish_mode 와 같음 · n_picks 정수 · start == 첫 행
+  · summary(rows·n·weeks_beat_universe·weeks_beat_bench·weeks_net_beat_*·weeks_no_picks·weeks_pending·weeks_gap) 재계산 일치
 - 행마다 results/{pick_as_of}.json 이 있고 status·result_as_of·beat_universe·beat_bench·pct_rank_among_singles 가 같음 · 기록 행 없는 결과 파일 없음
 - 결과 파일: schema results/1 · pick_as_of == 파일 이름 · 동결 선정 picks/{pick_as_of}.json 이 있고 종목 집합이 같음(n_picks 일치)
   · result_as_of 는 pick_as_of 뒤의 날짜(공백만 null) · publish_mode · 종목 행 status ∈ {확정, 데이터 지연, 유니버스 제외(계속 추적), 공백} · beat_* 참/거짓/null
   · 확정+선정 있음 → basket(n == 결과 있는 종목 수 · pct_rank_among_singles 0~100 또는 null · beat_* 참/거짓/null), 지연·공백 행 없음
   · 보류 → 데이터 지연 행 있음, basket 없음 · 공백 → 모든 행 공백, basket 없음
-- ranks_only: 기록·결과 파일 어디에도 PRICE_FIELDS 키 없음 · full(결과 파일의 publish_mode 기준): basket.ret_pct·net_ret_pct 와
-  기록 행의 basket_ret·basket_net_ret·universe_avg_ret·bench_ret_1w 가 숫자. 표준 출력에는 수익률 숫자를 찍지 않습니다.
+- ranks_only: 결과 파일(파일의 publish_mode 기준)·기록 행(행의 publish_mode, 없으면 기록 파일의 것)·summary(기록 파일의 publish_mode) 어디에도 PRICE_FIELDS 키 없음
+  · full: basket.ret_pct·net_ret_pct 와 기록 행의 basket_ret·basket_net_ret·universe_avg_ret·bench_ret_1w 가 숫자. 표준 출력에는 수익률 숫자를 찍지 않습니다.
 """
 from __future__ import annotations
 
@@ -30,7 +31,7 @@ MODES = {"ranks_only", "full"}
 ROW_STATUSES = {"확정", "보류", "공백"}
 PICK_STATUSES = {"확정", "데이터 지연", "유니버스 제외(계속 추적)", "공백"}
 OUTCOME = {"확정", "유니버스 제외(계속 추적)"}
-BASKET_KEYS = ("beat_universe", "beat_bench", "pct_rank_among_singles")
+BASKET_KEYS = ("beat_universe", "beat_bench", "net_beat_universe", "net_beat_bench", "pct_rank_among_singles")
 FULL_ROW_NUMS = ("basket_ret", "basket_net_ret", "universe_avg_ret", "bench_ret_1w")
 
 
@@ -83,6 +84,8 @@ def check_track(track: dict, rules: dict, errors: list[str]) -> list[dict]:
     for r, k in zip(weeks, keys):
         if r.get("status") not in ROW_STATUSES:
             errors.append(f"기록 행 {k}: status 는 확정/보류/공백 이어야 함: {r.get('status')!r}")
+        if "publish_mode" in r and r.get("publish_mode") not in MODES:
+            errors.append(f"기록 행 {k}: publish_mode 는 ranks_only 또는 full 이어야 함: {r.get('publish_mode')!r}")
         if not (isinstance(r.get("n_picks"), int) and not isinstance(r.get("n_picks"), bool) and r["n_picks"] >= 0):
             errors.append(f"기록 행 {k}: n_picks 는 0 이상 정수여야 함")
     if track.get("start") != (keys[0] if keys else None):
@@ -91,6 +94,8 @@ def check_track(track: dict, rules: dict, errors: list[str]) -> list[dict]:
     want = {"rows": len(weeks), "n": len(done),
             "weeks_beat_universe": sum(1 for r in done if r.get("beat_universe") is True),
             "weeks_beat_bench": sum(1 for r in done if r.get("beat_bench") is True),
+            "weeks_net_beat_universe": sum(1 for r in done if r.get("net_beat_universe") is True),
+            "weeks_net_beat_bench": sum(1 for r in done if r.get("net_beat_bench") is True),
             "weeks_no_picks": sum(1 for r in weeks if r.get("status") == "확정" and r.get("n_picks", 0) == 0),
             "weeks_pending": sum(1 for r in weeks if r.get("status") == "보류"),
             "weeks_gap": sum(1 for r in weeks if r.get("status") == "공백")}
@@ -114,6 +119,8 @@ def check_result(res: dict, stem: str, row: dict, frozen_dir: str, errors: list[
         err(f"status({status}) 가 기록 행({row.get('status')}) 과 다름")
     if mode not in MODES:
         err(f"publish_mode 는 ranks_only 또는 full 이어야 함: {mode!r}")
+    if "publish_mode" in row and row.get("publish_mode") != mode:
+        err(f"기록 행의 publish_mode({row.get('publish_mode')}) 가 결과 파일({mode}) 과 다름")
     if status == "공백" and rao is not None:
         err("공백 인데 result_as_of 가 null 이 아님")
     if status != "공백" and not (DATE_RE.match(str(rao)) and str(rao) > stem):
@@ -152,8 +159,8 @@ def check_result(res: dict, stem: str, row: dict, frozen_dir: str, errors: list[
                 err(f"basket.n({basket.get('n')}) 이 결과 있는 종목 수({n_out}) 와 다름")
             if pr is not None and not (is_num(pr) and 0 <= pr <= 100):
                 err("basket.pct_rank_among_singles 는 0~100 또는 null 이어야 함")
-            if not (bool_or_none(basket.get("beat_universe")) and bool_or_none(basket.get("beat_bench"))):
-                err("basket.beat_universe/beat_bench 는 참/거짓/null 이어야 함")
+            if not all(bool_or_none(basket.get(k)) for k in ("beat_universe", "beat_bench", "net_beat_universe", "net_beat_bench")):
+                err("basket.beat_*/net_beat_* 는 참/거짓/null 이어야 함")
             if mode == "full" and not all(is_num(basket.get(k)) for k in ("ret_pct", "net_ret_pct")):
                 err("full 모드인데 basket.ret_pct/net_ret_pct 가 숫자가 아님")
         if any(s not in OUTCOME for s in statuses):
@@ -214,7 +221,11 @@ def main(argv: list[str]) -> int:
         else:
             errors.append(f"results/{stem}.json: 최상위가 객체가 아님")
     errors += [f"results/{stem}.json: 기록 행이 없는 결과 파일" for stem in sorted(set(files) - seen)]
-    leaks = price_leaks(track) if track.get("publish_mode") == "ranks_only" else []
+    tmode = track.get("publish_mode")
+    leaks = price_leaks({k: v for k, v in track.items() if k != "weeks"}) if tmode == "ranks_only" else []
+    for row in weeks:
+        if row.get("publish_mode", tmode) == "ranks_only":
+            leaks += [f"weeks[{row.get('pick_as_of')}].{p}" for p in price_leaks(row)]
     if leaks:
         errors.append(f"track_record.json: ranks_only 인데 가격 칸이 {len(leaks)}곳 남아 있음: " + ", ".join(leaks[:6]))
     if errors:

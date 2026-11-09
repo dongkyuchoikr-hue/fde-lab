@@ -6,9 +6,9 @@ name: check-deploy
 on:
   push:
     branches: [main]
-    paths: ["docs/**", "scripts/**", ".github/workflows/check-deploy.yml"]
+    paths: ["docs/**", "scripts/**", "README.md", ".github/workflows/check-deploy.yml"]
   pull_request:
-    paths: ["docs/**", "scripts/**", ".github/workflows/**"]
+    paths: ["docs/**", "scripts/**", "README.md", ".github/workflows/**"]
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -36,18 +36,19 @@ jobs:
           ref: ${{ inputs.sha || github.sha }}
           fetch-depth: 0
 
+      # 주의: bash -e 는 `! grep …` 한 줄의 실패를 무시하므로(부정된 명령은 errexit 대상이 아님) 반드시 if 문으로 씁니다.
       - name: 첫 화면 검사 — 자리표시자 없음 · 고지 문구·기준일 있음
         run: |
           test -f docs/index.html
-          ! grep -q '<h1>주제 제목</h1>' docs/index.html
+          if grep -q '<h1>주제 제목</h1>' docs/index.html; then echo "::error::자리표시자 제목이 남아 있습니다"; exit 1; fi
           grep -q '투자 조언이 아닙니다' docs/index.html
           grep -q '기준일' docs/index.html
 
       - name: 비밀값 검사 — 키 모양 문자열·원본 HTML 응답이 없는지
         run: |
-          ! grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md scripts/
-          ! grep -rEn '(api_token|apikey|api_key)=[A-Za-z0-9._-]{12,}' docs/ README.md
-          ! grep -rl '<html' docs/data/ || (echo "docs/data/ 에 HTML 응답(봇 확인 페이지 등)이 섞여 있습니다"; exit 1)
+          if grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md scripts/; then echo "::error::키 모양 문자열이 있습니다"; exit 1; fi
+          if grep -rEn '(api_token|apikey|api_key)=[A-Za-z0-9._-]{12,}' docs/ README.md; then echo "::error::API 키 모양 문자열이 있습니다"; exit 1; fi
+          if grep -rl '<html' docs/data/; then echo "::error::docs/data/ 에 HTML 응답(봇 확인 페이지 등)이 섞여 있습니다"; exit 1; fi
 
       - name: 정적 자료 검사 — 유니버스 30개 · 휴장일 달력 범위 · 공급자 결정 · 규칙
         run: python3 -I scripts/check_static.py

@@ -14,7 +14,7 @@
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 07:06",
+ "generated_at_utc": "2026-11-09 10:12",
  "run": null,
  "rules_version": "v1",
  "rules_frozen_on": "2026-11-09",
@@ -56,7 +56,8 @@
    "ranks": {
     "trend": 4,
     "calm": 2,
-    "dd": 3
+    "dd": 3,
+    "week": 18
    },
    "state": "신규",
    "reasons_ko": [
@@ -83,7 +84,8 @@
    "ranks": {
     "trend": 12,
     "calm": 1,
-    "dd": 4
+    "dd": 4,
+    "week": 10
    },
    "state": "신규",
    "reasons_ko": [
@@ -110,7 +112,8 @@
    "ranks": {
     "trend": 8,
     "calm": 6,
-    "dd": 5
+    "dd": 5,
+    "week": 8
    },
    "state": "신규",
    "reasons_ko": [
@@ -137,7 +140,8 @@
    "ranks": {
     "trend": 10,
     "calm": 7,
-    "dd": 2
+    "dd": 2,
+    "week": 19
    },
    "state": "신규",
    "reasons_ko": [
@@ -164,7 +168,8 @@
    "ranks": {
     "trend": 2,
     "calm": 14,
-    "dd": 6
+    "dd": 6,
+    "week": 11
    },
    "state": "신규",
    "reasons_ko": [
@@ -523,6 +528,8 @@
   ],
   "dropped": [],
   "kept": [],
+  "buys": 5,
+  "sells": 0,
   "changed_count": 0,
   "prev_as_of": null
  },

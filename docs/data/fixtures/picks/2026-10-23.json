@@ -57,7 +57,7 @@
     "trend": 4,
     "calm": 2,
     "dd": 3,
-    "ret_1w": 7
+    "week": 7
    },
    "state": "신규",
    "reasons_ko": [
@@ -94,7 +94,7 @@
     "trend": 7,
     "calm": 1,
     "dd": 1,
-    "ret_1w": 15
+    "week": 15
    },
    "state": "신규",
    "reasons_ko": [
@@ -131,7 +131,7 @@
     "trend": 2,
     "calm": 3,
     "dd": 7,
-    "ret_1w": 11
+    "week": 11
    },
    "state": "신규",
    "reasons_ko": [
@@ -168,7 +168,7 @@
     "trend": 11,
     "calm": 4,
     "dd": 2,
-    "ret_1w": 19
+    "week": 19
    },
    "state": "신규",
    "reasons_ko": [
@@ -205,7 +205,7 @@
     "trend": 8,
     "calm": 7,
     "dd": 8,
-    "ret_1w": 6
+    "week": 6
    },
    "state": "신규",
    "reasons_ko": [
@@ -570,6 +570,8 @@
   ],
   "dropped": [],
   "kept": [],
+  "buys": 5,
+  "sells": 0,
   "changed_count": 0,
   "prev_as_of": null
  },

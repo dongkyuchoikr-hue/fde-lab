@@ -11,7 +11,7 @@
  "terms_checked_on": "2026-11-09",
  "terms_quote_en": "Non-Professional Users are permitted to store, manipulate, and analyze the data for private, non-commercial purposes. However, they are prohibited from: Sharing access to their account with others, including within groups. Selling, reselling, retransmitting, redistributing, displaying, or granting access to the Information or Services, whether in its original or repackaged form.",
  "terms_quote_ko": "비전문가 사용자는 개인적·비상업적 목적으로 데이터를 저장·가공·분석할 수 있다. 다만 계정 공유, 그리고 정보를 원형이든 재가공한 형태든 판매·재전송·재배포·표시(displaying)하거나 접근을 제공하는 것은 금지된다.",
- "decision_ko": "이용 조건이 가격 데이터의 '표시'를 금지하므로, 공개 화면과 저장소에는 가격·수익률 같은 숫자를 올리지 않고 이 데이터를 분석한 결과(순위·조건 통과 여부·오름/내림 방향·참/거짓 표시)만 공개한다. 원본 일별 시세는 Actions 실행 중 메모리와 임시 폴더에만 두고 어디에도 저장하지 않는다. 분석 결과만 공개하는 것도 회색 지대일 수 있어, 운영자가 EODHD에 문의해 답을 받으면 이 파일에 날짜와 함께 기록한다.",
+ "decision_ko": "이용 조건이 가격 데이터의 '표시'를 금지하므로, 공개 화면과 저장소에는 가격·수익률 같은 숫자를 올리지 않고 이 데이터를 분석한 결과(순위·조건 통과 여부·오름/내림 방향·참/거짓 표시)만 공개한다. 원본 일별 시세는 공개 저장소와 화면에 올리지 않고, Actions 실행의 비공개 작업 폴더(.work/)와 재시도용 Actions 캐시(저장소 밖 · 마지막 사용 뒤 최대 7일 · 커밋 성공 시 삭제)에만 둔다(이용 조건이 허용하는 개인적 저장·분석의 범위). 분석 결과만 공개하는 것도 회색 지대일 수 있어, 운영자가 EODHD에 문의해 답을 받으면 이 파일에 날짜와 함께 기록한다.",
  "decided_on": "2026-11-09",
  "inquiry": {"sent_on": null, "answer_on": null, "answer_summary_ko": null},
  "how_to_switch_ko": "publish_mode 를 full 로 바꾸려면: (1) EODHD의 서면 허락을 받아 inquiry 칸에 날짜·요지를 적거나, (2) 출처 표기 조건으로 표시를 허용하는 공급자(예: Twelve Data — 약관 문장을 Actions probe 로그에서 확인한 뒤)로 provider 를 바꾸고 해당 키를 Secret 에 넣는다. 바꾼 뒤부터의 주만 숫자가 공개되고, 그 전 주의 기록은 다시 계산하지 않는다.",
