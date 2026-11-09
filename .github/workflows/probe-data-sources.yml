@@ -4,6 +4,8 @@ name: probe-data-sources
 # 키를 쓰지 않습니다. 결과는 Actions 로그에서 봅니다.
 on:
   workflow_dispatch:
+  push:
+    paths: [".github/workflows/probe-data-sources.yml"]
 
 permissions:
   contents: read
