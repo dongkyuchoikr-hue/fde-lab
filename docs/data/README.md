@@ -113,7 +113,7 @@ python3 -I scripts/check_static.py                       # 유니버스·휴장�
 python3 -I scripts/check_weekly.py docs/data/weekly.json # 구조·순위 범위·공개 범위(숫자 비공개)
 python3 -I scripts/check_picks.py docs/data/picks.json   # 점수 재검산 ±0.1 · 조건 · 업종 상한 · 동결 사본 일치
 python3 -I scripts/check_results.py                      # 결과·기록 일관성
-python3 -I scripts/check_words.py docs README.md         # 금지어(추천·목표가·수익 보장 …, 부정문은 허용)·키 모양
+python3 -I scripts/check_words.py docs README.md         # 금지어 검사: 추천, 목표가, 수익 보장 같은 말이 없는지 (부정문은 허용), 키 모양 문자열
 python3 -I scripts/check_frozen.py --base origin/main    # 지난 선정·결과·기록 불변
 python3 -I scripts/make_fixture.py --check               # 합성 데이터 결정성
 ```
