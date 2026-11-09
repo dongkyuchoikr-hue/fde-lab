@@ -1,0 +1,30 @@
+name: probe-data-sources
+
+# 데이터 출처 시험 — Actions 러너에서 공개 시세가 실제로 받아지는지 한 번 확인합니다 (Sprint 2 Backlog 항목).
+# 키를 쓰지 않습니다. 결과는 Actions 로그에서 봅니다.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stooq CSV (키 없음)
+        run: |
+          for t in aapl.us msft.us ibm.us; do
+            echo "== stooq $t"
+            curl -sS -m 30 -o "$t.csv" -w "HTTP %{http_code} · %{size_download} bytes · %{content_type}\n" "https://stooq.com/q/d/l/?s=$t&i=d" || true
+            head -c 300 "$t.csv"; echo; echo "-- tail:"; tail -3 "$t.csv"
+          done
+      - name: EODHD demo (AAPL.US)
+        run: |
+          curl -sS -m 30 -w "\nHTTP %{http_code}\n" "https://eodhd.com/api/eod/AAPL.US?api_token=demo&fmt=json&from=2026-10-01" | head -c 800; echo
+      - name: Alpha Vantage demo (IBM)
+        run: |
+          curl -sS -m 30 -w "\nHTTP %{http_code}\n" "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo" | head -c 800; echo
+      - name: SEC EDGAR companyfacts (AAPL, 키 없음)
+        run: |
+          curl -sS -m 30 -A "fde-lab learning project (github.com/dongkyuchoikr-hue/fde-lab)" -w "\nHTTP %{http_code}\n" "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json" | head -c 400; echo
