@@ -31,6 +31,13 @@ jobs:
       - name: 비밀값 검사 — 키 모양 문자열이 없는지
         run: |
           ! grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md
+      - name: week.json 검사 — 형식·필수 칸·숫자 (파일이 있을 때만)
+        run: |
+          if [ -f docs/data/week.json ]; then
+            python3 -I scripts/check_week_json.py docs/data/week.json
+          else
+            echo "docs/data/week.json 없음 — 카드는 「데이터 없음」으로 표시됩니다"
+          fi
 
   deploy:
     needs: check

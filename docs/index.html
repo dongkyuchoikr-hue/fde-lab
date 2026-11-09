@@ -5,21 +5,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>이번 주 미국 주식 해설 — 주경야독 2026</title>
 <style>
+  :root { --up: #c0392b; --down: #1f5fbf; --muted: #666; --line: #ddd; }
   body { font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; max-width: 40rem; margin: 3rem auto; padding: 0 1rem; line-height: 1.6; color: #222; }
   h1 { font-size: 1.8rem; margin-bottom: .25rem; }
   .lead { font-size: 1.1rem; margin-top: 0; }
-  .notice { margin-top: 2rem; padding: .75rem 1rem; border: 1px solid #ccc; border-radius: .5rem; font-size: .9rem; color: #444; }
-  footer { margin-top: 2rem; font-size: .85rem; color: #666; }
+  .card { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: .75rem; }
+  .card h2 { margin: 0 0 .25rem; font-size: 1.25rem; }
+  .card h2 small { font-weight: 400; color: var(--muted); }
+  .card .week { color: var(--muted); font-size: .9rem; margin: 0 0 .75rem; }
+  .big { font-size: 2.2rem; font-weight: 700; line-height: 1.1; }
+  .up { color: var(--up); } .down { color: var(--down); }
+  .row { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: .75rem; }
+  .row div { min-width: 9rem; }
+  .row b { display: block; font-size: .8rem; color: var(--muted); font-weight: 500; }
+  .note { margin-top: .75rem; font-size: .95rem; }
+  .meta { margin-top: .75rem; font-size: .8rem; color: var(--muted); }
+  .empty { color: var(--muted); }
+  .notice { margin-top: 1.5rem; padding: .75rem 1rem; border: 1px solid #ccc; border-radius: .5rem; font-size: .9rem; color: #444; }
+  footer { margin-top: 2rem; font-size: .85rem; color: var(--muted); }
 </style>
 </head>
 <body>
 <h1>이번 주 미국 주식 해설</h1>
 <p class="lead">미국 관심 종목이 이번 주 얼마나 움직였고 왜 그랬는지, 초보 눈높이 한국어 한 줄로 풀어 줍니다.</p>
 
+<section id="card" class="card" aria-live="polite">
+  <p class="empty">데이터를 불러오는 중…</p>
+</section>
+
 <p class="notice">투자 조언이 아닙니다. 공개 일별 시세만 사용하며, 오를 종목을 고르거나 수익을 예측하지 않습니다.</p>
 
-<footer>
-  기준일: 아직 데이터 없음 (Sprint 2부터 표시) · 개인 학습 프로젝트 · 주경야독 2026
-</footer>
+<footer id="footer">개인 학습 프로젝트 · 주경야독 2026</footer>
+
+<script>
+(async function () {
+  const card = document.getElementById('card');
+  const footer = document.getElementById('footer');
+  const fmt = (n, d = 2) => Number(n).toLocaleString('ko-KR', { maximumFractionDigits: d, minimumFractionDigits: d });
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function showEmpty(why) {
+    card.innerHTML = '<p class="empty">데이터 없음 — ' + esc(why) + '</p>';
+  }
+
+  // 규칙 기반 한 줄 해설 (11월에는 AI 호출 없음)
+  function explain(d) {
+    const pct = d.change_pct, vol = d.volume_ratio;
+    let s;
+    if (Math.abs(pct) < 1) s = '이번 주 움직임이 1% 안쪽이라 평소와 비슷한 한 주였습니다.';
+    else s = '이번 주 ' + fmt(Math.abs(pct), 1) + '% ' + (pct > 0 ? '올랐' : '내렸') + '습니다.';
+    if (!Number.isFinite(vol)) return s;
+    if (vol >= 1.5) s += ' 거래량이 4주 평균의 ' + fmt(vol, 1) + '배로, 평소보다 관심이 몰린 주였습니다.';
+    else if (vol <= 0.7) s += ' 거래량은 4주 평균의 ' + fmt(vol, 1) + '배로 조용한 편이었습니다.';
+    else s += ' 거래량은 4주 평균과 비슷했습니다(' + fmt(vol, 1) + '배).';
+    return s;
+  }
+
+  try {
+    const res = await fetch('data/week.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    const need = ['ticker', 'week_start', 'week_end', 'prev_close', 'last_close', 'change_pct', 'source_url', 'as_of_et', 'as_of_kst'];
+    const missing = need.filter(k => d[k] === undefined || d[k] === null || d[k] === '');
+    if (missing.length) throw new Error('빠진 칸: ' + missing.join(', '));
+    if (![d.prev_close, d.last_close, d.change_pct].every(Number.isFinite)) throw new Error('숫자가 아닌 값이 있습니다');
+    const hasVol = Number.isFinite(d.volume_ratio);
+
+    const cls = d.change_pct > 0 ? 'up' : d.change_pct < 0 ? 'down' : '';
+    const sign = d.change_pct > 0 ? '+' : '';
+    card.innerHTML =
+      '<h2>' + esc(d.ticker) + (d.name ? ' <small>· ' + esc(d.name) + '</small>' : '') + '</h2>' +
+      '<p class="week">이번 주 · ' + esc(d.week_start) + ' ~ ' + esc(d.week_end) + ' (미국 장)</p>' +
+      '<div class="big ' + cls + '">' + sign + fmt(d.change_pct, 2) + '%</div>' +
+      '<div class="row">' +
+        '<div><b>지난주 종가</b>$' + fmt(d.prev_close) + '</div>' +
+        '<div><b>이번주 종가</b>$' + fmt(d.last_close) + '</div>' +
+        (hasVol ? '<div><b>거래량 (이번주 ÷ 4주 평균)</b>' + fmt(d.volume_ratio, 2) + '배</div>' : '') +
+      '</div>' +
+      '<p class="note">' + esc(explain(d)) + '</p>' +
+      '<p class="meta">출처: <a href="' + esc(d.source_url) + '" rel="noopener">' + esc(d.source_name || d.source_url) + '</a> · 일별 공개 시세를 손으로 옮김</p>';
+    footer.textContent = '기준일: ' + d.as_of_et + ' (ET) · ' + d.as_of_kst + ' (KST) · 개인 학습 프로젝트 · 주경야독 2026';
+  } catch (e) {
+    showEmpty(e.message);
+    footer.textContent = '기준일: 데이터 없음 · 개인 학습 프로젝트 · 주경야독 2026';
+  }
+})();
+</script>
 </body>
 </html>
