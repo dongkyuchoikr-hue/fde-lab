@@ -4,42 +4,177 @@
  "name_short_ko": "다우 30",
  "version": "2026-11-09",
  "verified_on": null,
- "verify_note_ko": "AI가 초안을 썼습니다. 위키백과 구성 종목 표(아래 source_urls)와 한 줄씩 대조한 뒤 verified_on 에 확인 날짜를, source_urls[0].url 에 확인한 판(oldid) 주소를 적습니다. Actions 'probe-data-sources' 로그에 러너가 받은 표가 그대로 출력됩니다.",
+ "verify_note_ko": "AI가 초안을 썼고, 2026-11-09 Actions probe-data-sources 실행 42576698571 로그에 출력된 위키백과 구성 종목 템플릿(Template:Dow Jones Industrial Average companies, revid 1362077295)의 회사 30개와 대조해 VZ(버라이즌)를 GOOGL(알파벳)로 바꿨습니다. 티커는 AI가 적은 것이므로 소유자가 위키백과 본문과 대조한 뒤 verified_on 에 날짜를 적습니다 — 특히 Alphabet 이 GOOGL(A주)인지 GOOG(C주)인지, Honeywell(템플릿 표기 'Honeywell Technologies')의 티커가 HON 인지 확인.",
  "source_urls": [
-  {"url": "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average", "what_ko": "위키백과 '구성 종목' 표", "license": "CC BY-SA 4.0", "opened_on": null}
+  {
+   "url": "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average",
+   "what_ko": "위키백과 '구성 종목' 표",
+   "license": "CC BY-SA 4.0",
+   "opened_on": null
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Template:Dow_Jones_Industrial_Average_companies",
+   "what_ko": "위키백과 구성 종목 템플릿(회사명 30개 · revid 1362077295 · probe 실행 42576698571 로그)",
+   "license": "CC BY-SA 4.0",
+   "opened_on": "2026-11-09 (Actions 러너)"
+  }
  ],
- "benchmark": {"ticker": "SPY", "name_ko": "S&P 500 ETF (SPY)", "what_ko": "미국 대형주 500개를 담은 ETF — '시장 전체'의 잣대로 씁니다"},
+ "benchmark": {
+  "ticker": "SPY",
+  "name_ko": "S&P 500 ETF (SPY)",
+  "what_ko": "미국 대형주 500개를 담은 ETF — '시장 전체'의 잣대로 씁니다"
+ },
  "sector_cap": 2,
  "tickers": [
-  {"ticker": "AAPL", "name_ko": "애플", "sector_ko": "정보기술"},
-  {"ticker": "AMGN", "name_ko": "암젠", "sector_ko": "헬스케어"},
-  {"ticker": "AMZN", "name_ko": "아마존", "sector_ko": "경기소비재"},
-  {"ticker": "AXP", "name_ko": "아메리칸 익스프레스", "sector_ko": "금융"},
-  {"ticker": "BA", "name_ko": "보잉", "sector_ko": "산업재"},
-  {"ticker": "CAT", "name_ko": "캐터필러", "sector_ko": "산업재"},
-  {"ticker": "CRM", "name_ko": "세일즈포스", "sector_ko": "정보기술"},
-  {"ticker": "CSCO", "name_ko": "시스코", "sector_ko": "정보기술"},
-  {"ticker": "CVX", "name_ko": "셰브런", "sector_ko": "에너지"},
-  {"ticker": "DIS", "name_ko": "디즈니", "sector_ko": "커뮤니케이션"},
-  {"ticker": "GS", "name_ko": "골드만삭스", "sector_ko": "금융"},
-  {"ticker": "HD", "name_ko": "홈디포", "sector_ko": "경기소비재"},
-  {"ticker": "HON", "name_ko": "허니웰", "sector_ko": "산업재"},
-  {"ticker": "IBM", "name_ko": "IBM", "sector_ko": "정보기술"},
-  {"ticker": "JNJ", "name_ko": "존슨앤드존슨", "sector_ko": "헬스케어"},
-  {"ticker": "JPM", "name_ko": "JP모건", "sector_ko": "금융"},
-  {"ticker": "KO", "name_ko": "코카콜라", "sector_ko": "필수소비재"},
-  {"ticker": "MCD", "name_ko": "맥도날드", "sector_ko": "경기소비재"},
-  {"ticker": "MMM", "name_ko": "3M", "sector_ko": "산업재"},
-  {"ticker": "MRK", "name_ko": "머크", "sector_ko": "헬스케어"},
-  {"ticker": "MSFT", "name_ko": "마이크로소프트", "sector_ko": "정보기술"},
-  {"ticker": "NKE", "name_ko": "나이키", "sector_ko": "경기소비재"},
-  {"ticker": "NVDA", "name_ko": "엔비디아", "sector_ko": "정보기술"},
-  {"ticker": "PG", "name_ko": "P&G", "sector_ko": "필수소비재"},
-  {"ticker": "SHW", "name_ko": "셔윈윌리엄스", "sector_ko": "소재"},
-  {"ticker": "TRV", "name_ko": "트래블러스", "sector_ko": "금융"},
-  {"ticker": "UNH", "name_ko": "유나이티드헬스", "sector_ko": "헬스케어"},
-  {"ticker": "V", "name_ko": "비자", "sector_ko": "금융"},
-  {"ticker": "VZ", "name_ko": "버라이즌", "sector_ko": "커뮤니케이션"},
-  {"ticker": "WMT", "name_ko": "월마트", "sector_ko": "필수소비재"}
+  {
+   "ticker": "AAPL",
+   "name_ko": "애플",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "AMGN",
+   "name_ko": "암젠",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "AMZN",
+   "name_ko": "아마존",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "AXP",
+   "name_ko": "아메리칸 익스프레스",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "BA",
+   "name_ko": "보잉",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "CAT",
+   "name_ko": "캐터필러",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "CRM",
+   "name_ko": "세일즈포스",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "CSCO",
+   "name_ko": "시스코",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "CVX",
+   "name_ko": "셰브런",
+   "sector_ko": "에너지"
+  },
+  {
+   "ticker": "DIS",
+   "name_ko": "디즈니",
+   "sector_ko": "커뮤니케이션"
+  },
+  {
+   "ticker": "GOOGL",
+   "name_ko": "알파벳(구글)",
+   "sector_ko": "커뮤니케이션"
+  },
+  {
+   "ticker": "GS",
+   "name_ko": "골드만삭스",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "HD",
+   "name_ko": "홈디포",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "HON",
+   "name_ko": "허니웰",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "IBM",
+   "name_ko": "IBM",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "JNJ",
+   "name_ko": "존슨앤드존슨",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "JPM",
+   "name_ko": "JP모건",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재"
+  },
+  {
+   "ticker": "MCD",
+   "name_ko": "맥도날드",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "MMM",
+   "name_ko": "3M",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "MRK",
+   "name_ko": "머크",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "MSFT",
+   "name_ko": "마이크로소프트",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "NKE",
+   "name_ko": "나이키",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "NVDA",
+   "name_ko": "엔비디아",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "PG",
+   "name_ko": "P&G",
+   "sector_ko": "필수소비재"
+  },
+  {
+   "ticker": "SHW",
+   "name_ko": "셔윈윌리엄스",
+   "sector_ko": "소재"
+  },
+  {
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "UNH",
+   "name_ko": "유나이티드헬스",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "V",
+   "name_ko": "비자",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "WMT",
+   "name_ko": "월마트",
+   "sector_ko": "필수소비재"
+  }
  ]
 }
