@@ -96,7 +96,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
   const fmt = (n, d = 1) => isNum(n) ? n.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—';
-  const signed = (n, d = 1) => isNum(n) ? (n > 0 ? '+' : '') + fmt(n, d) + '%' : '—';
+  const signed = (n, d = 1) => { if (!isNum(n)) return '—'; const r = Math.round(n * 10 ** d) / 10 ** d; return (r > 0 ? '+' : '') + fmt(r === 0 ? 0 : r, d) + '%'; };
   const rankKo = (r) => !isNum(r) ? '?' : Number.isInteger(r) ? String(r) : '공동 ' + Math.floor(r);
   const dirClass = (d) => d === '상승' ? 'up' : d === '하락' ? 'down' : 'flat';
   const dirMark = (d) => d === '상승' ? '▲ 상승' : d === '하락' ? '▼ 하락' : d === '보합' ? '― 보합' : '—';
