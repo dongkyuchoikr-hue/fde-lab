@@ -14,7 +14,7 @@
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 07:03",
+ "generated_at_utc": "2026-11-09 07:04",
  "run": null,
  "provider": "eodhd",
  "provider_name_ko": "EODHD (eodhd.com) 일별 시세 API",
@@ -572,7 +572,7 @@
   },
   {
    "ticker": "HON",
-   "name_ko": "허니웰",
+   "name_ko": "허니웰(테크놀로지스)",
    "sector_ko": "산업재",
    "in_universe": true,
    "fresh": true,

@@ -14,7 +14,7 @@
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 07:03",
+ "generated_at_utc": "2026-11-09 07:04",
  "run": null,
  "rules_version": "v1",
  "rules_frozen_on": "2026-11-09",
@@ -283,7 +283,7 @@
   },
   {
    "ticker": "HON",
-   "name_ko": "허니웰",
+   "name_ko": "허니웰(테크놀로지스)",
    "sector_ko": "산업재",
    "score": 47.6,
    "rank_all": 15,
