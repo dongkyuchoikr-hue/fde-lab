@@ -83,7 +83,7 @@
         (hasVol ? '<div><b>거래량 (이번주 ÷ 4주 평균)</b>' + fmt(d.volume_ratio, 2) + '배</div>' : '') +
       '</div>' +
       '<p class="note">' + esc(explain(d)) + '</p>' +
-      '<p class="meta">출처: <a href="' + esc(d.source_url) + '" rel="noopener">' + esc(d.source_name || d.source_url) + '</a> · 일별 공개 시세를 손으로 옮김</p>';
+      '<p class="meta">출처: <a href="' + esc(d.source_url) + '" rel="noopener">' + esc(d.source_name || d.source_url) + '</a> · 일별 공개 시세에서 계산 (방법은 week.json의 method 칸)</p>';
     footer.textContent = '기준일: ' + d.as_of_et + ' (ET) · ' + d.as_of_kst + ' (KST) · 개인 학습 프로젝트 · 주경야독 2026';
   } catch (e) {
     showEmpty(e.message);
