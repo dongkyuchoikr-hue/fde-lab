@@ -1,17 +1,23 @@
 name: fetch-prices
 
-# 주 1회(토요일 12:17 KST = 03:17 UTC, 미국 금요일 종가 뒤) 공개 일별 시세를 받아 docs/data/ 에 커밋하고 배포합니다.
-# 키: 저장소 Settings → Secrets and variables → Actions → New repository secret → 이름 EOD_API_KEY
-# 공급자: Settings → Variables → EOD_PROVIDER (eodhd 또는 alphavantage, 기본 eodhd)
-# 종목 목록: docs/data/universe.json 의 tickers[].ticker (없으면 AAPL 1개)
+# 주 1회 공개 일별 시세를 받아(비공개 작업 폴더) 주간 통계·지난주 결과·이번 주 선정을 계산하고 docs/data/ 에 커밋한 뒤 배포합니다.
+# 토 12:17 KST(금 22:17 ET, 미국 금요일 종가 뒤) 본 실행 · 일 09:47 KST 재시도(이미 최신이면 아무것도 하지 않음).
+# 키: Settings → Secrets and variables → Actions → New repository secret → 이름 EOD_API_KEY (값은 어디에도 적지 않음)
+# 공급자·공개 범위: docs/data/source_policy.json · 종목: docs/data/universe.json · 규칙: docs/data/rules.json
+# 원본 일별 시세는 공급자 이용 조건상 공개할 수 없어 .work/ 에만 두고 커밋하지 않습니다(로그에도 가격을 찍지 않음).
 on:
   schedule:
     - cron: "17 3 * * 6"
+    - cron: "47 0 * * 0"
   workflow_dispatch:
     inputs:
+      dry_run:
+        description: "계산만 하고 커밋·태그·배포는 하지 않음"
+        type: boolean
+        default: false
       tickers:
-        description: "쉼표 구분 종목 코드 (비우면 universe.json 사용)"
-        required: false
+        description: "시험용: 쉼표 구분 종목(비우면 universe.json + 벤치마크 + 지난주 선정)"
+        type: string
         default: ""
 
 concurrency:
@@ -25,47 +31,119 @@ jobs:
       contents: write
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: 종목 목록 정하기
-        id: list
+          fetch-depth: 0
+
+      - name: 실행 계획 — 기대 기준일·종목 목록·이미 최신인지
+        id: plan
         run: |
-          if [ -n "${{ github.event.inputs.tickers }}" ]; then
-            T="${{ github.event.inputs.tickers }}"
-          elif [ -f docs/data/universe.json ]; then
-            T=$(python3 -I -c 'import json; print(",".join(x["ticker"] for x in json.load(open("docs/data/universe.json"))["tickers"]))')
-          else
-            T="AAPL"
-          fi
-          echo "tickers=$T" >> "$GITHUB_OUTPUT"
-          echo "종목: $T"
-      - name: 시세 받기 (키는 Secret, 로그에 안 나옴)
+          python3 -I scripts/plan_run.py --tickers "${{ github.event.inputs.tickers }}" | tee -a "$GITHUB_OUTPUT"
+
+      - name: 이미 최신이면 종료
+        if: steps.plan.outputs.already == 'true'
+        run: echo "기준일 ${{ steps.plan.outputs.as_of }} 자료가 이미 확정돼 있습니다 — 할 일 없음 (${{ steps.plan.outputs.reason }})" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: 작업 폴더 복원 (재시도 때 한도 절약 · 캐시는 공개되지 않음)
+        if: steps.plan.outputs.already != 'true'
+        id: restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .work/eod
+          key: eod-${{ steps.plan.outputs.provider }}-${{ steps.plan.outputs.as_of }}
+
+      - name: 시세 받기 (키는 Secret · 로그에는 날짜·행 수만)
+        if: steps.plan.outputs.already != 'true'
         env:
           EOD_API_KEY: ${{ secrets.EOD_API_KEY }}
         run: |
-          python3 -I scripts/fetch_eod.py --provider "${{ vars.EOD_PROVIDER || 'eodhd' }}" \
-            --tickers "${{ steps.list.outputs.tickers }}" --out docs/data/eod --max-requests 25 || test $? -eq 2
-      - name: 주간 요약 만들기 (스크립트가 있을 때)
+          if [ -z "$EOD_API_KEY" ]; then echo "::notice::EOD_API_KEY Secret 이 없어 demo 키로 시도합니다 — 소수 종목만 받아지고 선정은 '보류'가 됩니다"; fi
+          python3 -I scripts/fetch_eod.py --provider "${{ steps.plan.outputs.provider }}" \
+            --tickers "${{ steps.plan.outputs.tickers }}" --out .work/eod \
+            --expect-last "${{ steps.plan.outputs.as_of }}" --skip-fresh --max-requests 40 --pause 3.1 \
+            || test $? -eq 2
+
+      - name: 작업 폴더 저장
+        if: always() && steps.plan.outputs.already != 'true' && steps.restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .work/eod
+          key: eod-${{ steps.plan.outputs.provider }}-${{ steps.plan.outputs.as_of }}
+
+      - name: 주간 통계 → 지난주 결과 → 이번 주 선정
+        if: steps.plan.outputs.already != 'true'
+        id: build
         run: |
-          if [ -f scripts/build_weekly.py ]; then python3 -I scripts/build_weekly.py; else echo "build_weekly.py 없음 — eod/ 원본만 저장"; fi
-      - name: 검사
+          set +e
+          EXTRA=""
+          python3 -I scripts/build_weekly.py --eod .work/eod --private-out .work/weekly_full.json --out docs/data/weekly.json \
+            --extra-tickers "$(python3 -I -c "import json,os; p='docs/data/picks/${{ steps.plan.outputs.prev_pick_as_of }}.json'; print(','.join(x['ticker'] for x in json.load(open(p))['picks']) if os.path.exists(p) else '')")"
+          rc=$?
+          set -e
+          if [ $rc -eq 3 ]; then
+            echo "아직 게시 안 됨 — 벤치마크의 ${{ steps.plan.outputs.as_of }} 행이 없습니다" | tee -a "$GITHUB_STEP_SUMMARY"
+            git checkout -- docs/data/weekly.json 2>/dev/null || true
+            if [ "${{ steps.plan.outputs.age_days }}" -gt 2 ]; then echo "::error::기준일이 2일 넘게 지났는데도 자료가 없습니다 — 휴장일 파일 또는 공급자 상태를 확인하세요"; exit 1; fi
+            echo "built=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          [ $rc -eq 0 ] || exit $rc
+          python3 -I scripts/build_results.py --private .work/weekly_full.json
+          python3 -I scripts/build_picks.py --private .work/weekly_full.json
+          echo "built=true" >> "$GITHUB_OUTPUT"
+
+      - name: 검사 (구조·순위 재검산·금지어·동결 파일 불변)
+        if: steps.build.outputs.built == 'true'
         run: |
-          if [ -f docs/data/week.json ]; then python3 -I scripts/check_week_json.py docs/data/week.json; fi
-          if [ -f scripts/check_weekly.py ]; then python3 -I scripts/check_weekly.py; fi
-      - name: 커밋·푸시
+          python3 -I scripts/check_static.py
+          python3 -I scripts/check_weekly.py docs/data/weekly.json
+          python3 -I scripts/check_picks.py docs/data/picks.json
+          python3 -I scripts/check_results.py
+          python3 -I scripts/check_words.py docs/data
+          python3 -I scripts/check_frozen.py --base HEAD
+          ! grep -rEl '(api_token|apikey)=[A-Za-z0-9._-]{12,}' docs/ || (echo "::error::키 모양 문자열이 docs/ 에 있습니다"; exit 1)
+
+      - name: 커밋·태그·푸시 (dry_run 이면 건너뜀)
+        if: steps.build.outputs.built == 'true'
         id: commit
         run: |
-          if git diff --quiet -- docs/data; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"; echo "바뀐 데이터 없음"; exit 0
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            echo "dry_run — 바뀐 파일:"; git status --short docs/data; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
           fi
+          if git diff --quiet -- docs/data && [ -z "$(git ls-files --others --exclude-standard docs/data)" ]; then
+            echo "바뀐 데이터 없음"; echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          AS_OF="${{ steps.plan.outputs.as_of }}"
+          STATUS=$(python3 -I -c "import json; print(json.load(open('docs/data/picks.json'))['status'])")
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data
-          git commit -m "데이터 갱신: $(date -u +%Y-%m-%d) 공개 일별 시세 (fetch-prices)"
-          git push origin HEAD:main
+          git commit -m "데이터 갱신: 주 마감 ${{ steps.plan.outputs.week_end }} (기준일 ${AS_OF} ET) · 선정 ${STATUS} (fetch-prices)"
+          if { [ "$STATUS" = "확정" ] || [ "$STATUS" = "선정 없음" ]; } && ! git rev-parse -q --verify "refs/tags/data/${AS_OF}" >/dev/null; then
+            git tag -a "data/${AS_OF}" -m "선정 동결 — 기준일 ${AS_OF} (Actions 실행 ${{ github.run_id }})"
+          fi
+          git pull --rebase origin main
+          git push origin HEAD:main --follow-tags
           echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: 요약
+        if: always() && steps.plan.outputs.already != 'true'
+        env:
+          EOD_API_KEY: ${{ secrets.EOD_API_KEY }}
+        run: |
+          {
+            echo "### fetch-prices — 기준일 ${{ steps.plan.outputs.as_of }}"
+            if [ -f .work/eod/_manifest.json ]; then python3 -I -c "import json; m=json.load(open('.work/eod/_manifest.json')); print('- 수집: 성공', len(m['tickers']), '· 건너뜀', len(m.get('skipped_fresh',[])), '· 실패', len(m['errors']), '·', ', '.join(f'{k}: {v}' for k,v in m['errors'].items())[:300])"; fi
+            if [ -f docs/data/picks.json ]; then python3 -I -c "import json; p=json.load(open('docs/data/picks.json')); print('- 선정:', p['status'], '·', ', '.join(x['ticker'] for x in p['picks']), '· 통과', p['gate_summary']['passed'], '/', p['gate_summary']['M'])"; fi
+            if [ -f docs/data/track_record.json ]; then python3 -I -c "import json; t=json.load(open('docs/data/track_record.json')); print('- 기록:', t['summary'].get('rows'), '행 · 확정', t['summary'].get('n'))"; fi
+            if [ -n "$EOD_API_KEY" ] && [ "${{ steps.plan.outputs.provider }}" = "eodhd" ]; then
+              curl -sS -m 20 "https://eodhd.com/api/user?api_token=${EOD_API_KEY}&fmt=json" | python3 -I -c "import sys,json; d=json.load(sys.stdin); print('- EODHD 한도: 오늘', d.get('apiRequests'), '/', d.get('dailyRateLimit'), '· 보너스 남음', d.get('extraLimit'))" || echo "- EODHD 한도 조회 실패"
+            fi
+            echo "- 커밋: ${{ steps.commit.outputs.changed || 'false' }} ${{ steps.commit.outputs.sha }}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
     needs: fetch
@@ -75,3 +153,5 @@ jobs:
       pages: write
       id-token: write
     uses: ./.github/workflows/check-deploy.yml
+    with:
+      sha: ${{ needs.fetch.outputs.sha }}

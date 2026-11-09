@@ -1,0 +1,1224 @@
+{
+ "schema": "weekly/2",
+ "as_of": {
+  "date": "2026-11-06",
+  "et": "2026-11-06 16:00",
+  "kst": "2026-11-07 06:00",
+  "half_day": false
+ },
+ "week": {
+  "start": "2026-11-02",
+  "end": "2026-11-06",
+  "prev_end": "2026-10-30",
+  "trading_days": 5,
+  "half_day": false,
+  "short": false
+ },
+ "generated_at_utc": "2026-11-09 06:57",
+ "run": null,
+ "provider": "eodhd",
+ "provider_name_ko": "EODHD (eodhd.com) 일별 시세 API",
+ "publish_mode": "ranks_only",
+ "adjusted": true,
+ "terms_url": "https://eodhd.com/financial-apis/terms-conditions",
+ "attribution_ko": "데이터 출처: EODHD (eodhd.com) · 수정 종가 기준 · 개인 학습용 분석 결과만 게시",
+ "fetched_at_utc": "2026-11-09 06:32",
+ "universe": {
+  "name": "다우존스 산업평균(DJIA) 30종목",
+  "name_short_ko": "다우 30",
+  "version": "2026-11-09",
+  "verified_on": null,
+  "size": 30
+ },
+ "benchmark": {
+  "ticker": "SPY",
+  "name_ko": "S&P 500 ETF (SPY)",
+  "fresh": true,
+  "last_date": "2026-11-06",
+  "days_of_data": 250,
+  "high_window_days": 250,
+  "above_ma200": true,
+  "worst_day_4w": {
+   "date": "2026-11-05",
+   "market_down_too": null,
+   "volume_spike": true
+  },
+  "suspect": null,
+  "dir_1w": "하락",
+  "flags": []
+ },
+ "M": 30,
+ "fresh_count": 30,
+ "universe_count": 30,
+ "stocks": [
+  {
+   "ticker": "AAPL",
+   "name_ko": "애플",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-03",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": true,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 10,
+    "calm": 7,
+    "dd": 2
+   },
+   "pct": {
+    "trend": 69.0,
+    "calm": 79.3,
+    "dd": 96.6
+   },
+   "flags": []
+  },
+  {
+   "ticker": "AMGN",
+   "name_ko": "암젠",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": true,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 5,
+    "calm": 25,
+    "dd": 21
+   },
+   "pct": {
+    "trend": 86.2,
+    "calm": 17.2,
+    "dd": 31.0
+   },
+   "flags": [
+    "VOLATILE",
+    "BIG_DD"
+   ]
+  },
+  {
+   "ticker": "AMZN",
+   "name_ko": "아마존",
+   "sector_ko": "경기소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-22",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 25,
+    "calm": 22,
+    "dd": 11
+   },
+   "pct": {
+    "trend": 17.2,
+    "calm": 27.6,
+    "dd": 65.5
+   },
+   "flags": [
+    "VOLATILE"
+   ]
+  },
+  {
+   "ticker": "AXP",
+   "name_ko": "아메리칸 익스프레스",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 21,
+    "calm": 5,
+    "dd": 17
+   },
+   "pct": {
+    "trend": 31.0,
+    "calm": 86.2,
+    "dd": 44.8
+   },
+   "flags": [
+    "BELOW_MA200"
+   ]
+  },
+  {
+   "ticker": "BA",
+   "name_ko": "보잉",
+   "sector_ko": "산업재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-27",
+    "market_down_too": false,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": false
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 30,
+    "calm": 26,
+    "dd": 29
+   },
+   "pct": {
+    "trend": 0.0,
+    "calm": 13.8,
+    "dd": 3.4
+   },
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "CAT",
+   "name_ko": "캐터필러",
+   "sector_ko": "산업재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-29",
+    "market_down_too": false,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": false
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 26,
+    "calm": 28,
+    "dd": 30
+   },
+   "pct": {
+    "trend": 13.8,
+    "calm": 6.9,
+    "dd": 0.0
+   },
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "CRM",
+   "name_ko": "세일즈포스",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-29",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 3,
+    "calm": 30,
+    "dd": 26
+   },
+   "pct": {
+    "trend": 93.1,
+    "calm": 0.0,
+    "dd": 13.8
+   },
+   "flags": [
+    "VOLATILE",
+    "BIG_DD"
+   ]
+  },
+  {
+   "ticker": "CSCO",
+   "name_ko": "시스코",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": false
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 6,
+    "calm": 24,
+    "dd": 27
+   },
+   "pct": {
+    "trend": 82.8,
+    "calm": 20.7,
+    "dd": 10.3
+   },
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "CVX",
+   "name_ko": "셰브런",
+   "sector_ko": "에너지",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-04",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 7,
+    "calm": 9,
+    "dd": 10
+   },
+   "pct": {
+    "trend": 79.3,
+    "calm": 72.4,
+    "dd": 69.0
+   },
+   "flags": []
+  },
+  {
+   "ticker": "DIS",
+   "name_ko": "디즈니",
+   "sector_ko": "커뮤니케이션",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-26",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 17.5,
+    "calm": 10.5,
+    "dd": 8.5
+   },
+   "pct": {
+    "trend": 43.1,
+    "calm": 67.2,
+    "dd": 74.1
+   },
+   "flags": []
+  },
+  {
+   "ticker": "GS",
+   "name_ko": "골드만삭스",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 22,
+    "calm": 15,
+    "dd": 25
+   },
+   "pct": {
+    "trend": 27.6,
+    "calm": 51.7,
+    "dd": 17.2
+   },
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "HD",
+   "name_ko": "홈디포",
+   "sector_ko": "경기소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 23,
+    "calm": 18,
+    "dd": 23
+   },
+   "pct": {
+    "trend": 24.1,
+    "calm": 41.4,
+    "dd": 24.1
+   },
+   "flags": [
+    "BIG_DD"
+   ]
+  },
+  {
+   "ticker": "HON",
+   "name_ko": "허니웰",
+   "sector_ko": "산업재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 24,
+    "calm": 8,
+    "dd": 19
+   },
+   "pct": {
+    "trend": 20.7,
+    "calm": 75.9,
+    "dd": 37.9
+   },
+   "flags": [
+    "BELOW_MA200"
+   ]
+  },
+  {
+   "ticker": "IBM",
+   "name_ko": "IBM",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 19,
+    "calm": 17,
+    "dd": 15
+   },
+   "pct": {
+    "trend": 37.9,
+    "calm": 44.8,
+    "dd": 51.7
+   },
+   "flags": [
+    "BELOW_MA200",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "JNJ",
+   "name_ko": "존슨앤드존슨",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-13",
+    "market_down_too": false,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 9,
+    "calm": 12.5,
+    "dd": 13
+   },
+   "pct": {
+    "trend": 72.4,
+    "calm": 60.3,
+    "dd": 58.6
+   },
+   "flags": []
+  },
+  {
+   "ticker": "JPM",
+   "name_ko": "JP모건",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": true,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 13,
+    "calm": 3,
+    "dd": 8.5
+   },
+   "pct": {
+    "trend": 58.6,
+    "calm": 93.1,
+    "dd": 74.1
+   },
+   "flags": []
+  },
+  {
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 12,
+    "calm": 1,
+    "dd": 4
+   },
+   "pct": {
+    "trend": 62.1,
+    "calm": 100.0,
+    "dd": 89.7
+   },
+   "flags": []
+  },
+  {
+   "ticker": "MCD",
+   "name_ko": "맥도날드",
+   "sector_ko": "경기소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 27,
+    "calm": 12.5,
+    "dd": 20
+   },
+   "pct": {
+    "trend": 10.3,
+    "calm": 60.3,
+    "dd": 34.5
+   },
+   "flags": [
+    "BELOW_MA200"
+   ]
+  },
+  {
+   "ticker": "MMM",
+   "name_ko": "3M",
+   "sector_ko": "산업재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 11,
+    "calm": 20,
+    "dd": 16
+   },
+   "pct": {
+    "trend": 65.5,
+    "calm": 34.5,
+    "dd": 48.3
+   },
+   "flags": []
+  },
+  {
+   "ticker": "MRK",
+   "name_ko": "머크",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-26",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": true,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 1,
+    "calm": 27,
+    "dd": 12
+   },
+   "pct": {
+    "trend": 100.0,
+    "calm": 10.3,
+    "dd": 62.1
+   },
+   "flags": [
+    "VOLATILE"
+   ]
+  },
+  {
+   "ticker": "MSFT",
+   "name_ko": "마이크로소프트",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 2,
+    "calm": 14,
+    "dd": 6
+   },
+   "pct": {
+    "trend": 96.6,
+    "calm": 55.2,
+    "dd": 82.8
+   },
+   "flags": []
+  },
+  {
+   "ticker": "NKE",
+   "name_ko": "나이키",
+   "sector_ko": "경기소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "보합",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 29,
+    "calm": 21,
+    "dd": 22
+   },
+   "pct": {
+    "trend": 3.4,
+    "calm": 31.0,
+    "dd": 27.6
+   },
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "NVDA",
+   "name_ko": "엔비디아",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": false
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 14,
+    "calm": 29,
+    "dd": 28
+   },
+   "pct": {
+    "trend": 55.2,
+    "calm": 3.4,
+    "dd": 6.9
+   },
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ]
+  },
+  {
+   "ticker": "PG",
+   "name_ko": "P&G",
+   "sector_ko": "필수소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-23",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 15,
+    "calm": 4,
+    "dd": 1
+   },
+   "pct": {
+    "trend": 51.7,
+    "calm": 89.7,
+    "dd": 100.0
+   },
+   "flags": []
+  },
+  {
+   "ticker": "SHW",
+   "name_ko": "셔윈윌리엄스",
+   "sector_ko": "소재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 16,
+    "calm": 23,
+    "dd": 18
+   },
+   "pct": {
+    "trend": 48.3,
+    "calm": 24.1,
+    "dd": 41.4
+   },
+   "flags": [
+    "VOLATILE"
+   ]
+  },
+  {
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-06",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "보합",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 4,
+    "calm": 2,
+    "dd": 3
+   },
+   "pct": {
+    "trend": 89.7,
+    "calm": 96.6,
+    "dd": 93.1
+   },
+   "flags": []
+  },
+  {
+   "ticker": "UNH",
+   "name_ko": "유나이티드헬스",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 20,
+    "calm": 10.5,
+    "dd": 7
+   },
+   "pct": {
+    "trend": 34.5,
+    "calm": 67.2,
+    "dd": 79.3
+   },
+   "flags": []
+  },
+  {
+   "ticker": "V",
+   "name_ko": "비자",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": true
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 8,
+    "calm": 6,
+    "dd": 5
+   },
+   "pct": {
+    "trend": 75.9,
+    "calm": 82.8,
+    "dd": 86.2
+   },
+   "flags": []
+  },
+  {
+   "ticker": "VZ",
+   "name_ko": "버라이즌",
+   "sector_ko": "커뮤니케이션",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-10-26",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 17.5,
+    "calm": 16,
+    "dd": 24
+   },
+   "pct": {
+    "trend": 43.1,
+    "calm": 48.3,
+    "dd": 20.7
+   },
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD"
+   ]
+  },
+  {
+   "ticker": "WMT",
+   "name_ko": "월마트",
+   "sector_ko": "필수소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-06",
+   "days_of_data": 250,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-03",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 28,
+    "calm": 19,
+    "dd": 14
+   },
+   "pct": {
+    "trend": 6.9,
+    "calm": 37.9,
+    "dd": 55.2
+   },
+   "flags": []
+  }
+ ],
+ "skipped": []
+}

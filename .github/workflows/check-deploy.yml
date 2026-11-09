@@ -1,14 +1,22 @@
 name: check-deploy
 
-# docs/ 가 바뀌어 main 에 올라오면: 검사 → GitHub Pages 배포
-# 처음 한 번은 Actions 탭에서 "Run workflow" 로 수동 실행해도 됩니다.
-# fetch-prices.yml 이 주 1회 데이터를 갱신한 뒤에도 이 워크플로를 호출해 배포합니다.
+# 검사 → GitHub Pages 배포.
+# - main 에 docs/·scripts/ 변경이 올라오면 실행 · PR 에서는 검사만(배포 없음) · fetch-prices.yml 이 데이터를 커밋한 뒤 호출(sha 입력)
+# - 봇 푸시는 push 이벤트를 만들지 않으므로 workflow_call 로 호출합니다.
 on:
   push:
     branches: [main]
     paths: ["docs/**", "scripts/**", ".github/workflows/check-deploy.yml"]
+  pull_request:
+    paths: ["docs/**", "scripts/**", ".github/workflows/**"]
   workflow_dispatch:
-  workflow_call:   # fetch-prices.yml 이 데이터를 올린 뒤 호출합니다 (봇 푸시는 push 이벤트를 만들지 않음)
+  workflow_call:
+    inputs:
+      sha:
+        description: "검사·배포할 커밋 (fetch-prices 가 방금 푸시한 커밋)"
+        type: string
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -16,7 +24,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: ${{ github.event_name == 'pull_request' && format('check-{0}', github.ref) || 'pages' }}
   cancel-in-progress: false
 
 jobs:
@@ -24,34 +32,76 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: 첫 화면 검사 — 자리표시자가 남아 있지 않은지
+        with:
+          ref: ${{ inputs.sha || github.sha }}
+          fetch-depth: 0
+
+      - name: 첫 화면 검사 — 자리표시자 없음 · 고지 문구·기준일 있음
         run: |
           test -f docs/index.html
           ! grep -q '<h1>주제 제목</h1>' docs/index.html
           grep -q '투자 조언이 아닙니다' docs/index.html
           grep -q '기준일' docs/index.html
-      - name: 비밀값 검사 — 키 모양 문자열이 없는지
+
+      - name: 비밀값 검사 — 키 모양 문자열·원본 HTML 응답이 없는지
         run: |
-          ! grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md
-      - name: week.json 검사 — 형식·필수 칸·숫자 (파일이 있을 때만)
+          ! grep -rEn '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36})' docs/ README.md scripts/
+          ! grep -rEn '(api_token|apikey|api_key)=[A-Za-z0-9._-]{12,}' docs/ README.md
+          ! grep -rl '<html' docs/data/ || (echo "docs/data/ 에 HTML 응답(봇 확인 페이지 등)이 섞여 있습니다"; exit 1)
+
+      - name: 정적 자료 검사 — 유니버스 30개 · 휴장일 달력 범위 · 공급자 결정 · 규칙
+        run: python3 -I scripts/check_static.py
+
+      - name: 데이터 파일 검사 — 구조 · 순위 재검산 · 공개 범위(숫자 비공개) · 기록 일관성
         run: |
-          if [ -f docs/data/week.json ]; then
-            python3 -I scripts/check_week_json.py docs/data/week.json
+          if [ -f docs/data/weekly.json ]; then python3 -I scripts/check_weekly.py docs/data/weekly.json; else echo "weekly.json 없음 — 화면은 「데이터 없음」으로 표시됩니다"; fi
+          if [ -f docs/data/picks.json ]; then python3 -I scripts/check_picks.py docs/data/picks.json; else echo "picks.json 없음"; fi
+          python3 -I scripts/check_results.py
+
+      - name: 금지어 검사 — 추천·목표가·수익 보장 같은 말이 없는지(부정문은 허용)
+        run: python3 -I scripts/check_words.py docs README.md
+
+      - name: 동결 파일 검사 — 지난 선정·결과·기록을 바꾸지 않았는지
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${{ github.base_ref }}"
+          elif [ "${{ github.event_name }}" = "push" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            BASE="${{ github.event.before }}"
           else
-            echo "docs/data/week.json 없음 — 카드는 「데이터 없음」으로 표시됩니다"
+            echo "비교 기준 없음(수동 실행 또는 호출) — 건너뜀"; exit 0
           fi
+          git cat-file -e "$BASE^{commit}" 2>/dev/null || { echo "기준 커밋 $BASE 없음 — 건너뜀"; exit 0; }
+          python3 -I scripts/check_frozen.py --base "$BASE"
+
+      - name: 합성 데이터 결정성 검사 — 같은 입력이면 같은 선정이 나오는지
+        run: python3 -I scripts/make_fixture.py --check
 
   deploy:
     needs: check
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.sha }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: 배포 확인 — 사이트의 weekly.json 기준일이 방금 커밋한 값과 같은지 (최대 5회 × 30초)
+        run: |
+          if [ ! -f docs/data/weekly.json ]; then echo "weekly.json 없음 — 확인 생략"; exit 0; fi
+          WANT=$(python3 -I -c "import json; print(json.load(open('docs/data/weekly.json'))['as_of']['date'])")
+          URL="${{ steps.deployment.outputs.page_url }}data/weekly.json"
+          for i in 1 2 3 4 5; do
+            GOT=$(curl -sS -m 20 -H 'Cache-Control: no-cache' "$URL?t=$i$RANDOM" | python3 -I -c "import sys,json; print(json.load(sys.stdin)['as_of']['date'])" 2>/dev/null || echo "?")
+            echo "시도 $i: 사이트 기준일 $GOT · 커밋 기준일 $WANT"
+            if [ "$GOT" = "$WANT" ]; then echo "OK 배포 확인 — $URL" | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+            sleep 30
+          done
+          echo "::warning::배포된 weekly.json 기준일($GOT)이 커밋($WANT)과 다릅니다 — CDN 반영 지연일 수 있으니 몇 분 뒤 다시 확인하세요"

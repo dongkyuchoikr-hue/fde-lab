@@ -1,0 +1,536 @@
+{
+ "schema": "picks/1",
+ "as_of": {
+  "date": "2026-11-06",
+  "et": "2026-11-06 16:00",
+  "kst": "2026-11-07 06:00",
+  "half_day": false
+ },
+ "week": {
+  "start": "2026-11-02",
+  "end": "2026-11-06",
+  "prev_end": "2026-10-30",
+  "trading_days": 5,
+  "half_day": false,
+  "short": false
+ },
+ "generated_at_utc": "2026-11-09 06:57",
+ "run": null,
+ "rules_version": "v1",
+ "rules_frozen_on": "2026-11-09",
+ "universe_version": "2026-11-09",
+ "publish_mode": "ranks_only",
+ "provider": "eodhd",
+ "status": "확정",
+ "status_message_ko": "조건 4개를 통과한 19개 중 점수 순으로 5개(같은 업종 최대 2개).",
+ "late": false,
+ "gate_summary": {
+  "M": 30,
+  "fresh_count": 30,
+  "universe_count": 30,
+  "above_ma200": 19,
+  "surge_excluded": 0,
+  "crash_excluded": 4,
+  "data_excluded": 0,
+  "passed": 19
+ },
+ "market": {
+  "ticker": "SPY",
+  "above_ma200": true,
+  "dir_1w": "하락"
+ },
+ "previous": null,
+ "picks": [
+  {
+   "rank": 1,
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융",
+   "score": 93.1,
+   "rank_all": 1,
+   "pct": {
+    "trend": 89.7,
+    "calm": 96.6,
+    "dd": 93.1
+   },
+   "ranks": {
+    "trend": 4,
+    "calm": 2,
+    "dd": 3
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 30개 중 4위. 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 30개 중 2번째.",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 30개 중 3번째. 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 보합 · 시장(SPY)보다 나음 · 거래량 평소 수준 · 200일 추세선 위",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다."
+  },
+  {
+   "rank": 2,
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재",
+   "score": 82.8,
+   "rank_all": 2,
+   "pct": {
+    "trend": 62.1,
+    "calm": 100.0,
+    "dd": 89.7
+   },
+   "ranks": {
+    "trend": 12,
+    "calm": 1,
+    "dd": 4
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 30개 중 12위. 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 30개 중 1번째.",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 30개 중 4번째. 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 상승 · 시장(SPY)보다 나음 · 거래량 평소 수준 · 200일 추세선 위",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다."
+  },
+  {
+   "rank": 3,
+   "ticker": "V",
+   "name_ko": "비자",
+   "sector_ko": "금융",
+   "score": 80.7,
+   "rank_all": 3,
+   "pct": {
+    "trend": 75.9,
+    "calm": 82.8,
+    "dd": 86.2
+   },
+   "ranks": {
+    "trend": 8,
+    "calm": 6,
+    "dd": 5
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 30개 중 8위. 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 30개 중 6번째.",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 30개 중 5번째. 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 상승 · 시장(SPY)보다 나음 · 거래량 평소 수준 · 200일 추세선 위",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다."
+  },
+  {
+   "rank": 4,
+   "ticker": "AAPL",
+   "name_ko": "애플",
+   "sector_ko": "정보기술",
+   "score": 78.6,
+   "rank_all": 4,
+   "pct": {
+    "trend": 69.0,
+    "calm": 79.3,
+    "dd": 96.6
+   },
+   "ranks": {
+    "trend": 10,
+    "calm": 7,
+    "dd": 2
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 30개 중 10위. 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 30개 중 7번째.",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 30개 중 2번째. 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 하락 · 시장(SPY)보다 나음 · 거래량 평소 수준 · 200일 추세선 위",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다."
+  },
+  {
+   "rank": 5,
+   "ticker": "MSFT",
+   "name_ko": "마이크로소프트",
+   "sector_ko": "정보기술",
+   "score": 77.3,
+   "rank_all": 5,
+   "pct": {
+    "trend": 96.6,
+    "calm": 55.2,
+    "dd": 82.8
+   },
+   "ranks": {
+    "trend": 2,
+    "calm": 14,
+    "dd": 6
+   },
+   "state": "신규",
+   "reasons_ko": [
+    "추세 — 한 달 전 가격이 반년 전보다 얼마나 올랐나: 30개 중 2위. 최근 한 달은 되돌림이 잦았던 구간이라 계산에서 뺐습니다.",
+    "잔잔함 — 평소 하루 움직임이 작은 순서로 30개 중 14번째.",
+    "낙폭 — 최근 3개월 고점에서 바닥까지 내려간 폭이 작은 순서로 30개 중 6번째. 작은 낙폭이 안전을 뜻하지는 않습니다."
+   ],
+   "reference_ko": "이번 주 상승 · 시장(SPY)보다 나음 · 거래량 평소 수준 · 200일 추세선 위",
+   "flags": [],
+   "closing_ko": "이 종목이 뽑힌 이유는 과거 가격 숫자가 위 조건에 맞아서이지, 오를 것이라는 예측이 아닙니다. 이번 주 선정 ≠ 매수 권유. 비중·금액은 이 도구가 정하지 않습니다."
+  }
+ ],
+ "not_selected": [
+  {
+   "ticker": "PG",
+   "name_ko": "P&G",
+   "sector_ko": "필수소비재",
+   "score": 76.6,
+   "rank_all": 6,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "JPM",
+   "name_ko": "JP모건",
+   "sector_ko": "금융",
+   "score": 75.5,
+   "rank_all": 7,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "CVX",
+   "name_ko": "셰브런",
+   "sector_ko": "에너지",
+   "score": 74.5,
+   "rank_all": 8,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "JNJ",
+   "name_ko": "존슨앤드존슨",
+   "sector_ko": "헬스케어",
+   "score": 64.8,
+   "rank_all": 9,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "DIS",
+   "name_ko": "디즈니",
+   "sector_ko": "커뮤니케이션",
+   "score": 58.9,
+   "rank_all": 10,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "UNH",
+   "name_ko": "유나이티드헬스",
+   "sector_ko": "헬스케어",
+   "score": 56.5,
+   "rank_all": 11,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "MRK",
+   "name_ko": "머크",
+   "sector_ko": "헬스케어",
+   "score": 56.5,
+   "rank_all": 12,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "AXP",
+   "name_ko": "아메리칸 익스프레스",
+   "sector_ko": "금융",
+   "score": 55.8,
+   "rank_all": 13,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "MMM",
+   "name_ko": "3M",
+   "sector_ko": "산업재",
+   "score": 49.7,
+   "rank_all": 14,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "AMGN",
+   "name_ko": "암젠",
+   "sector_ko": "헬스케어",
+   "score": 47.6,
+   "rank_all": 15,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE",
+    "BIG_DD"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "HON",
+   "name_ko": "허니웰",
+   "sector_ko": "산업재",
+   "score": 46.2,
+   "rank_all": 16,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "CSCO",
+   "name_ko": "시스코",
+   "sector_ko": "정보기술",
+   "score": 43.5,
+   "rank_all": 17,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "IBM",
+   "name_ko": "IBM",
+   "sector_ko": "정보기술",
+   "score": 43.4,
+   "rank_all": 18,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "VZ",
+   "name_ko": "버라이즌",
+   "sector_ko": "커뮤니케이션",
+   "score": 40.7,
+   "rank_all": 19,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "CRM",
+   "name_ko": "세일즈포스",
+   "sector_ko": "정보기술",
+   "score": 40.0,
+   "rank_all": 20,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE",
+    "BIG_DD"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "SHW",
+   "name_ko": "셔윈윌리엄스",
+   "sector_ko": "소재",
+   "score": 37.2,
+   "rank_all": 21,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "GS",
+   "name_ko": "골드만삭스",
+   "sector_ko": "금융",
+   "score": 35.2,
+   "rank_all": 22,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "MCD",
+   "name_ko": "맥도날드",
+   "sector_ko": "경기소비재",
+   "score": 35.1,
+   "rank_all": 23,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "HD",
+   "name_ko": "홈디포",
+   "sector_ko": "경기소비재",
+   "score": 31.0,
+   "rank_all": 24,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "BIG_DD"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "AMZN",
+   "name_ko": "아마존",
+   "sector_ko": "경기소비재",
+   "score": 31.0,
+   "rank_all": 25,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [
+    "VOLATILE"
+   ],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "WMT",
+   "name_ko": "월마트",
+   "sector_ko": "필수소비재",
+   "score": 29.0,
+   "rank_all": 26,
+   "why_code": "RANK",
+   "why_ko": "조건은 통과했지만 점수가 5위 밖",
+   "flags": [],
+   "dir_1w": "상승"
+  },
+  {
+   "ticker": "NVDA",
+   "name_ko": "엔비디아",
+   "sector_ko": "정보기술",
+   "score": 24.8,
+   "rank_all": 27,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "NKE",
+   "name_ko": "나이키",
+   "sector_ko": "경기소비재",
+   "score": 19.3,
+   "rank_all": 28,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "보합"
+  },
+  {
+   "ticker": "CAT",
+   "name_ko": "캐터필러",
+   "sector_ko": "산업재",
+   "score": 8.3,
+   "rank_all": 29,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "하락"
+  },
+  {
+   "ticker": "BA",
+   "name_ko": "보잉",
+   "sector_ko": "산업재",
+   "score": 6.2,
+   "rank_all": 30,
+   "why_code": "BELOW_MA200",
+   "why_ko": "C2 미충족 — 200일 추세선 아래",
+   "flags": [
+    "BELOW_MA200",
+    "CRASH_DAY",
+    "VOLATILE",
+    "BIG_DD",
+    "FAR_FROM_HIGH"
+   ],
+   "dir_1w": "상승"
+  }
+ ],
+ "changes": {
+  "added": [
+   "AAPL",
+   "KO",
+   "MSFT",
+   "TRV",
+   "V"
+  ],
+  "dropped": [],
+  "kept": [],
+  "changed_count": 0,
+  "prev_as_of": null
+ },
+ "sector_mix": {
+  "금융": 2,
+  "필수소비재": 1,
+  "정보기술": 2
+ },
+ "basket_flags": [],
+ "rule_line_ko": "조건: 데이터 충분 · 200일 추세선 위 · 이번 주 +10% 급등 아님 · 최근 4주 −7% 급락 없음 → 점수: 추세 40 · 잔잔함 40 · 낙폭 20 → 상위 5 · 같은 업종 최대 2개",
+ "disclaimer_ko": "투자 조언이 아닙니다. 이 목록은 과거 가격 숫자가 미리 정한 규칙에 맞았다는 뜻이지 앞으로 오를 종목이라는 뜻이 아니며, 수익을 예측하지 않습니다."
+}
