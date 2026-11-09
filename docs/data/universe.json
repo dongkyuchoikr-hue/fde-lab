@@ -4,17 +4,23 @@
  "name_short_ko": "다우 30",
  "version": "2026-11-09",
  "verified_on": null,
- "verify_note_ko": "AI가 초안을 썼고, 2026-11-09 Actions probe-data-sources 실행 42576698571 로그에 출력된 위키백과 구성 종목 템플릿(Template:Dow Jones Industrial Average companies, revid 1362077295)의 회사 30개와 대조해 VZ(버라이즌)를 GOOGL(알파벳)로 바꿨습니다. 티커는 AI가 적은 것이므로 소유자가 위키백과 본문과 대조한 뒤 verified_on 에 날짜를 적습니다 — 특히 Alphabet 이 GOOGL(A주)인지 GOOG(C주)인지, Honeywell(템플릿 표기 'Honeywell Technologies')의 티커가 HON 인지 확인.",
+ "verify_note_ko": "AI가 초안을 썼고 2026-11-09 Actions probe-data-sources 로그로 대조했습니다: 위키백과 구성 종목 템플릿(revid 1362077295)의 회사 30개와 일치하도록 VZ(버라이즌)를 GOOGL(알파벳)로 바꿨고, 위키백과 '다우 구성 변경 이력' 문서(revid 1369743926)는 2026-06-29 Alphabet 이 Verizon 을 대신했고 Honeywell International 이 Honeywell Aerospace 를 분사한 뒤 Honeywell Technologies 로 이름을 바꿔 남았다고 적고 있습니다. 티커(특히 Alphabet 의 GOOGL/GOOG 클래스)는 소유자가 S&P DJI 보도자료·위키백과 본문과 대조한 뒤 verified_on 에 날짜를 적습니다.",
  "source_urls": [
   {
-   "url": "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average",
-   "what_ko": "위키백과 '구성 종목' 표",
+   "url": "https://en.wikipedia.org/wiki/Template:Dow_Jones_Industrial_Average_companies",
+   "what_ko": "위키백과 구성 종목 템플릿 — 회사명 30개 (revid 1362077295, probe 실행 42576698571)",
    "license": "CC BY-SA 4.0",
-   "opened_on": null
+   "opened_on": "2026-11-09 (Actions 러너)"
   },
   {
-   "url": "https://en.wikipedia.org/wiki/Template:Dow_Jones_Industrial_Average_companies",
-   "what_ko": "위키백과 구성 종목 템플릿(회사명 30개 · revid 1362077295 · probe 실행 42576698571 로그)",
+   "url": "https://en.wikipedia.org/wiki/Historical_components_of_the_Dow_Jones_Industrial_Average",
+   "what_ko": "위키백과 구성 변경 이력 — 2026-06-29 Alphabet↔Verizon, Honeywell 사명 변경 (revid 1369743926, probe 실행 42576842586)",
+   "license": "CC BY-SA 4.0",
+   "opened_on": "2026-11-09 (Actions 러너)"
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Dow_Jones_Industrial_Average",
+   "what_ko": "위키백과 본문 (revid 1382817452)",
    "license": "CC BY-SA 4.0",
    "opened_on": "2026-11-09 (Actions 러너)"
   }
@@ -93,7 +99,7 @@
   },
   {
    "ticker": "HON",
-   "name_ko": "허니웰",
+   "name_ko": "허니웰(테크놀로지스)",
    "sector_ko": "산업재"
   },
   {
