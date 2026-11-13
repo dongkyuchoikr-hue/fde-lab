@@ -215,7 +215,7 @@
       if (picks.previous && picks.previous.picks && picks.previous.picks.length) {
         html += '<p class="small">직전 선정(' + esc(picks.previous.as_of) + ' · 유지 중): ' + picks.previous.picks.map(p => esc(p.ticker) + ' ' + esc(p.name_ko)).join(' · ') + '</p>';
       }
-      if (picks.status === '보류') { el.innerHTML = html || '<p class="empty">보류 — 지난주 선정도 없습니다.</p>'; return; }
+      if (picks.status === '보류') { el.innerHTML = html || '<p class="empty">보류 — 유지 중인 직전 선정도 없습니다.</p>'; return; }
     }
     if (!picks.picks.length) {
       el.innerHTML = html + '<p class="empty">' + esc(picks.status_message_ko) + '</p>';
@@ -304,7 +304,7 @@
         '<div class="tile"><b>시장(' + esc(benchT) + ')보다 나았던 주</b><span>' + esc(s.weeks_beat_bench || 0) + ' / ' + esc(s.n || 0) + '</span></div>' +
         (isNum(s.weeks_net_beat_universe) ? '<div class="tile"><b>비용을 빼고도 평균보다 나았던 주</b><span>' + esc(s.weeks_net_beat_universe) + ' / ' + esc(s.n || 0) + '</span></div>' : '');
     } else {
-      html += '<div class="tile"><b>나았던 주 집계</b><span>' + esc(minW) + '주 뒤 표시</span></div>';
+      html += '<div class="tile"><b>나았던 주 집계</b><span>기록 ' + esc(minW) + '주째부터 (' + esc(s.n || 0) + '/' + esc(minW) + ')</span></div>';
     }
     html += '</div>';
     if (!readable) html += '<p class="small">' + esc(minW) + '주가 지나기 전에는 「평균보다 나았던 주」 같은 집계를 보여 주지 않습니다 — 몇 주 결과는 운이 크게 좌우합니다. 주별 결과는 아래 표에 그대로 있습니다.</p>';

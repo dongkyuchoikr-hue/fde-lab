@@ -272,7 +272,8 @@ def main(argv: list[str]) -> int:
     if late:
         status, msg = "지각", "이번 주 선정은 다음 거래일 장 시작 뒤에 계산돼 '미리 골랐다'고 할 수 없습니다. 참고로만 보이고 기록에는 공백으로 남깁니다."
     elif deferred:
-        status, msg = "보류", f"데이터 지연 — {uni_count}개 중 {fresh_count}개만 기준일 자료가 있어 이번 주 선정을 보류합니다(필요 {min_fresh}개). 아래는 지난주 선정(유지 중)."
+        status, msg = "보류", f"데이터 지연 — {uni_count}개 중 {fresh_count}개만 기준일 자료가 있어 이번 주 선정을 보류합니다(필요 {min_fresh}개). " + (
+            f"아래는 직전 선정({prev['as_of']['date']} · 유지 중)." if prev and prev.get("picks") else "유지 중인 직전 선정은 없습니다.")
     elif not picks:
         status, msg = "선정 없음", f"이번 주 조건에 맞는 종목이 없습니다(통과 0/{m}). 아무것도 고르지 않는 것도 이 규칙의 정상 결과입니다."
     else:
@@ -281,8 +282,8 @@ def main(argv: list[str]) -> int:
             capped = sum(1 for _, c in not_selected if c == "SECTOR_CAP")
             head = (f"이번 주 조건을 통과한 종목은 {len(eligible)}개이고, 같은 업종 최대 {cap}개 규칙으로 {capped}개를 빼서 선정은 {len(picks)}개입니다"
                     if capped else f"이번 주 조건을 통과한 종목이 {len(eligible)}개뿐입니다")
-            msg = (head + f" — {uni_count}종목 중 추세선 위 {gate_summary['above_ma200']}개 · "
-                   f"급등 제외 {gate_summary['surge_excluded']}개 · 급락 제외 {gate_summary['crash_excluded']}개 · 데이터 지연·확인 필요 {gate_summary['data_excluded']}개")
+            msg = (head + f" — {uni_count}종목을 조건별로 따로 센 수(한 종목이 여러 칸에 들 수 있음): 추세선 위 {gate_summary['above_ma200']}개 · "
+                   f"이번 주 급등 {gate_summary['surge_excluded']}개 · 최근 급락일 {gate_summary['crash_excluded']}개 · 데이터 지연·확인 필요 {gate_summary['data_excluded']}개")
         else:
             msg = f"조건 4개를 통과한 {len(eligible)}개 중 점수 순으로 {top_n}개(같은 업종 최대 {cap}개)."
 

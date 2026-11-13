@@ -14,7 +14,7 @@
  "decision_ko": "이용 조건이 가격 데이터의 '표시'를 금지하므로, 공개 화면과 저장소에는 가격·수익률 같은 숫자를 올리지 않고 이 데이터를 분석한 결과(순위·조건 통과 여부·오름/내림 방향·참/거짓 표시)만 공개한다. 원본 일별 시세는 공개 저장소와 화면에 올리지 않고, Actions 실행의 비공개 작업 폴더(.work/)와 재시도용 Actions 캐시(저장소 밖 · 마지막 사용 뒤 최대 7일 · 그 주가 다 끝나면 삭제)에만 둔다(이용 조건이 허용하는 개인적 저장·분석의 범위). 분석 결과만 공개하는 것도 회색 지대일 수 있어, 운영자가 EODHD에 문의해 답을 받으면 이 파일에 날짜와 함께 기록한다.",
  "decided_on": "2026-11-09",
  "inquiry": {"sent_on": null, "answer_on": null, "answer_summary_ko": null},
- "how_to_switch_ko": "publish_mode 를 full 로 바꾸려면: (1) EODHD의 서면 허락을 받아 inquiry 칸에 날짜·요지를 적거나, (2) 출처 표기 조건으로 표시를 허용하는 공급자(예: Twelve Data — 약관 문장을 Actions probe 로그에서 확인한 뒤)로 provider 를 바꾸고 해당 키를 Secret 에 넣는다. 바꾼 뒤부터의 주만 숫자가 공개되고, 그 전 주의 기록은 다시 계산하지 않는다.",
+ "how_to_switch_ko": "publish_mode 를 full 로 바꾸려면: (1) EODHD의 서면 허락을 받아 inquiry 칸에 날짜·요지를 적거나, (2) 출처 표기 조건으로 표시를 허용하는 공급자를 찾아(약관 문장을 Actions probe 로그에서 확인 — 2026-11-09 에 본 Twelve Data 무료 플랜은 외부 표시를 별도 추가 상품으로만 허용해 해당 없음) provider 를 바꾼다. 이때 scripts/fetch_eod.py 에 그 공급자의 수집 함수(PROVIDERS·--provider 선택지)를 더하고, 새 키를 Secret 에 넣어 fetch-prices.yml 에 연결해야 한다(지금은 EOD_API_KEY 만 넘김). 바꾼 뒤부터의 주만 숫자가 공개되고, 그 전 주의 기록은 다시 계산하지 않는다.",
  "attribution_ko": "데이터 출처: EODHD (eodhd.com) · 수정 종가 기준 · 개인 학습용 분석 결과만 게시",
  "excluded_ko": [
   "Stooq — 2026-11-09 이 환경과 Actions 러너 모두 JavaScript 봇 확인 페이지가 돌아와 제외 (우회하지 않음)",
