@@ -7,8 +7,9 @@ CI 에서는 actions/checkout 에 fetch-depth: 0 을 줘야 기준 ref(origin/ma
 
 규칙:
 - 기준 ref 에 있는 picks/ 파일은 작업 폴더에서 바이트 단위로 같아야 함(삭제도 실패)
-- 기준 ref 에 있는 results/ 파일도 같아야 함 — 단, 기준 쪽 status 가 보류·공백 이면 다시 계산돼 바뀔 수 있음(삭제는 실패)
-- track_record.json 의 기준 쪽 행(pick_as_of 기준)은 그대로 있어야 함 — 기준 쪽 status 가 보류·공백 인 행만 바뀔 수 있음(행 삭제는 실패)
+- 기준 ref 에 있는 results/ 파일도 같아야 함 — 단, 기준 쪽 status 가 보류 이면 다시 계산돼 바뀔 수 있음(삭제는 실패).
+  공백은 확정처럼 끝난 결과라 바뀌면 실패
+- track_record.json 의 기준 쪽 행(pick_as_of 기준)은 그대로 있어야 함 — 기준 쪽 status 가 보류 인 행만 바뀔 수 있음(행 삭제는 실패)
 - 새 파일·새 행은 허용 · 기준 ref 에 폴더·파일이 없으면 모두 새것으로 봄
 """
 from __future__ import annotations
@@ -22,7 +23,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fdelib import load_json  # noqa: E402
 
-REDO_OK = {"보류", "공백"}
+REDO_OK = {"보류"}   # 공백은 확정처럼 끝난 결과(build_results 도 다시 쓰지 않음)
 
 
 def git(top: str | None, *args: str) -> tuple[int, bytes]:
@@ -66,7 +67,7 @@ def wt_files(top: str, rel_dir: str) -> set[str]:
 
 
 def check_dir(top: str, base: str, rel_dir: str, label: str, redo_ok: bool, errors: list[str]) -> dict:
-    """기준 ref 의 파일마다 작업 폴더와 바이트 비교. 결과 폴더는 기준 status 가 보류·공백 이면 변경 허용."""
+    """기준 ref 의 파일마다 작업 폴더와 바이트 비교. 결과 폴더는 기준 status 가 보류 이면 변경 허용."""
     base_list = [p for p in base_files(top, base, rel_dir) if p]
     n = {"same": 0, "redo": 0, "new": len(wt_files(top, rel_dir) - set(base_list))}
     for rp in base_list:

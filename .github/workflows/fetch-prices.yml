@@ -129,7 +129,11 @@ jobs:
           fi
           PREV_STATUS=$(python3 -I -c "import json,os,sys; p='docs/data/results/'+sys.argv[1]+'.json'; print(json.load(open(p)).get('status','') if os.path.exists(p) else '')" "$PREV_PICK_AS_OF")
           if [ "$PREV_STATUS" = "보류" ]; then
-            echo "::warning::지난주(${PREV_PICK_AS_OF}) 선정의 결과가 아직 보류입니다 — 선정 종목 중 기준일 자료가 없는 종목이 있어 다음 실행이 다시 계산합니다"
+            if [ "$AGE_DAYS" -ge 3 ]; then
+              echo "::warning::지난주(${PREV_PICK_AS_OF}) 선정의 결과가 아직 보류입니다 — 오늘이 마지막 자동 재시도였습니다. 금요일 장 마감 전에 Actions → fetch-prices → Run workflow 로 다시 돌리지 않으면 다음 토요일에 공백으로 남습니다"
+            else
+              echo "::warning::지난주(${PREV_PICK_AS_OF}) 선정의 결과가 아직 보류입니다 — 선정 종목 중 기준일 자료가 없는 종목이 있어 일·월 자동 재시도가 다시 계산합니다"
+            fi
           fi
           echo "built=true" >> "$GITHUB_OUTPUT"
 

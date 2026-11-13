@@ -11,10 +11,12 @@
   비용 차감 선 = 편도 cost_one_way_pct × (매수 + 매도 건수) ÷ 선정 종목 수(보통 5) — 건수는 동결 파일의 changes.buys + changes.sells
   (첫 주 = 매수 5건 · 보통 주 = 바뀐 종목당 매도 1 + 매수 1 · '선정 없음' 다음 주 = 매수 5건).
   '선정 없음' 주로 넘어갈 때 판 종목의 매도 비용은 세지 않습니다(그 주엔 바구니가 없어 뺄 곳이 없음) — 가정 문장에 적혀 있습니다.
-- 선정 종목 중 하나라도 기준일 자료가 없으면 결과 '보류'(바구니 계산 안 함). 다음 실행이 다시 계산합니다.
+- 선정 종목 중 하나라도 기준일 자료가 없으면 결과 '보류'(바구니 계산 안 함). 일·월 자동 재시도가 다시 계산하고, 그 뒤에는
+  금요일 장 마감 전 수동 실행(Run workflow)만 다시 계산합니다 — 기준일이 다음 주로 넘어가면 공백이 됩니다.
   더 오래된 동결 선정에 확정 결과가 없으면 '공백'으로 남기고 2주 수익률로 메우지 않습니다(보류였다가 끝내 자료가 다 모이지 않은 경우는 그 이유를 적음).
   상태 지각으로 동결된 주도 '공백'(참고용 선정이라 성적을 내지 않음).
-- 기록은 추가만 합니다. 확정된 행은 바꾸지 않습니다(바꾸려 하면 오류). 이미 있는 결과(보류·공백)와 내용이 같으면 파일을 다시 쓰지 않습니다.
+- 기록은 추가만 합니다. 확정된 행은 바꾸지 않습니다(바꾸려 하면 오류). 공백도 끝난 결과라 처음 적은 이유 그대로 두고 다시 계산하지 않습니다.
+  보류 결과는 내용이 같으면 파일을 다시 쓰지 않습니다.
 - 공개 범위 ranks_only 면 수익률 숫자 대신 '나았나' 참/거짓(비용을 뺀 뒤 기준도 함께)과 단일 종목 중 백분위만 공개합니다.
   기록 행마다 그때의 publish_mode 를 적어 두어, 나중에 공개 범위가 바뀌어도 옛 행을 그 행의 기준으로 검사할 수 있게 합니다.
 종료 코드: 0 성공(쓸 것이 없어도 0) · 1 오류
@@ -160,8 +162,8 @@ def main(argv: list[str]) -> int:
         P = load_json(path)
         res_path = os.path.join(args.results_dir, f"{pick_as_of}.json")
         existing = load_json(res_path, default=None)
-        if existing and existing.get("status") == "확정":
-            continue
+        if existing and existing.get("status") in ("확정", "공백"):
+            continue   # 확정·공백은 끝난 결과 — 공백은 처음 적은 이유를 그대로 둠(다음 실행이 더 일반적인 이유로 덮어쓰지 않게)
         ch = P.get("changes") or {}
         picks = P.get("picks", [])
 
@@ -278,7 +280,7 @@ def main(argv: list[str]) -> int:
             lessons = [c for c, _ in chosen]
             lesson_rows = [lesson_texts(c, ctx, mode) for c, ctx in chosen]
         else:
-            status, msg = "보류", "선정 종목 중 기준일 자료가 없는 종목이 있어 결과를 보류합니다. 다음 실행이 다시 계산합니다."
+            status, msg = "보류", "선정 종목 중 기준일 자료가 없는 종목이 있어 결과를 보류합니다. 일·월 자동 재시도가 다시 계산하고, 그 뒤에도 보류면 금요일 장 마감 전에 Actions → fetch-prices → Run workflow 로 다시 계산할 수 있습니다(그때까지 안 되면 다음 주에 공백으로 남습니다)."
 
         res = {
             "schema": "results/1", "pick_as_of": pick_as_of, "result_as_of": result_as_of, "holding": hold,
