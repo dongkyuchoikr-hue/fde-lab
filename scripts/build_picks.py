@@ -281,7 +281,7 @@ def main(argv: list[str]) -> int:
             capped = sum(1 for _, c in not_selected if c == "SECTOR_CAP")
             head = (f"이번 주 조건을 통과한 종목은 {len(eligible)}개이고, 같은 업종 최대 {cap}개 규칙으로 {capped}개를 빼서 선정은 {len(picks)}개입니다"
                     if capped else f"이번 주 조건을 통과한 종목이 {len(eligible)}개뿐입니다")
-            msg = (head + f" — {m}종목 중 추세선 위 {gate_summary['above_ma200']}개 · "
+            msg = (head + f" — {uni_count}종목 중 추세선 위 {gate_summary['above_ma200']}개 · "
                    f"급등 제외 {gate_summary['surge_excluded']}개 · 급락 제외 {gate_summary['crash_excluded']}개 · 데이터 지연·확인 필요 {gate_summary['data_excluded']}개")
         else:
             msg = f"조건 4개를 통과한 {len(eligible)}개 중 점수 순으로 {top_n}개(같은 업종 최대 {cap}개)."
