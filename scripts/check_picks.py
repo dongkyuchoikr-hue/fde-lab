@@ -14,7 +14,7 @@
 - not_selected: 선정되지 않은 유니버스 종목을 정확히 한 번씩 · why_code 는 알려진 코드 · 보류(최신 자료 부족)면 조건 통과 종목은 DEFERRED(RANK·SECTOR_CAP 없음), 아니면 DEFERRED 없음
   · changes: added ∪ kept == 선정, dropped == 지난 선정 − 선정 · buys == |added| · sells == |dropped| · changed_count == max(|added|, |dropped|)(직전 선정 없으면 0)
   · previous.status 는 확정·선정 없음(지각 선정은 비교 대상이 아님)
-- 동결 사본 {frozen-dir}/{as_of}.json 이 있고 status 가 확정·선정 없음·지각 이면 run·generated_at_utc 만 빼고 같아야 함
+- 동결 사본 {frozen-dir}/{as_of}.json 이 있으면(picks.json 의 status 가 무엇이든 — 보류여도) run·generated_at_utc 만 빼고 같아야 함
 - ranks_only: PRICE_FIELDS 키(values 포함)가 어디에도 없음(재귀). 표준 출력에는 가격 숫자를 찍지 않습니다.
 """
 from __future__ import annotations
@@ -191,18 +191,16 @@ def check_changes(d: dict, picks: list[dict], errors: list[str]) -> None:
 
 
 def check_frozen(d: dict, frozen_dir: str, errors: list[str]) -> str:
-    if d.get("status") not in FROZEN_STATUSES:
-        return "동결 대상 아님"
     fp = os.path.join(frozen_dir, f"{(d.get('as_of') or {}).get('date')}.json")
     if not os.path.exists(fp):
-        return "동결 사본 없음"
+        return "동결 사본 없음" if d.get("status") in FROZEN_STATUSES else "동결 대상 아님"
     try:
         frozen = load_json(fp)
     except json.JSONDecodeError:
         errors.append(f"동결 사본 {fp} 의 JSON 을 읽을 수 없음")
         return "동결 사본 오류"
     if {k: v for k, v in frozen.items() if k not in IGNORE_FROZEN} != {k: v for k, v in d.items() if k not in IGNORE_FROZEN}:
-        errors.append(f"동결 사본 {fp} 이 picks.json 과 다름(run·generated_at_utc 제외) — 지난 선정은 바꾸지 않음")
+        errors.append(f"동결 사본 {fp}(상태 {frozen.get('status')!r}) 이 picks.json(상태 {d.get('status')!r}) 과 다름(run·generated_at_utc 제외) — 이미 동결된 주의 선정은 바꾸지 않음")
     return "동결 사본 일치"
 
 

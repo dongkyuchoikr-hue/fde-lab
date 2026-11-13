@@ -2,13 +2,16 @@ name: probe-data-sources
 
 # 데이터 출처 시험 — Actions 러너(인터넷 제한 없음)에서 공개 자료가 실제로 받아지는지, 이용 조건 문장이 무엇인지 확인합니다.
 # 키를 쓰지 않습니다. 결과는 Actions 로그에서 봅니다. 가격 숫자는 로그에 남기지 않도록 머리 부분만 출력합니다.
+# main 에 병합된 뒤에는 Actions → probe-data-sources → Run workflow 로만 실행합니다(병합 전에는 이 파일을 고쳐 올릴 때 자동 실행했음).
 on:
   workflow_dispatch:
-  push:
-    paths: [".github/workflows/probe-data-sources.yml"]
 
 permissions:
   contents: read
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   probe:

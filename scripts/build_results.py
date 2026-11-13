@@ -8,12 +8,13 @@
 - 지난주 = weekly.json 의 week.prev_end 를 기준일로 가진 동결 파일(picks/{날짜}.json). 없으면 아무것도 쓰지 않습니다(첫 주).
 - 종목 수익률 = 이번 주 수집본의 ret_1w(같은 시계열의 두 날짜). 바구니 = 선정 종목 단순 평균(동일 비중).
 - 기준선 둘: 순위 대상 M개(C1 통과 종목)의 동일비중 평균, 시장(벤치마크, universe.json).
-  비용 차감 선 = 편도 cost_one_way_pct × (매수 + 매도 건수) ÷ 5 — 건수는 동결 파일의 changes.buys + changes.sells
+  비용 차감 선 = 편도 cost_one_way_pct × (매수 + 매도 건수) ÷ 선정 종목 수(보통 5) — 건수는 동결 파일의 changes.buys + changes.sells
   (첫 주 = 매수 5건 · 보통 주 = 바뀐 종목당 매도 1 + 매수 1 · '선정 없음' 다음 주 = 매수 5건).
   '선정 없음' 주로 넘어갈 때 판 종목의 매도 비용은 세지 않습니다(그 주엔 바구니가 없어 뺄 곳이 없음) — 가정 문장에 적혀 있습니다.
 - 선정 종목 중 하나라도 기준일 자료가 없으면 결과 '보류'(바구니 계산 안 함). 다음 실행이 다시 계산합니다.
-  더 오래된 동결 선정에 확정 결과가 없으면 '공백'으로 남기고 2주 수익률로 메우지 않습니다. 상태 지각으로 동결된 주도 '공백'(참고용 선정이라 성적을 내지 않음).
-- 기록은 추가만 합니다. 확정된 행은 바꾸지 않습니다(바꾸려 하면 오류). 이미 있는 공백 결과와 내용이 같으면 파일을 다시 쓰지 않습니다.
+  더 오래된 동결 선정에 확정 결과가 없으면 '공백'으로 남기고 2주 수익률로 메우지 않습니다(보류였다가 끝내 자료가 다 모이지 않은 경우는 그 이유를 적음).
+  상태 지각으로 동결된 주도 '공백'(참고용 선정이라 성적을 내지 않음).
+- 기록은 추가만 합니다. 확정된 행은 바꾸지 않습니다(바꾸려 하면 오류). 이미 있는 결과(보류·공백)와 내용이 같으면 파일을 다시 쓰지 않습니다.
 - 공개 범위 ranks_only 면 수익률 숫자 대신 '나았나' 참/거짓(비용을 뺀 뒤 기준도 함께)과 단일 종목 중 백분위만 공개합니다.
   기록 행마다 그때의 publish_mode 를 적어 두어, 나중에 공개 범위가 바뀌어도 옛 행을 그 행의 기준으로 검사할 수 있게 합니다.
 종료 코드: 0 성공(쓸 것이 없어도 0) · 1 오류
@@ -31,7 +32,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fdelib import dump_json, is_num, load_json, parse_now, run_info, strip_private  # noqa: E402
 
 ASSUMPTIONS_KO = ("가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · "
-                  "5종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 5 (예시 값 · 첫 주는 매수 5건 · '선정 없음' 주로 넘어갈 때 판 종목의 비용은 세지 않음) · "
+                  "선정 종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 선정 종목 수(보통 5) (예시 값 · 첫 주는 매수 5건 · '선정 없음' 주로 넘어갈 때 판 종목의 비용은 세지 않음) · "
                   "세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.")
 IGNORE_SAME = {"run", "generated_at_utc"}
 
@@ -69,10 +70,10 @@ def lesson_texts(code: str, ctx: dict, mode: str) -> str:
         head = f"시장 전체({b})가 {ctx['bench']:.1f}% 빠진 주였습니다" if full and is_num(ctx.get("bench")) else f"시장 전체({b})가 3% 넘게 빠진 주였습니다"
         return f"교훈: {head}. 이런 주엔 무엇을 골랐든 대부분 내립니다 — '내 종목만 왜?'보다 '시장이 왜?'를 먼저 보세요."
     if code == "L5":
+        head = f"교훈: {ctx.get('pick_as_of', '')} 선정은 그 직전 선정보다 {ctx.get('changed', 0)}개 바뀌었습니다(가정 매매 {ctx.get('trades', 0)}건)."
         if full:
-            return f"교훈: 이번 주 선정이 {ctx.get('changed', 0)}개 바뀌었습니다. 매주 따라 사고팔면 비용이 수익을 갉아먹습니다 — 기록의 '비용 차감' 열이 그 차이입니다."
-        return (f"교훈: 이번 주 선정이 {ctx.get('changed', 0)}개 바뀌었습니다(가정 매매 {ctx.get('trades', 0)}건). 매주 따라 사고팔면 비용이 수익을 갉아먹습니다 — "
-                f"비용을 뺀 뒤에도 평균보다 나았는지가 복기의 '비용 뺀 뒤' 칸입니다.")
+            return head + " 매주 따라 사고팔면 비용이 수익을 갉아먹습니다 — 기록의 '비용 차감' 열이 그 차이입니다."
+        return head + " 매주 따라 사고팔면 비용이 수익을 갉아먹습니다 — 비용을 빼고도 평균보다 나았는지가 복기의 '비용 뺀 뒤' 칸입니다."
     if code == "L0":
         return "교훈: 지난주엔 조건을 통과한 종목이 없어 아무것도 고르지 않았습니다. 쉬는 것도 규칙의 정상 결과이고, 그 주의 기록은 '선정 없음'으로 남습니다."
     return "교훈: 평범한 주였습니다. 본 이유를 한 줄 적어 두는 습관은 평범한 주에 만들어집니다 — 카드의 「복사」로 메모장에 붙여 두세요."
@@ -167,6 +168,9 @@ def main(argv: list[str]) -> int:
         gap_msg = None
         if P.get("status") == "지각":
             gap_msg = f"{pick_as_of} 선정은 다음 거래일 장 시작 뒤에 계산된 '지각' 선정이라 성적을 내지 않습니다(공백)."
+        elif pick_as_of != prev_end and existing and existing.get("status") == "보류":
+            gap_msg = (f"{pick_as_of} 선정의 다음 주 자료가 끝내 다 모이지 않아(보류) 결과를 내지 못했습니다 — 공백으로 남기고 "
+                       "2주 수익률로 메우지 않습니다.")
         elif pick_as_of != prev_end:
             gap_msg = f"{pick_as_of} 선정의 다음 주 수집이 없어 결과를 계산하지 않았습니다(공백). 2주 수익률로 메우지 않습니다."
         if gap_msg:
@@ -267,7 +271,7 @@ def main(argv: list[str]) -> int:
             if is_num(bench_ret) and bench_ret <= -3:
                 cand.append(("L4", {"bench": bench_ret, "bench_t": bench.get("ticker", "시장")}))
             if changed >= rules["flags"]["MANY_CHANGES"]["threshold"]:
-                cand.append(("L5", {"changed": changed, "trades": trades}))
+                cand.append(("L5", {"changed": changed, "trades": trades, "pick_as_of": pick_as_of}))
             order = {c: i for i, c in enumerate(rr["lessons_priority"])}
             cand.sort(key=lambda x: order.get(x[0], 99))
             chosen = cand[:2] or [("L6", {})]
@@ -287,8 +291,11 @@ def main(argv: list[str]) -> int:
             "generated_at_utc": now.strftime("%Y-%m-%d %H:%M"), "run": run_info(),
         }
         public = strip_private(res, mode)
-        dump_json(res_path, public)
-        wrote.append(f"{pick_as_of}: {status}")
+        if existing and same_except(existing, public):
+            print(f"{pick_as_of}: 결과 {status} — 지난 실행과 내용이 같아 다시 쓰지 않음")
+        else:
+            dump_json(res_path, public)
+            wrote.append(f"{pick_as_of}: {status}")
 
         row = strip_private(track_row(pick_as_of, result_as_of, status, mode, len(picks), basket, ch.get("changed_count"), lessons), mode)
         old = rows.get(pick_as_of)
@@ -302,6 +309,7 @@ def main(argv: list[str]) -> int:
     track["weeks"] = weeks
     track["start"] = weeks[0]["pick_as_of"] if weeks else None
     track["publish_mode"] = mode
+    track["assumptions_ko"] = ASSUMPTIONS_KO   # 설명 문장은 최신으로(행은 그대로 — check_frozen 은 행만 비교)
     done = [r for r in weeks if r["status"] == "확정" and r.get("n_picks", 0) > 0]
     summary = {
         "rows": len(weeks), "n": len(done),

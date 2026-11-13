@@ -27,6 +27,11 @@ concurrency:
   group: ${{ github.event_name == 'pull_request' && format('check-{0}', github.ref) || 'pages' }}
   cancel-in-progress: false
 
+# 모든 run 단계를 bash -eo pipefail 로(지정하지 않으면 pipefail 없는 bash -e)
+defaults:
+  run:
+    shell: bash
+
 jobs:
   check:
     runs-on: ubuntu-latest

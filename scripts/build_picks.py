@@ -9,6 +9,8 @@
 통과한 종목을 점수(추세 40 · 잔잔함 40 · 낙폭 20, 백분위)로 줄 세우고 같은 업종 최대 2개로 위에서부터 5개.
 상태: 확정 / 보류(최신 자료 부족 — 동결하지 않음, 다음 실행이 다시 계산) / 선정 없음(통과 0개) /
       지각(다음 거래일 장 시작 뒤 실행 — '참고'로만 보이고, 상태 지각 그대로 동결해 기록에 공백 행으로 남김).
+이미 동결 파일이 있는 주를 다시 계산하면, 새 결과(상태가 보류여도)가 동결 파일과 같을 때만 통과합니다. 다르면 아무 파일도 쓰지 않고 1로 끝납니다
+(fetch-prices 는 동결된 주의 재시도에서 이 스크립트를 부르지 않고 지난주 결과만 다시 계산합니다).
 문장은 전부 규칙 템플릿(AI 아님). 문턱값·가중치는 rules.json 에서 읽어 문장에 넣습니다(숫자를 두 곳에 적지 않음).
 공개 범위가 ranks_only 면 숫자 없이 순위·방향만 적습니다.
 직전 선정(previous·changes 의 비교 대상) = 가장 최근의 확정·선정 없음 동결 파일(지각 파일은 건너뜀).
@@ -276,7 +278,10 @@ def main(argv: list[str]) -> int:
     else:
         status = "확정"
         if len(picks) < top_n:
-            msg = (f"이번 주 조건을 통과한 종목이 {len(picks)}개뿐입니다 — {m}종목 중 추세선 위 {gate_summary['above_ma200']}개 · "
+            capped = sum(1 for _, c in not_selected if c == "SECTOR_CAP")
+            head = (f"이번 주 조건을 통과한 종목은 {len(eligible)}개이고, 같은 업종 최대 {cap}개 규칙으로 {capped}개를 빼서 선정은 {len(picks)}개입니다"
+                    if capped else f"이번 주 조건을 통과한 종목이 {len(eligible)}개뿐입니다")
+            msg = (head + f" — {m}종목 중 추세선 위 {gate_summary['above_ma200']}개 · "
                    f"급등 제외 {gate_summary['surge_excluded']}개 · 급락 제외 {gate_summary['crash_excluded']}개 · 데이터 지연·확인 필요 {gate_summary['data_excluded']}개")
         else:
             msg = f"조건 4개를 통과한 {len(eligible)}개 중 점수 순으로 {top_n}개(같은 업종 최대 {cap}개)."
@@ -322,8 +327,8 @@ def main(argv: list[str]) -> int:
         tail = ("기록의 '비용 차감' 열이 그 차이입니다" if mode == "full"
                 else "비용을 뺀 뒤에도 평균보다 나았는지는 다음 주 복기의 '비용 뺀 뒤' 칸에 남습니다")
         basket_flags.append({"code": "MANY_CHANGES",
-                             "message_ko": f"이번 주 선정 {len(picks)}개 중 {changes['changed_count']}개가 바뀌었습니다 — 매주 따라 사고팔면 "
-                                           f"수수료·환전 비용이 쌓입니다(가정 매매 {trades}건 × 편도 {g(cost_pct)}%). {tail}."})
+                             "message_ko": f"직전 선정과 비교해 {changes['buys']}개가 새로 들어오고 {changes['sells']}개가 빠졌습니다 — 매주 따라 사고팔면 "
+                                           f"수수료·환전 비용이 쌓입니다(가정 매매 {trades}건, 건마다 편도 {g(cost_pct)}%). {tail}."})
     if (w.get("benchmark") or {}).get("above_ma200") is False:
         basket_flags.append({"code": "MARKET_BELOW_MA200", "message_ko": f"시장 전체({bench_t})가 200일 추세선 아래입니다. 이런 때는 조건을 통과하는 종목이 줄거나 0개가 됩니다 — 쉬어 가는 것도 선택입니다."})
     if w["week"].get("short"):
@@ -357,20 +362,21 @@ def main(argv: list[str]) -> int:
         "disclaimer_ko": "투자 조언이 아닙니다. 이 목록은 과거 가격 숫자가 미리 정한 규칙에 맞았다는 뜻이지 앞으로 오를 종목이라는 뜻이 아니며, 수익을 예측하지 않습니다.",
     }
     public = strip_private(out, mode)
-    dump_json(args.out, public)
 
+    # 동결 파일이 이미 있는 주: 새 결과가 같을 때만 통과(상태가 보류여도 비교) — 다르면 아무것도 쓰지 않고 끝냄
     frozen_path = os.path.join(args.frozen_dir, f"{as_of}.json")
     froze = False
-    if status in FROZEN_STATUSES and not args.no_freeze:
-        if os.path.exists(frozen_path):
-            old = load_json(frozen_path)
-            if not same_frozen(old, public):
-                print(f"동결 파일 {frozen_path} 이 이미 있고 내용이 다릅니다 — 지난 선정은 바꾸지 않습니다(규칙). 수동 확인 필요", file=sys.stderr)
-                return 1
-            print(f"동결 파일 이미 있음(내용 동일): {frozen_path}")
-        else:
-            dump_json(frozen_path, public)
-            froze = True
+    if not args.no_freeze and os.path.exists(frozen_path):
+        old = load_json(frozen_path)
+        if not same_frozen(old, public):
+            print(f"동결 파일 {frozen_path} (상태 {old.get('status')}) 이 이미 있고 새로 계산한 결과(상태 {status})와 다릅니다 — "
+                  "지난 선정은 바꾸지 않습니다(규칙). picks.json 도 쓰지 않았습니다. 수동 확인 필요", file=sys.stderr)
+            return 1
+        print(f"동결 파일 이미 있음(내용 동일): {frozen_path}")
+    dump_json(args.out, public)
+    if not args.no_freeze and status in FROZEN_STATUSES and not os.path.exists(frozen_path):
+        dump_json(frozen_path, public)
+        froze = True
     print(f"OK picks.json: 상태 {status} · 선정 {len(pick_rows)}개 {[p['ticker'] for p in pick_rows]} · 통과 {len(eligible)}/{m} · "
           f"변경 {changes['changed_count']}(매수 {changes['buys']} · 매도 {changes['sells']}) · 동결 {'기록' if froze else '안 함'} · 공개 범위 {mode}")
     return 0
