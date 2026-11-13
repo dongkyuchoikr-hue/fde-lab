@@ -1,0 +1,174 @@
+{
+ "schema": "universe/1",
+ "name": "합성 예시 유니버스 30종목 (지어낸 값)",
+ "name_short_ko": "예시 30",
+ "version": "fixture-1",
+ "verified_on": "2026-11-09",
+ "source_urls": [
+  {
+   "url": "https://github.com/dongkyuchoikr-hue/fde-lab",
+   "what_ko": "scripts/make_fixture.py 가 만든 합성 데이터",
+   "license": "저장소와 동일"
+  }
+ ],
+ "benchmark": {
+  "ticker": "MKT",
+  "name_ko": "예시 시장 ETF",
+  "what_ko": "합성 벤치마크"
+ },
+ "sector_cap": 2,
+ "tickers": [
+  {
+   "ticker": "S01",
+   "name_ko": "예시 1",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "S02",
+   "name_ko": "예시 2",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "S03",
+   "name_ko": "예시 3",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "S04",
+   "name_ko": "예시 4",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "S05",
+   "name_ko": "예시 5",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "S06",
+   "name_ko": "예시 6",
+   "sector_ko": "필수소비재"
+  },
+  {
+   "ticker": "S07",
+   "name_ko": "예시 7",
+   "sector_ko": "커뮤니케이션"
+  },
+  {
+   "ticker": "S08",
+   "name_ko": "예시 8",
+   "sector_ko": "에너지"
+  },
+  {
+   "ticker": "S09",
+   "name_ko": "예시 9",
+   "sector_ko": "소재"
+  },
+  {
+   "ticker": "S10",
+   "name_ko": "예시 10",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "S11",
+   "name_ko": "예시 11",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "S12",
+   "name_ko": "예시 12",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "S13",
+   "name_ko": "예시 13",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "S14",
+   "name_ko": "예시 14",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "S15",
+   "name_ko": "예시 15",
+   "sector_ko": "필수소비재"
+  },
+  {
+   "ticker": "S16",
+   "name_ko": "예시 16",
+   "sector_ko": "커뮤니케이션"
+  },
+  {
+   "ticker": "S17",
+   "name_ko": "예시 17",
+   "sector_ko": "에너지"
+  },
+  {
+   "ticker": "S18",
+   "name_ko": "예시 18",
+   "sector_ko": "소재"
+  },
+  {
+   "ticker": "S19",
+   "name_ko": "예시 19",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "S20",
+   "name_ko": "예시 20",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "S21",
+   "name_ko": "예시 21",
+   "sector_ko": "헬스케어"
+  },
+  {
+   "ticker": "S22",
+   "name_ko": "예시 22",
+   "sector_ko": "산업재"
+  },
+  {
+   "ticker": "S23",
+   "name_ko": "예시 23",
+   "sector_ko": "경기소비재"
+  },
+  {
+   "ticker": "S24",
+   "name_ko": "예시 24",
+   "sector_ko": "필수소비재"
+  },
+  {
+   "ticker": "S25",
+   "name_ko": "예시 25",
+   "sector_ko": "커뮤니케이션"
+  },
+  {
+   "ticker": "S26",
+   "name_ko": "예시 26",
+   "sector_ko": "에너지"
+  },
+  {
+   "ticker": "S27",
+   "name_ko": "예시 27",
+   "sector_ko": "소재"
+  },
+  {
+   "ticker": "S28",
+   "name_ko": "예시 28",
+   "sector_ko": "정보기술"
+  },
+  {
+   "ticker": "S29",
+   "name_ko": "예시 29",
+   "sector_ko": "금융"
+  },
+  {
+   "ticker": "S30",
+   "name_ko": "예시 30",
+   "sector_ko": "헬스케어"
+  }
+ ],
+ "synthetic": true,
+ "note_ko": "지어낸 값입니다. 실제 종목·가격과 무관합니다."
+}

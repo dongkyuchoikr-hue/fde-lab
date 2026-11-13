@@ -1,9 +1,4 @@
-.env
-*.env
-*.key
-*.pem
-secrets*
-.DS_Store
-Thumbs.db
+.work/
 __pycache__/
-node_modules/
+*.pyc
+.DS_Store

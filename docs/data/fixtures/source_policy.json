@@ -1,0 +1,18 @@
+{
+ "schema": "source_policy/1",
+ "provider": "synthetic",
+ "provider_name_ko": "합성 예시 데이터 (지어낸 값)",
+ "publish_mode": "full",
+ "publish_mode_ko": {
+  "ranks_only": "순위·조건 결과·방향만 공개 (가격·수익률 숫자는 비공개)",
+  "full": "주간 집계 숫자까지 공개 (등락률·종가·거래량 배수 등)"
+ },
+ "terms_url": "https://github.com/dongkyuchoikr-hue/fde-lab/blob/main/docs/data/README.md",
+ "terms_checked_on": "2026-11-09",
+ "terms_quote_en": "synthetic data — no provider terms apply",
+ "terms_quote_ko": "합성 데이터 — 공급자 이용 조건 없음",
+ "decision_ko": "숫자를 전부 보여 주는 화면 예시와 검사용으로 지어낸 값을 씁니다.",
+ "decided_on": "2026-11-09",
+ "attribution_ko": "합성 예시 데이터 (지어낸 값) · scripts/make_fixture.py",
+ "synthetic": true
+}

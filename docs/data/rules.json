@@ -1,0 +1,61 @@
+{
+ "schema": "rules/1",
+ "version": "v1",
+ "frozen_on": "2026-11-09",
+ "note_ko": "결과를 보기 전에 정한 규칙입니다. 11월 중에는 숫자를 바꾸지 않습니다. 바꾸면 v2로 새 기록을 시작하고 v1 기록은 그대로 둡니다.",
+ "universe_file": "universe.json",
+ "top_n": 5,
+ "sector_cap": 2,
+ "min_fresh_ratio": 0.9,
+ "stale_days_max": 10,
+ "gates": {
+  "C1": {"name_ko": "데이터 충분", "rule": "기준일 자료가 있고(fresh) 거래일 200일 이상, 자료 이상 의심 없음", "min_days": 200},
+  "C2": {"name_ko": "200일 추세선 위", "rule": "기준일 수정 종가 > 최근 200거래일 평균"},
+  "C3": {"name_ko": "이번 주 급등 아님", "rule": "이번 주 등락률 ≤ +10%", "surge_1w_max_pct": 10.0},
+  "C4": {"name_ko": "최근 4주 급락일 없음", "rule": "최근 20거래일 중 하루 등락률 최저값 > −7%", "crash_day_min_pct": -7.0}
+ },
+ "factors": {
+  "trend": {"name_ko": "추세", "weight": 0.4, "formula": "mom_6_1 = adj_close[t−21] ÷ adj_close[t−126] − 1 (한 달 전 가격이 반년 전보다 얼마나 올랐나)", "better": "높을수록", "skip_days": 21, "length_days": 126},
+  "calm": {"name_ko": "잔잔함", "weight": 0.4, "formula": "volatility_60d = 최근 60거래일 일별 등락률의 표본표준편차(%)", "better": "낮을수록", "window_days": 60},
+  "dd": {"name_ko": "낙폭", "weight": 0.2, "formula": "max_drawdown_12w = 최근 61거래일 종가에서 고점 대비 가장 깊은 하락(%)", "better": "0에 가까울수록", "window_days": 61}
+ },
+ "percentile": "P = (M − rank) ÷ (M − 1) × 100, rank 1 = 가장 좋은 쪽, 동률은 평균 순위, M = C1을 통과한 종목 수",
+ "score": "점수 = 0.4 × P_추세 + 0.4 × P_잔잔함 + 0.2 × P_낙폭 (0~100)",
+ "tie_break": ["점수 높은 순", "volatility_60d 낮은 순", "종목 코드 A→Z"],
+ "not_in_score_ko": [
+  "이번 주 등락률 — 점수에 넣으면 '방금 오른 것을 사라'가 되므로 급등 제외 조건(C3)과 표시에만 씁니다",
+  "거래량 배수 — 무슨 일이 있었다는 단서일 뿐 좋은 일인지 나쁜 일인지 모르므로 표시에만",
+  "52주 고점 대비 위치 — 추세와 두 번 세지 않으려고 표시에만",
+  "200일 추세선 — 점수가 아니라 조건(C2)으로만"
+ ],
+ "flags": {
+  "SURGE": {"rule": "ret_1w > +10%", "name_ko": "이번 주 급등"},
+  "CRASH_DAY": {"rule": "최근 20거래일 중 하루 ≤ −7%", "name_ko": "최근 급락일"},
+  "BELOW_MA200": {"rule": "기준일 종가 ≤ 200일 평균", "name_ko": "추세선 아래"},
+  "DATA": {"rule": "기준일 자료 없음 또는 200일 미만", "name_ko": "데이터 부족·지연"},
+  "SUSPECT": {"rule": "최근 61거래일 중 하루 |등락률| > 40%", "name_ko": "자료 이상 의심", "threshold": 40.0},
+  "VOL_SPIKE": {"rule": "이번 주 일평균 거래량 ÷ 직전 20거래일 일평균 ≥ 2.0", "name_ko": "거래량 급증", "threshold": 2.0},
+  "VOLATILE": {"rule": "P_잔잔함 ≤ 30 (M개 중 출렁임 상위 30%)", "name_ko": "출렁임 큼", "threshold": 30},
+  "VOL_UP": {"rule": "volatility_20d ÷ volatility_60d ≥ 1.5", "name_ko": "출렁임 급증", "threshold": 1.5},
+  "BIG_DD": {"rule": "max_drawdown_12w ≤ −15%", "name_ko": "최근 큰 낙폭", "threshold": -15.0},
+  "FAR_FROM_HIGH": {"rule": "52주 고점(수정 종가) 대비 ≤ −20%", "name_ko": "고점에서 멀다", "threshold": -20.0},
+  "SHORT_WEEK": {"rule": "이번 주 거래일 < 5 또는 단축 거래일 포함", "name_ko": "단축 거래 주"},
+  "MANY_CHANGES": {"rule": "지난주 선정과 비교해 바뀐 종목 ≥ 3", "name_ko": "선정 많이 바뀜", "threshold": 3},
+  "MARKET_BELOW_MA200": {"rule": "시장(벤치마크) 종가 ≤ 200일 평균", "name_ko": "시장 추세선 아래"}
+ },
+ "dir_1w": {"up_pct": 0.5, "down_pct": -0.5, "note_ko": "+0.5% 넘으면 상승, −0.5% 밑이면 하락, 사이는 보합"},
+ "results": {
+  "cost_one_way_pct": 0.3,
+  "note_ko": "바구니 = 선정 종목 단순 평균(동일 비중, 보통 5종목). 기준선 둘: 순위 대상 M개(C1 통과 종목)의 동일비중 평균과 시장(SPY). 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 선정 종목 수(보통 5) (예시 값 · 첫 주는 매수 5건 · 선정 없음 주로 넘어갈 때 판 종목의 비용은 세지 않음). 기준일 종가 → 다음 기준일 종가로 계산하며, 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다.",
+  "lessons_priority": ["L1", "L1b", "L2", "L4", "L5", "L6"],
+  "lessons": {
+   "L1": "선정 종목 중 7% 넘게 내린 종목에 위험 표시가 붙어 있었음",
+   "L1b": "위험 표시가 있던 종목이 5% 넘게 오름",
+   "L2": "위험 표시가 없던 종목이 7% 넘게 내림",
+   "L4": "시장(SPY)이 3% 넘게 내린 주",
+   "L5": "선정이 3개 이상 바뀜",
+   "L6": "평범한 주 (기본)"
+  },
+  "min_weeks_to_read": 26
+ }
+}
