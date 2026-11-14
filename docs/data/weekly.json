@@ -1,28 +1,32 @@
 {
  "schema": "weekly/2",
  "as_of": {
-  "date": "2026-11-06",
-  "et": "2026-11-06 16:00",
-  "kst": "2026-11-07 06:00",
+  "date": "2026-11-13",
+  "et": "2026-11-13 16:00",
+  "kst": "2026-11-14 06:00",
   "half_day": false
  },
  "week": {
-  "start": "2026-11-02",
-  "end": "2026-11-06",
-  "prev_end": "2026-10-30",
+  "start": "2026-11-09",
+  "end": "2026-11-13",
+  "prev_end": "2026-11-06",
   "trading_days": 5,
   "half_day": false,
   "short": false
  },
- "generated_at_utc": "2026-11-09 10:12",
- "run": null,
+ "generated_at_utc": "2026-11-14 10:30",
+ "run": {
+  "id": "43585440587",
+  "url": "https://github.com/dongkyuchoikr-hue/fde-lab/actions/runs/43585440587",
+  "sha": "2e94b9e54389d17343c63da20e221596ececac93"
+ },
  "provider": "eodhd",
  "provider_name_ko": "EODHD (eodhd.com) 일별 시세 API",
  "publish_mode": "ranks_only",
  "adjusted": true,
  "terms_url": "https://eodhd.com/financial-apis/terms-conditions",
  "attribution_ko": "데이터 출처: EODHD (eodhd.com) · 수정 종가 기준 · 개인 학습용 분석 결과만 게시",
- "fetched_at_utc": "2026-11-09 06:32",
+ "fetched_at_utc": "2026-11-14 10:28",
  "universe": {
   "name": "다우존스 산업평균(DJIA) 30종목",
   "name_short_ko": "다우 30",
@@ -34,8 +38,8 @@
   "ticker": "SPY",
   "name_ko": "S&P 500 ETF (SPY)",
   "fresh": true,
-  "last_date": "2026-11-06",
-  "days_of_data": 250,
+  "last_date": "2026-11-13",
+  "days_of_data": 251,
   "high_window_days": 250,
   "above_ma200": true,
   "worst_day_4w": {
@@ -44,7 +48,7 @@
    "volume_spike": true
   },
   "suspect": null,
-  "dir_1w": "하락",
+  "dir_1w": "상승",
   "flags": []
  },
  "M": 30,
@@ -57,8 +61,8 @@
    "sector_ko": "정보기술",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -73,14 +77,14 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
+   "dir_1w": "상승",
    "beat_bench_1w": true,
-   "beat_universe_1w": false,
+   "beat_universe_1w": true,
    "ranks": {
     "trend": 10,
     "calm": 7,
     "dd": 2,
-    "week": 19
+    "week": 3
    },
    "pct": {
     "trend": 69.0,
@@ -95,8 +99,8 @@
    "sector_ko": "헬스케어",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -111,18 +115,18 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
-   "beat_bench_1w": true,
+   "dir_1w": "상승",
+   "beat_bench_1w": false,
    "beat_universe_1w": false,
    "ranks": {
-    "trend": 5,
-    "calm": 25,
+    "trend": 2,
+    "calm": 24,
     "dd": 21,
     "week": 21
    },
    "pct": {
-    "trend": 86.2,
-    "calm": 17.2,
+    "trend": 96.6,
+    "calm": 20.7,
     "dd": 31.0
    },
    "flags": [
@@ -136,8 +140,8 @@
    "sector_ko": "경기소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -156,17 +160,19 @@
    "beat_bench_1w": true,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 24,
-    "calm": 21,
-    "dd": 11,
-    "week": 1
+    "trend": 21,
+    "calm": 22,
+    "dd": 12,
+    "week": 10
    },
    "pct": {
-    "trend": 20.7,
-    "calm": 31.0,
-    "dd": 65.5
+    "trend": 31.0,
+    "calm": 27.6,
+    "dd": 62.1
    },
-   "flags": []
+   "flags": [
+    "VOLATILE"
+   ]
   },
   {
    "ticker": "AXP",
@@ -174,8 +180,8 @@
    "sector_ko": "금융",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -190,19 +196,19 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "dir_1w": "보합",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
-    "trend": 20,
-    "calm": 5,
-    "dd": 17,
-    "week": 16
+    "trend": 19,
+    "calm": 4.5,
+    "dd": 15,
+    "week": 24
    },
    "pct": {
-    "trend": 34.5,
-    "calm": 86.2,
-    "dd": 44.8
+    "trend": 37.9,
+    "calm": 87.9,
+    "dd": 51.7
    },
    "flags": [
     "BELOW_MA200"
@@ -214,8 +220,8 @@
    "sector_ko": "산업재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -230,19 +236,19 @@
     "C3": true,
     "C4": false
    },
-   "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
-    "trend": 30,
-    "calm": 26,
-    "dd": 29,
-    "week": 14
+    "trend": 29,
+    "calm": 25,
+    "dd": 28,
+    "week": 26
    },
    "pct": {
-    "trend": 0.0,
-    "calm": 13.8,
-    "dd": 3.4
+    "trend": 3.4,
+    "calm": 17.2,
+    "dd": 6.9
    },
    "flags": [
     "BELOW_MA200",
@@ -258,8 +264,8 @@
    "sector_ko": "산업재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -274,17 +280,17 @@
     "C3": true,
     "C4": false
    },
-   "dir_1w": "하락",
-   "beat_bench_1w": false,
-   "beat_universe_1w": false,
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
    "ranks": {
-    "trend": 25,
+    "trend": 30,
     "calm": 28,
     "dd": 30,
-    "week": 30
+    "week": 1
    },
    "pct": {
-    "trend": 17.2,
+    "trend": 0.0,
     "calm": 6.9,
     "dd": 0.0
    },
@@ -302,8 +308,8 @@
    "sector_ko": "정보기술",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -318,17 +324,17 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
+   "dir_1w": "상승",
    "beat_bench_1w": false,
-   "beat_universe_1w": false,
+   "beat_universe_1w": true,
    "ranks": {
-    "trend": 3,
+    "trend": 1,
     "calm": 30,
     "dd": 25,
-    "week": 26
+    "week": 14
    },
    "pct": {
-    "trend": 93.1,
+    "trend": 100.0,
     "calm": 0.0,
     "dd": 17.2
    },
@@ -343,8 +349,8 @@
    "sector_ko": "정보기술",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -359,18 +365,18 @@
     "C3": true,
     "C4": false
    },
-   "dir_1w": "하락",
+   "dir_1w": "상승",
    "beat_bench_1w": false,
-   "beat_universe_1w": false,
+   "beat_universe_1w": true,
    "ranks": {
-    "trend": 6,
-    "calm": 23,
+    "trend": 24,
+    "calm": 27,
     "dd": 26,
-    "week": 29
+    "week": 15.5
    },
    "pct": {
-    "trend": 82.8,
-    "calm": 24.1,
+    "trend": 20.7,
+    "calm": 10.3,
     "dd": 13.8
    },
    "flags": [
@@ -387,8 +393,8 @@
    "sector_ko": "에너지",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -403,19 +409,19 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
-   "beat_bench_1w": false,
-   "beat_universe_1w": false,
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
    "ranks": {
     "trend": 7,
-    "calm": 9,
-    "dd": 10,
-    "week": 28
+    "calm": 11,
+    "dd": 16,
+    "week": 8
    },
    "pct": {
     "trend": 79.3,
-    "calm": 72.4,
-    "dd": 69.0
+    "calm": 65.5,
+    "dd": 48.3
    },
    "flags": []
   },
@@ -425,8 +431,8 @@
    "sector_ko": "커뮤니케이션",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -442,18 +448,18 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
+   "beat_bench_1w": false,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 17,
-    "calm": 10.5,
-    "dd": 8.5,
-    "week": 4
+    "trend": 15,
+    "calm": 8,
+    "dd": 11,
+    "week": 17
    },
    "pct": {
-    "trend": 44.8,
-    "calm": 67.2,
-    "dd": 74.1
+    "trend": 51.7,
+    "calm": 75.9,
+    "dd": 65.5
    },
    "flags": []
   },
@@ -463,8 +469,8 @@
    "sector_ko": "커뮤니케이션",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -483,14 +489,14 @@
    "beat_bench_1w": true,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 27,
-    "calm": 24,
+    "trend": 28,
+    "calm": 26,
     "dd": 27,
-    "week": 9
+    "week": 4
    },
    "pct": {
-    "trend": 10.3,
-    "calm": 20.7,
+    "trend": 6.9,
+    "calm": 13.8,
     "dd": 10.3
    },
    "flags": [
@@ -507,8 +513,8 @@
    "sector_ko": "금융",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -523,18 +529,18 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
-   "beat_bench_1w": false,
-   "beat_universe_1w": false,
+   "dir_1w": "상승",
+   "beat_bench_1w": true,
+   "beat_universe_1w": true,
    "ranks": {
-    "trend": 21,
-    "calm": 15,
+    "trend": 22,
+    "calm": 20,
     "dd": 24,
-    "week": 24
+    "week": 2
    },
    "pct": {
-    "trend": 31.0,
-    "calm": 51.7,
+    "trend": 27.6,
+    "calm": 34.5,
     "dd": 20.7
    },
    "flags": [
@@ -549,8 +555,8 @@
    "sector_ko": "경기소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -566,17 +572,17 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
+   "beat_bench_1w": false,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 22,
-    "calm": 17,
+    "trend": 17,
+    "calm": 18,
     "dd": 23,
-    "week": 5
+    "week": 19
    },
    "pct": {
-    "trend": 27.6,
-    "calm": 44.8,
+    "trend": 44.8,
+    "calm": 41.4,
     "dd": 24.1
    },
    "flags": [
@@ -589,8 +595,8 @@
    "sector_ko": "산업재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -606,18 +612,18 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
     "trend": 23,
-    "calm": 8,
-    "dd": 19,
-    "week": 15
+    "calm": 9.5,
+    "dd": 10,
+    "week": 20
    },
    "pct": {
     "trend": 24.1,
-    "calm": 75.9,
-    "dd": 37.9
+    "calm": 70.7,
+    "dd": 69.0
    },
    "flags": [
     "BELOW_MA200"
@@ -629,55 +635,14 @@
    "sector_ko": "정보기술",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
-   "above_ma200": false,
+   "above_ma200": true,
    "worst_day_4w": {
     "date": "2026-11-05",
     "market_down_too": true,
     "volume_spike": false
-   },
-   "suspect": null,
-   "gates": {
-    "C1": true,
-    "C2": false,
-    "C3": true,
-    "C4": true
-   },
-   "dir_1w": "하락",
-   "beat_bench_1w": false,
-   "beat_universe_1w": false,
-   "ranks": {
-    "trend": 18,
-    "calm": 16,
-    "dd": 15,
-    "week": 25
-   },
-   "pct": {
-    "trend": 41.4,
-    "calm": 48.3,
-    "dd": 51.7
-   },
-   "flags": [
-    "BELOW_MA200",
-    "FAR_FROM_HIGH"
-   ]
-  },
-  {
-   "ticker": "JNJ",
-   "name_ko": "존슨앤드존슨",
-   "sector_ko": "헬스케어",
-   "in_universe": true,
-   "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
-   "high_window_days": 250,
-   "above_ma200": true,
-   "worst_day_4w": {
-    "date": "2026-10-13",
-    "market_down_too": false,
-    "volume_spike": true
    },
    "suspect": null,
    "gates": {
@@ -687,71 +652,35 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
+   "beat_bench_1w": false,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 9,
-    "calm": 12.5,
-    "dd": 13,
-    "week": 13
+    "trend": 16,
+    "calm": 17,
+    "dd": 19,
+    "week": 18
    },
    "pct": {
-    "trend": 72.4,
-    "calm": 60.3,
-    "dd": 58.6
+    "trend": 48.3,
+    "calm": 44.8,
+    "dd": 37.9
    },
-   "flags": []
+   "flags": [
+    "FAR_FROM_HIGH"
+   ]
   },
   {
-   "ticker": "JPM",
-   "name_ko": "JP모건",
-   "sector_ko": "금융",
+   "ticker": "JNJ",
+   "name_ko": "존슨앤드존슨",
+   "sector_ko": "헬스케어",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
-    "date": "2026-11-05",
-    "market_down_too": true,
-    "volume_spike": false
-   },
-   "suspect": null,
-   "gates": {
-    "C1": true,
-    "C2": true,
-    "C3": true,
-    "C4": true
-   },
-   "dir_1w": "하락",
-   "beat_bench_1w": true,
-   "beat_universe_1w": false,
-   "ranks": {
-    "trend": 13,
-    "calm": 3,
-    "dd": 8.5,
-    "week": 20
-   },
-   "pct": {
-    "trend": 58.6,
-    "calm": 93.1,
-    "dd": 74.1
-   },
-   "flags": []
-  },
-  {
-   "ticker": "KO",
-   "name_ko": "코카콜라",
-   "sector_ko": "필수소비재",
-   "in_universe": true,
-   "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
-   "high_window_days": 250,
-   "above_ma200": true,
-   "worst_day_4w": {
-    "date": "2026-10-23",
+    "date": "2026-11-03",
     "market_down_too": false,
     "volume_spike": false
    },
@@ -767,65 +696,25 @@
    "beat_universe_1w": true,
    "ranks": {
     "trend": 12,
-    "calm": 1,
-    "dd": 4,
-    "week": 10
+    "calm": 13,
+    "dd": 17,
+    "week": 7
    },
    "pct": {
     "trend": 62.1,
-    "calm": 100.0,
-    "dd": 89.7
+    "calm": 58.6,
+    "dd": 44.8
    },
    "flags": []
   },
   {
-   "ticker": "MCD",
-   "name_ko": "맥도날드",
-   "sector_ko": "경기소비재",
+   "ticker": "JPM",
+   "name_ko": "JP모건",
+   "sector_ko": "금융",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
-   "high_window_days": 250,
-   "above_ma200": false,
-   "worst_day_4w": {
-    "date": "2026-10-23",
-    "market_down_too": false,
-    "volume_spike": false
-   },
-   "suspect": null,
-   "gates": {
-    "C1": true,
-    "C2": false,
-    "C3": true,
-    "C4": true
-   },
-   "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
-   "ranks": {
-    "trend": 26,
-    "calm": 12.5,
-    "dd": 20,
-    "week": 2
-   },
-   "pct": {
-    "trend": 13.8,
-    "calm": 60.3,
-    "dd": 34.5
-   },
-   "flags": [
-    "BELOW_MA200"
-   ]
-  },
-  {
-   "ticker": "MMM",
-   "name_ko": "3M",
-   "sector_ko": "산업재",
-   "in_universe": true,
-   "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -845,29 +734,29 @@
    "beat_universe_1w": true,
    "ranks": {
     "trend": 11,
-    "calm": 19,
-    "dd": 16,
-    "week": 3
+    "calm": 3,
+    "dd": 9,
+    "week": 6
    },
    "pct": {
     "trend": 65.5,
-    "calm": 37.9,
-    "dd": 48.3
+    "calm": 93.1,
+    "dd": 72.4
    },
    "flags": []
   },
   {
-   "ticker": "MRK",
-   "name_ko": "머크",
-   "sector_ko": "헬스케어",
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
-    "date": "2026-10-26",
+    "date": "2026-10-23",
     "market_down_too": false,
     "volume_spike": false
    },
@@ -878,32 +767,70 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "하락",
+   "dir_1w": "상승",
    "beat_bench_1w": true,
-   "beat_universe_1w": false,
+   "beat_universe_1w": true,
    "ranks": {
-    "trend": 1,
-    "calm": 27,
-    "dd": 12,
-    "week": 22
+    "trend": 8,
+    "calm": 1,
+    "dd": 5,
+    "week": 5
    },
    "pct": {
-    "trend": 100.0,
-    "calm": 10.3,
-    "dd": 62.1
+    "trend": 75.9,
+    "calm": 100.0,
+    "dd": 86.2
+   },
+   "flags": []
+  },
+  {
+   "ticker": "MCD",
+   "name_ko": "맥도날드",
+   "sector_ko": "경기소비재",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
+   "high_window_days": 250,
+   "above_ma200": false,
+   "worst_day_4w": {
+    "date": "2026-11-11",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": false,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 27,
+    "calm": 14,
+    "dd": 20,
+    "week": 29
+   },
+   "pct": {
+    "trend": 10.3,
+    "calm": 55.2,
+    "dd": 34.5
    },
    "flags": [
-    "VOLATILE"
+    "BELOW_MA200"
    ]
   },
   {
-   "ticker": "MSFT",
-   "name_ko": "마이크로소프트",
-   "sector_ko": "정보기술",
+   "ticker": "MMM",
+   "name_ko": "3M",
+   "sector_ko": "산업재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -918,19 +845,95 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "dir_1w": "보합",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
-    "trend": 2,
-    "calm": 14,
-    "dd": 6,
-    "week": 11
+    "trend": 9,
+    "calm": 21,
+    "dd": 18,
+    "week": 25
    },
    "pct": {
-    "trend": 96.6,
-    "calm": 55.2,
-    "dd": 82.8
+    "trend": 72.4,
+    "calm": 31.0,
+    "dd": 41.4
+   },
+   "flags": []
+  },
+  {
+   "ticker": "MRK",
+   "name_ko": "머크",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-10-26",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 3,
+    "calm": 16,
+    "dd": 14,
+    "week": 23
+   },
+   "pct": {
+    "trend": 93.1,
+    "calm": 48.3,
+    "dd": 55.2
+   },
+   "flags": []
+  },
+  {
+   "ticker": "MSFT",
+   "name_ko": "마이크로소프트",
+   "sector_ko": "정보기술",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
+   "ranks": {
+    "trend": 5,
+    "calm": 15,
+    "dd": 7,
+    "week": 27
+   },
+   "pct": {
+    "trend": 86.2,
+    "calm": 51.7,
+    "dd": 79.3
    },
    "flags": []
   },
@@ -940,12 +943,12 @@
    "sector_ko": "경기소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
-    "date": "2026-10-23",
+    "date": "2026-11-10",
     "market_down_too": false,
     "volume_spike": false
    },
@@ -956,18 +959,18 @@
     "C3": true,
     "C4": true
    },
-   "dir_1w": "보합",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "dir_1w": "하락",
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
-    "trend": 29,
-    "calm": 20,
+    "trend": 25,
+    "calm": 19,
     "dd": 22,
-    "week": 17
+    "week": 28
    },
    "pct": {
-    "trend": 3.4,
-    "calm": 34.5,
+    "trend": 17.2,
+    "calm": 37.9,
     "dd": 27.6
    },
    "flags": [
@@ -982,8 +985,8 @@
    "sector_ko": "정보기술",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": false,
    "worst_day_4w": {
@@ -1002,19 +1005,20 @@
    "beat_bench_1w": false,
    "beat_universe_1w": false,
    "ranks": {
-    "trend": 14,
+    "trend": 20,
     "calm": 29,
-    "dd": 28,
-    "week": 27
+    "dd": 29,
+    "week": 30
    },
    "pct": {
-    "trend": 55.2,
+    "trend": 34.5,
     "calm": 3.4,
-    "dd": 6.9
+    "dd": 3.4
    },
    "flags": [
     "BELOW_MA200",
     "CRASH_DAY",
+    "VOL_SPIKE",
     "VOLATILE",
     "BIG_DD",
     "FAR_FROM_HIGH"
@@ -1026,8 +1030,8 @@
    "sector_ko": "필수소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -1046,14 +1050,14 @@
    "beat_bench_1w": true,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 15,
-    "calm": 4,
+    "trend": 14,
+    "calm": 4.5,
     "dd": 1,
-    "week": 7
+    "week": 11
    },
    "pct": {
-    "trend": 51.7,
-    "calm": 89.7,
+    "trend": 55.2,
+    "calm": 87.9,
     "dd": 100.0
    },
    "flags": []
@@ -1064,8 +1068,86 @@
    "sector_ko": "소재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-05",
+    "market_down_too": true,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": false,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 13,
+    "calm": 23,
+    "dd": 13,
+    "week": 15.5
+   },
+   "pct": {
+    "trend": 58.6,
+    "calm": 24.1,
+    "dd": 58.6
+   },
+   "flags": [
+    "VOLATILE"
+   ]
+  },
+  {
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
+   "high_window_days": 250,
+   "above_ma200": true,
+   "worst_day_4w": {
+    "date": "2026-11-06",
+    "market_down_too": false,
+    "volume_spike": false
+   },
+   "suspect": null,
+   "gates": {
+    "C1": true,
+    "C2": true,
+    "C3": true,
+    "C4": true
+   },
+   "dir_1w": "상승",
+   "beat_bench_1w": false,
+   "beat_universe_1w": true,
+   "ranks": {
+    "trend": 4,
+    "calm": 2,
+    "dd": 4,
+    "week": 13
+   },
+   "pct": {
+    "trend": 89.7,
+    "calm": 96.6,
+    "dd": 89.7
+   },
+   "flags": []
+  },
+  {
+   "ticker": "UNH",
+   "name_ko": "유나이티드헬스",
+   "sector_ko": "헬스케어",
+   "in_universe": true,
+   "fresh": true,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -1084,93 +1166,15 @@
    "beat_bench_1w": true,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 16,
-    "calm": 22,
-    "dd": 18,
-    "week": 6
+    "trend": 18,
+    "calm": 12,
+    "dd": 8,
+    "week": 9
    },
    "pct": {
-    "trend": 48.3,
-    "calm": 27.6,
-    "dd": 41.4
-   },
-   "flags": [
-    "VOLATILE"
-   ]
-  },
-  {
-   "ticker": "TRV",
-   "name_ko": "트래블러스",
-   "sector_ko": "금융",
-   "in_universe": true,
-   "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
-   "high_window_days": 250,
-   "above_ma200": true,
-   "worst_day_4w": {
-    "date": "2026-11-06",
-    "market_down_too": false,
-    "volume_spike": false
-   },
-   "suspect": null,
-   "gates": {
-    "C1": true,
-    "C2": true,
-    "C3": true,
-    "C4": true
-   },
-   "dir_1w": "보합",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
-   "ranks": {
-    "trend": 4,
-    "calm": 2,
-    "dd": 3,
-    "week": 18
-   },
-   "pct": {
-    "trend": 89.7,
-    "calm": 96.6,
-    "dd": 93.1
-   },
-   "flags": []
-  },
-  {
-   "ticker": "UNH",
-   "name_ko": "유나이티드헬스",
-   "sector_ko": "헬스케어",
-   "in_universe": true,
-   "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
-   "high_window_days": 250,
-   "above_ma200": true,
-   "worst_day_4w": {
-    "date": "2026-11-05",
-    "market_down_too": true,
-    "volume_spike": false
-   },
-   "suspect": null,
-   "gates": {
-    "C1": true,
-    "C2": true,
-    "C3": true,
-    "C4": true
-   },
-   "dir_1w": "하락",
-   "beat_bench_1w": false,
-   "beat_universe_1w": false,
-   "ranks": {
-    "trend": 19,
-    "calm": 10.5,
-    "dd": 7,
-    "week": 23
-   },
-   "pct": {
-    "trend": 37.9,
-    "calm": 67.2,
-    "dd": 79.3
+    "trend": 41.4,
+    "calm": 62.1,
+    "dd": 75.9
    },
    "flags": []
   },
@@ -1180,8 +1184,8 @@
    "sector_ko": "금융",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -1197,18 +1201,18 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
-   "beat_universe_1w": true,
+   "beat_bench_1w": false,
+   "beat_universe_1w": false,
    "ranks": {
-    "trend": 8,
+    "trend": 6,
     "calm": 6,
-    "dd": 5,
-    "week": 8
+    "dd": 6,
+    "week": 22
    },
    "pct": {
-    "trend": 75.9,
+    "trend": 82.8,
     "calm": 82.8,
-    "dd": 86.2
+    "dd": 82.8
    },
    "flags": []
   },
@@ -1218,8 +1222,8 @@
    "sector_ko": "필수소비재",
    "in_universe": true,
    "fresh": true,
-   "last_date": "2026-11-06",
-   "days_of_data": 250,
+   "last_date": "2026-11-13",
+   "days_of_data": 251,
    "high_window_days": 250,
    "above_ma200": true,
    "worst_day_4w": {
@@ -1235,18 +1239,18 @@
     "C4": true
    },
    "dir_1w": "상승",
-   "beat_bench_1w": true,
+   "beat_bench_1w": false,
    "beat_universe_1w": true,
    "ranks": {
-    "trend": 28,
-    "calm": 18,
-    "dd": 14,
+    "trend": 26,
+    "calm": 9.5,
+    "dd": 3,
     "week": 12
    },
    "pct": {
-    "trend": 6.9,
-    "calm": 41.4,
-    "dd": 55.2
+    "trend": 13.8,
+    "calm": 70.7,
+    "dd": 93.1
    },
    "flags": []
   }
