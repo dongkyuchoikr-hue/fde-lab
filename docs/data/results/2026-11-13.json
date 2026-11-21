@@ -1,0 +1,110 @@
+{
+ "schema": "results/1",
+ "pick_as_of": "2026-11-13",
+ "result_as_of": "2026-11-20",
+ "holding": {
+  "from": "2026-11-13",
+  "to": "2026-11-20",
+  "trading_days": 5,
+  "half_day": false
+ },
+ "status": "확정",
+ "status_message_ko": "2026-11-13 선정 5종목의 2026-11-13 → 2026-11-20 결과(가상 계산).",
+ "publish_mode": "ranks_only",
+ "M": 30,
+ "rules_version": "v1",
+ "pick_status": "확정",
+ "market": {
+  "ticker": "SPY",
+  "dir_1w": "하락"
+ },
+ "picks": [
+  {
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융",
+   "status": "확정",
+   "dir_1w": "하락",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 6,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 92.5 · 30개 중 1위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재",
+   "status": "확정",
+   "dir_1w": "하락",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 5,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 87.6 · 30개 중 2위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "V",
+   "name_ko": "비자",
+   "sector_ko": "금융",
+   "status": "확정",
+   "dir_1w": "하락",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 15,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 82.8 · 30개 중 3위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "AAPL",
+   "name_ko": "애플",
+   "sector_ko": "정보기술",
+   "status": "확정",
+   "dir_1w": "하락",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 10,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 78.6 · 30개 중 4위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "PG",
+   "name_ko": "P&G",
+   "sector_ko": "필수소비재",
+   "status": "확정",
+   "dir_1w": "보합",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 3,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 77.2 · 30개 중 6위",
+   "in_universe_now": true
+  }
+ ],
+ "basket": {
+  "n": 5,
+  "beat_universe": true,
+  "beat_bench": true,
+  "net_beat_universe": true,
+  "net_beat_bench": true,
+  "pct_rank_among_singles": 76.7,
+  "trades_assumed": 2
+ },
+ "lessons": [
+  "L4"
+ ],
+ "lessons_ko": [
+  "교훈: 시장 전체(SPY)가 3% 넘게 빠진 주였습니다. 이런 주엔 무엇을 골랐든 대부분 내립니다 — '내 종목만 왜?'보다 '시장이 왜?'를 먼저 보세요."
+ ],
+ "assumptions_ko": "가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · 선정 종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 선정 종목 수(보통 5) (예시 값 · 첫 주는 매수 5건 · '선정 없음' 주로 넘어갈 때 판 종목의 비용은 세지 않음) · 세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.",
+ "generated_at_utc": "2026-11-21 11:06",
+ "run": {
+  "id": "44897391910",
+  "url": "https://github.com/dongkyuchoikr-hue/fde-lab/actions/runs/44897391910",
+  "sha": "1b28a011b0f6723a9cfa145cb759945cbe68151c"
+ }
+}

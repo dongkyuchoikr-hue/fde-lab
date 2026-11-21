@@ -21,15 +21,31 @@
    "lessons": [
     "L6"
    ]
+  },
+  {
+   "pick_as_of": "2026-11-13",
+   "result_as_of": "2026-11-20",
+   "status": "확정",
+   "publish_mode": "ranks_only",
+   "n_picks": 5,
+   "beat_universe": true,
+   "beat_bench": true,
+   "net_beat_universe": true,
+   "net_beat_bench": true,
+   "pct_rank_among_singles": 76.7,
+   "changed_count": 1,
+   "lessons": [
+    "L4"
+   ]
   }
  ],
  "summary": {
-  "rows": 1,
-  "n": 1,
-  "weeks_beat_universe": 1,
-  "weeks_beat_bench": 0,
-  "weeks_net_beat_universe": 1,
-  "weeks_net_beat_bench": 0,
+  "rows": 2,
+  "n": 2,
+  "weeks_beat_universe": 2,
+  "weeks_beat_bench": 1,
+  "weeks_net_beat_universe": 2,
+  "weeks_net_beat_bench": 1,
   "weeks_no_picks": 0,
   "weeks_pending": 0,
   "weeks_gap": 0,
