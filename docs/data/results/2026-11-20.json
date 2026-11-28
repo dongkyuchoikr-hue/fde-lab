@@ -1,0 +1,110 @@
+{
+ "schema": "results/1",
+ "pick_as_of": "2026-11-20",
+ "result_as_of": "2026-11-27",
+ "holding": {
+  "from": "2026-11-20",
+  "to": "2026-11-27",
+  "trading_days": 4,
+  "half_day": true
+ },
+ "status": "확정",
+ "status_message_ko": "2026-11-20 선정 5종목의 2026-11-20 → 2026-11-27 결과(가상 계산).",
+ "publish_mode": "ranks_only",
+ "M": 30,
+ "rules_version": "v1",
+ "pick_status": "확정",
+ "market": {
+  "ticker": "SPY",
+  "dir_1w": "상승"
+ },
+ "picks": [
+  {
+   "ticker": "TRV",
+   "name_ko": "트래블러스",
+   "sector_ko": "금융",
+   "status": "확정",
+   "dir_1w": "상승",
+   "beat_universe": false,
+   "beat_bench": false,
+   "rank_1w": 21,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 94.5 · 30개 중 1위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "KO",
+   "name_ko": "코카콜라",
+   "sector_ko": "필수소비재",
+   "status": "확정",
+   "dir_1w": "보합",
+   "beat_universe": false,
+   "beat_bench": false,
+   "rank_1w": 30,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 89.7 · 30개 중 2위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "V",
+   "name_ko": "비자",
+   "sector_ko": "금융",
+   "status": "확정",
+   "dir_1w": "상승",
+   "beat_universe": true,
+   "beat_bench": true,
+   "rank_1w": 13,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 85.5 · 30개 중 3위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "PG",
+   "name_ko": "P&G",
+   "sector_ko": "필수소비재",
+   "status": "확정",
+   "dir_1w": "상승",
+   "beat_universe": false,
+   "beat_bench": false,
+   "rank_1w": 27,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 84.8 · 30개 중 4위",
+   "in_universe_now": true
+  },
+  {
+   "ticker": "AAPL",
+   "name_ko": "애플",
+   "sector_ko": "정보기술",
+   "status": "확정",
+   "dir_1w": "상승",
+   "beat_universe": false,
+   "beat_bench": false,
+   "rank_1w": 17,
+   "flags_at_pick": [],
+   "reason_short_ko": "점수 74.5 · 30개 중 5위",
+   "in_universe_now": true
+  }
+ ],
+ "basket": {
+  "n": 5,
+  "beat_universe": false,
+  "beat_bench": false,
+  "net_beat_universe": false,
+  "net_beat_bench": false,
+  "pct_rank_among_singles": 30.0,
+  "trades_assumed": 0
+ },
+ "lessons": [
+  "L6"
+ ],
+ "lessons_ko": [
+  "교훈: 평범한 주였습니다. 본 이유를 한 줄 적어 두는 습관은 평범한 주에 만들어집니다 — 카드의 「복사」로 메모장에 붙여 두세요."
+ ],
+ "assumptions_ko": "가정: 기준일(금요일) 종가 → 다음 기준일 종가로 계산 — 금요일 종가는 토·일에 고른 뒤라 실제로 살 수 없는 가격입니다 · 선정 종목 동일 비중 · 비용 차감 선 = 편도 0.3% × (매수+매도 건수) ÷ 선정 종목 수(보통 5) (예시 값 · 첫 주는 매수 5건 · '선정 없음' 주로 넘어갈 때 판 종목의 비용은 세지 않음) · 세금·환전·호가 차이 제외 · 배당은 수정 종가에 포함 · USD 기준 · 실제 매매가 아닌 가상 계산입니다.",
+ "generated_at_utc": "2026-11-28 11:50",
+ "run": {
+  "id": "46141652830",
+  "url": "https://github.com/dongkyuchoikr-hue/fde-lab/actions/runs/46141652830",
+  "sha": "7ec77b82c5d31292ecab47e0efe0489c989f5d31"
+ }
+}
